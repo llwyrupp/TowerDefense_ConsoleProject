@@ -1,0 +1,4 @@
+ Molotov          [ burns opponent for 2 turns ]
+ Throwing knife   [ opponent bleeds for 2 turns ]
+ HP Potion        [ Replenish HP ]
+ MP Potion        [ Replenish MP ]

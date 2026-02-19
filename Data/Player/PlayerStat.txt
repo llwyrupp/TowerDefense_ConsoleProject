@@ -1,0 +1,6 @@
+iHP = 100
+iMP = 100
+iAttack = 50
+iDefense = 10
+iCritRate = 70
+iCritDmg = 150

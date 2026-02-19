@@ -1,0 +1,4 @@
+ (A)TTACK    [ Execute tactical offensive protocols ]
+ (G)UARD     [ Divert power to forward shielding ]
+ (I)TEM      [ Access internal storage cache ]
+ (R)UN       [ Initiate emergency thruster escape ]
