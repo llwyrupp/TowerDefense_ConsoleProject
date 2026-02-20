@@ -4,6 +4,8 @@
 #include "EngineCommon/Engine_Macro.h"
 #include "EngineCommon/Engine_Defines.h"
 
+#include "Math/Vector2.h"
+
 BEGIN(System)
 
 #define MAX_SIZE_KEYSTATE 256
@@ -29,6 +31,11 @@ BEGIN(System)
 		bool GetKeyUp(int iKeyCode);
 		// 현재 눌려있으면 반복 호출.
 		bool GetKey(int iKeyCode);
+	public://MOUSE
+		bool GetMouseButtonDown(int iBtnCode);
+		bool GetMouseButtonUp(int iBtnCode);
+		bool GetMouseButton(int iBtnCode);
+		inline Vector2 GetMousePos() const { return m_vMousePos; }
 	public:
 		static InputMgr& Get_Instance();
 	private:
@@ -39,6 +46,7 @@ BEGIN(System)
 	private:
 		KEYSTATE m_stKeyStates[MAX_SIZE_KEYSTATE] = {};
 		static InputMgr* m_pInstance;
+		Vector2 m_vMousePos = {};
 	};
 END
 #endif

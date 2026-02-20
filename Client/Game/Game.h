@@ -16,6 +16,9 @@ public:
 private:
 	static Game* m_pInstance;
 	class Player* m_pPlayer = nullptr;
+
+private:
+	vector<Level*> m_vecLevels;
 };
 
 

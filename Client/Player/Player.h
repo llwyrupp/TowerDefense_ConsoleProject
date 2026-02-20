@@ -18,10 +18,8 @@ public:
 	void Render() override;
 
 public:
-	POINT& GetMousePos();
-
 private:
-
+	POINT m_MousePt = {};
 };
 
 #endif//!__PLAYER_H__

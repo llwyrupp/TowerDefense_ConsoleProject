@@ -1,7 +1,9 @@
 #include "FieldLevel.h"
+#include "Player/Player.h"
 
 FieldLevel::FieldLevel()
 {
+	AddNewActor(new Player());
 }
 
 FieldLevel::~FieldLevel()
@@ -11,6 +13,8 @@ FieldLevel::~FieldLevel()
 void FieldLevel::BeginPlay()
 {
 	super::BeginPlay();
+
+	
 }
 
 void FieldLevel::Tick(float _fDeltaTime)

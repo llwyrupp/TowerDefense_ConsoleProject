@@ -20,5 +20,11 @@ enum class E_TYPE_ENEMY{
 	E_TYPE_MAX
 };
 
-
+enum class E_TYPE_LEVEL {
+	E_TYPE_NONE = -1,
+	E_TYPE_MENU = 0,
+	E_TYPE_FIELD = 1,
+	E_TYPE_UPGRADE = 2,
+	E_TYPE_MAX
+};
 #endif

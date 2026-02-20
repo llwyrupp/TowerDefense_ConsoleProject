@@ -1,7 +1,9 @@
 #include "Player.h"
 #include "InputMgr/InputMgr.h"
+#include "Graphics/Renderer/Renderer.h"
 
 Player::Player()
+	:super("@", nullptr, Vector2::Zero, Color::eGreen)
 {
 }
 
@@ -12,48 +14,21 @@ Player::~Player()
 void Player::BeginPlay()
 {
 	super::BeginPlay();
+
 }
 
 void Player::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 
-	if (InputMgr::Get_Instance().GetKeyDown(VK_LBUTTON))
+	if (InputMgr::Get_Instance().GetMouseButton(0))
 	{
-		//get current position on console window
-
-		cout << GetMousePos().x << ' ' << GetMousePos().y << '\n';
+		SetPos(Vector2(InputMgr::Get_Instance().GetMousePos().m_iX, InputMgr::Get_Instance().GetMousePos().m_iY));
 	}
 }
 
 void Player::Render()
 {
 	super::Render();
+	Renderer::Get_Instance().Submit(m_strImg, Vector2::Right, m_eColor, m_iSortingOrder);
 }
-
-POINT& Player::GetMousePos()
-{
-	// 1. Get the handle to the console window and the output (for font info)
-	HWND hWnd = GetConsoleWindow();
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	//get mouse pos
-	POINT pt = {};
-	GetCursorPos(&pt);
-
-	//convert screen pixels to coords relative to the console window size
-	ScreenToClient(hWnd, &pt);
-
-	//get cur console font size(width/height of one char)
-	CONSOLE_FONT_INFO cInfo;
-	GetCurrentConsoleFont(hOut, FALSE, &cInfo);
-
-	//div window pixels by font size to get the console cell( col/row)
-	int iConsoleX = pt.x / cInfo.dwFontSize.X;
-	int iConsoleY = pt.y / cInfo.dwFontSize.Y;
-
-	POINT curPt = { iConsoleX, iConsoleY };
-
-	return curPt;
-}
-
