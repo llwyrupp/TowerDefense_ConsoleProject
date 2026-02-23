@@ -18,6 +18,9 @@ public:
 	void Tick(float _fDeltaTime) override;
 	void Render() override;
 
+public:
+	bool CheckCollision_PlayerCursor_TowerActors();
+
 private:
 
 };

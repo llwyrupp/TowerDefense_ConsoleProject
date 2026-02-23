@@ -22,4 +22,9 @@ Game::Game()
 Game::~Game()
 {
 	Safe_Delete(m_pPlayer);
+	for (auto& level : m_vecLevels)
+	{
+		if(level != m_pMainLevel)//m_pMainLevel del in ~Engine()
+			Safe_Delete(level);
+	}
 }

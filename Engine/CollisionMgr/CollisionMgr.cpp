@@ -24,7 +24,7 @@ CollisionMgr& CollisionMgr::Get_Instance()
 	return *m_pInstance;
 }
 
-Actor* CollisionMgr::CheckCol_Player_Enemy(std::list<Actor*>& _Dst, std::list<Actor*>& _Src)//dst: player, src: enemy
+Actor* CollisionMgr::CheckCol_ReturnActor(std::list<Actor*>& _Dst, std::list<Actor*>& _Src)//dst: player, src: enemy
 {
 	for (auto& dst : _Dst) {
 		for (auto& src : _Src) {
@@ -61,7 +61,7 @@ bool CollisionMgr::Check_Intersect(const RECT& _rtDst, const RECT& _rtSrc)
 	return true;
 }
 
-bool CollisionMgr::CheckCol_Player_Target(std::list<Actor*>& _Dst, std::list<Actor*>& _Src)
+bool CollisionMgr::CheckCol_ReturnBool(std::list<Actor*>& _Dst, std::list<Actor*>& _Src)
 {
 	for (auto& dst : _Dst) {
 		for (auto& src : _Src) {

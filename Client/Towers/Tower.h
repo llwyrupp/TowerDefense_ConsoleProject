@@ -10,7 +10,7 @@ class Tower : public Actor
 {
 	RTTI_DECLARATIONS(Tower, Actor)
 public:
-	Tower(const E_TYPE_TOWER& _eType);
+	Tower(const E_TYPE_TOWER& _eType, const char* pPath);
 	virtual ~Tower();
 
 public:

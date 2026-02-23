@@ -40,7 +40,7 @@ namespace System {
 		inline void Set_IsDestroyRequested(bool _bFlag) { m_bIsDestroyRequested = _bFlag; }
 
 		inline int Get_SortingOrder() const { return m_iSortingOrder; }
-
+		inline void Set_Color( Color const _eColor) { m_eColor = _eColor; }
 		inline const RECT& GetRect() const { return m_rtSize; }
 	protected:
 		//beginplay에 들어가면 세팅되는 플래그값

@@ -1,6 +1,7 @@
 #include "Tower.h"
 
-Tower::Tower(const E_TYPE_TOWER& _eType)
+Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
+	:super(nullptr, pPath, Vector2::Zero, Color::eWhite)
 {
 	m_tInfo.eType = _eType;
 }

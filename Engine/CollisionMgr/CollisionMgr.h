@@ -16,8 +16,8 @@ class Actor;
 
 	public:
 		static CollisionMgr& Get_Instance();
-		Actor* CheckCol_Player_Enemy(std::list<Actor*>& _Dst, std::list<Actor*>& _Src);
-		bool CheckCol_Player_Target(std::list<Actor*>& _Dst, std::list<Actor*>& _Src);
+		Actor* CheckCol_ReturnActor(std::list<Actor*>& _Dst, std::list<Actor*>& _Src);
+		bool CheckCol_ReturnBool(std::list<Actor*>& _Dst, std::list<Actor*>& _Src);
 		bool Check_Intersect(const RECT& _rtDst, const RECT& _rtSrc);
 	private:
 		static CollisionMgr* m_pInstance;

@@ -6,11 +6,12 @@
 #include "Actor/Actor.h"
 using namespace System;
 
+class PlayerCursor;
 class Player : public Actor
 {
 	RTTI_DECLARATIONS(Player, Actor)
 public:
-	Player();
+	Player(PlayerCursor* _cursor);
 	virtual ~Player();
 public:
 	void BeginPlay() override;
@@ -18,8 +19,11 @@ public:
 	void Render() override;
 
 public:
+	bool CheckCollision_PlayerCursor_Tower();
 private:
 	POINT m_MousePt = {};
+	PlayerCursor* m_pCursor;
+	bool m_bCanPlaceTower = false;
 };
 
 #endif//!__PLAYER_H__

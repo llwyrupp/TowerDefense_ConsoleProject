@@ -89,7 +89,7 @@ void InputMgr::ProcessInput()
 			MessageBoxA(nullptr, "InputMgr::ProcessInput(): Failed to set console mode", "Error", MB_OK);
 			__debugbreak();
 		}
-		bInit = !bInit;
+		bInit = true;
 	}
 
 	const DWORD dwMaxRecCnt = 256;
@@ -139,8 +139,8 @@ void InputMgr::ProcessInput()
 						//save mouse click state.
 						m_stKeyStates[VK_LBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
 						m_stKeyStates[VK_RBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) != 0;
-						break;
 					}
+					break;
 				}
 			}
 		}

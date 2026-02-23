@@ -20,10 +20,10 @@ Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color c
 		m_strImg = pImage;
 	}
 	else if (pPath) {
-		
+
 		LoadString_FromFile(pPath);
 	}
-	
+
 	UpdateRect();
 
 }
@@ -46,11 +46,18 @@ void Actor::Tick(float _fDeltaTime)
 
 void Actor::Render()
 {
-	if(m_vecStr_FieldLevel.empty())
+	if (m_vecStr_FieldLevel.empty())
 		Renderer::Get_Instance().Submit(m_strImg, m_vPosition, m_eColor, m_iSortingOrder);
-	else {
-		for (int i = 0; i < m_vecStr_FieldLevel.size(); ++i) {
-			Renderer::Get_Instance().Submit(m_vecStr_FieldLevel[i], Vector2(m_vPosition.m_iX, m_vPosition.m_iY), m_eColor, m_iSortingOrder);
+	else {//assume that all objects' height and width are even numbers.
+		size_t szIndex = 0;
+		for (int iX = -m_iStringWidth / 2; iX < (m_iStringWidth / 2) + 1; ++iX) {
+			for (int iY = -m_iStringHeight / 2; iY < (m_iStringHeight / 2) + 1; ++iY)
+			{
+				if (szIndex >= m_vecStr_FieldLevel.size())
+					break;
+				//object with multiple strings will be drawn with the position as the center.
+				Renderer::Get_Instance().Submit(m_vecStr_FieldLevel[szIndex++], Vector2(m_vPosition.m_iX + iX, m_vPosition.m_iY + iY), m_eColor, m_iSortingOrder);
+			}
 		}
 	}
 }
@@ -96,7 +103,7 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 	if (file.is_open())
 	{
 		std::string tempStr = "";
-		
+
 		while (std::getline(file, tempStr)) {
 			m_vecStr_FieldLevel.emplace_back(tempStr);
 		}
@@ -111,11 +118,11 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 		cerr << "FAILED TO OPEN FILE"<< _pPath;
 		__debugbreak();
 	}
-	
+
 	char cBuffer[MAX_STRING_LEN] = {};
-	
+
 	size_t szLen = fread(cBuffer, sizeof(char), MAX_STRING_LEN, pFile);
-	
+
 	if (szLen == 0) {
 		cerr << "No file at: "<< _pPath;
 		__debugbreak();
@@ -131,7 +138,7 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 
 	//TODO: reserve dynamically
 	vecChars.reserve(MAX_STRING_LEN);
-	
+
 	pToken = strtok_s(cBuffer, "\n", &pContext);//read the first line
 	size_t szTotalLen = 0;
 	while (pToken) {
@@ -142,7 +149,7 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 
 		strcat_s(m_pImage, sizeof(char) * MAX_STRING_LEN, pLine);
 		strcat_s(m_pImage, sizeof(char) * MAX_STRING_LEN, "\n");
-		
+
 		//strcpy_s(m_pImage + szTotalLen, szLen, pLine);
 		//szTotalLen += szLen;
 
