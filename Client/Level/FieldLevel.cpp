@@ -33,6 +33,9 @@ void FieldLevel::Tick(float _fDeltaTime)
 	{
 		Engine::Get_Instance().QuitEngine();
 	}
+
+	//check collisions
+	CheckCollision_PlayerCursor_TowerActors();
 }
 
 void FieldLevel::Render()
@@ -40,24 +43,37 @@ void FieldLevel::Render()
 	super::Render();
 }
 
-bool FieldLevel::CheckCollision_PlayerCursor_TowerActors()
+void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 {
-	list<Actor*> listPlayerCursor;
+	Player* pPlayer = nullptr;
+	PlayerCursor* pCursor = nullptr;
 	list<Actor*> listTowerActors;
 
-	for (auto& actor : m_vecActors)
+	for (auto const actor : m_vecActors)
 	{
-		if (actor->IsTypeOf<PlayerCursor>())
-			listPlayerCursor.push_back(actor);
-		if (actor->IsTypeOf<Tower>())
-			listTowerActors.push_back(actor);
-	}
+		if (actor->IsTypeOf<Player>())
+			pPlayer = dynamic_cast<Player*>(actor);
 
-	if (CollisionMgr::Get_Instance().CheckCol_ReturnBool(listPlayerCursor, listTowerActors))
-	{
-		return true;
+		else if (actor->IsTypeOf<PlayerCursor>())
+			pCursor = dynamic_cast<PlayerCursor*>(actor);
+
+		else if(actor->IsTypeOf<Tower>())
+			listTowerActors.push_back(actor);
+
 	}
-	
-	return false;
+	if (pPlayer == nullptr || pCursor == nullptr)
+		return;
+
+	for (auto const tower : listTowerActors)
+	{
+		if (pCursor->CheckIntersect(tower))
+		{
+			pPlayer->SetCanPlaceTower(false);
+			pCursor->SetColor(Color::eRed);
+			return;
+		}
+	}
+	pPlayer->SetCanPlaceTower(true);
+	pCursor->SetColor(Color::eGreen);
 }
 

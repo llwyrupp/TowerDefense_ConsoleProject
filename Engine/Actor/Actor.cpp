@@ -86,6 +86,30 @@ void Actor::UpdateRect()
 	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iStringHeight);
 }
 
+bool System::Actor::CheckIntersect(const Actor* const _other)
+{
+	int iMinX_This = this->m_rtSize.left, iMaxX_This = this->m_rtSize.right,
+		iMinY_This = this->m_rtSize.top, iMaxY_This = this->m_rtSize.bottom,
+		iMinX_Other = _other->GetRect().left, iMaxX_Other = _other->GetRect().right,
+		iMinY_Other = _other->GetRect().top, iMaxY_Other = _other->GetRect().bottom;
+
+	//check if two intersects.
+
+	if (iMaxX_This <= iMinX_Other)
+		return false;
+
+	if (iMaxX_Other <= iMinX_This)
+		return false;
+
+	if (iMaxY_This <= iMinY_Other)
+		return false;
+
+	if (iMaxY_Other <= iMinY_This)
+		return false;
+
+	return true;
+}
+
 void Actor::SetPos(const Vector2& vNewPos)
 {
 	//변경하려는 위치가 현 위치와 동일하면 스킵.

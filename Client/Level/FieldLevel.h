@@ -6,6 +6,7 @@
 #include "Level/Level.h"
 using namespace System;
 
+class PlayerCursor;
 class FieldLevel : public Level
 {
 	RTTI_DECLARATIONS(FieldLevel, Level)
@@ -19,10 +20,9 @@ public:
 	void Render() override;
 
 public:
-	bool CheckCollision_PlayerCursor_TowerActors();
+	void CheckCollision_PlayerCursor_TowerActors();
 
 private:
-
 };
 
 

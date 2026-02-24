@@ -2,9 +2,13 @@
 #include "InputMgr/InputMgr.h"
 #include "CollisionMgr/CollisionMgr.h"
 
+//DELEGATE
+//using OnHit = bool (*)(Actor*);
+
 PlayerCursor::PlayerCursor()
 	:super(nullptr, "../Data/Player/PlayerCursor.txt", Vector2::Zero, Color::eGreen)
 {
+	m_iSortingOrder = 3;
 }
 
 PlayerCursor::~PlayerCursor()

@@ -19,7 +19,7 @@ public:
 	void Render() override;
 
 public:
-	bool CheckCollision_PlayerCursor_Tower();
+	void SetCanPlaceTower(bool _bFlag) { m_bCanPlaceTower = _bFlag; }
 private:
 	POINT m_MousePt = {};
 	PlayerCursor* m_pCursor;

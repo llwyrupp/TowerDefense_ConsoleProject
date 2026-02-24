@@ -28,6 +28,8 @@ namespace System {
 		void ChangeImage(const char* newImage);
 		void LoadString_FromFile(const char* _pPath);
 		void UpdateRect();
+		bool CheckIntersect(const Actor* const _other);
+	public:
 		void SetPos(const Vector2& vNewPos);
 		inline Vector2 GetPos() const { return m_vPosition; }
 
@@ -40,7 +42,8 @@ namespace System {
 		inline void Set_IsDestroyRequested(bool _bFlag) { m_bIsDestroyRequested = _bFlag; }
 
 		inline int Get_SortingOrder() const { return m_iSortingOrder; }
-		inline void Set_Color( Color const _eColor) { m_eColor = _eColor; }
+		inline void SetColor( Color const _eColor) { m_eColor = _eColor; }
+		inline Color GetColor() const { return m_eColor; }
 		inline const RECT& GetRect() const { return m_rtSize; }
 	protected:
 		//beginplay에 들어가면 세팅되는 플래그값
