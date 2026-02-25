@@ -7,7 +7,7 @@
 #include "Level/FieldLevel.h"
 
 Player::Player(PlayerCursor* _cursor)
-	:super("@", nullptr, Vector2::Zero, Color::eGreen), m_pCursor(_cursor), m_bCanPlaceTower(false)
+	:super("@", nullptr, Vector2::Zero, Color::eGreen), m_pCursor(_cursor)
 {
 	
 }
@@ -26,13 +26,9 @@ void Player::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 
-	if (InputMgr::Get_Instance().GetMouseButtonDown(0) && m_bCanPlaceTower)
+	if (InputMgr::Get_Instance().GetMouseButtonDown(0))
 	{
-		Tower* pTower = nullptr;
-		m_pLevel->AddNewActor(pTower = new Tower(E_TYPE_TOWER::E_TYPE_RIFLE, "../Data/Tower/TowerRifle.txt"));
-
-		if (pTower && m_pCursor)
-			pTower->SetPos(m_pCursor->GetPos());
+		dynamic_cast<FieldLevel*>(m_pLevel)->AddTower();
 	}
 	//SetPos(Vector2(InputMgr::Get_Instance().GetMousePos().m_iX, InputMgr::Get_Instance().GetMousePos().m_iY));
 }

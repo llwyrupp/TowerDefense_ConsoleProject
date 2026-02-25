@@ -19,11 +19,9 @@ public:
 	void Render() override;
 
 public:
-	void SetCanPlaceTower(bool _bFlag) { m_bCanPlaceTower = _bFlag; }
 private:
 	POINT m_MousePt = {};
 	PlayerCursor* m_pCursor;
-	bool m_bCanPlaceTower = false;
 };
 
 #endif//!__PLAYER_H__

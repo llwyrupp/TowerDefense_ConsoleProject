@@ -8,6 +8,14 @@ Enemy::~Enemy()
 {
 }
 
+void Enemy::OnCollisionEnter2D(Actor* _pActor)
+{
+	if (!m_bIsDestroyRequested)
+	{
+		Destroy();
+	}
+}
+
 void Enemy::BeginPlay()
 {
 	super::BeginPlay();

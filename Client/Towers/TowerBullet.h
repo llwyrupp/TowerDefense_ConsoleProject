@@ -1,18 +1,16 @@
 #pragma once
-#ifndef __ENEMY_H__
-#define __ENEMY_H__
-
+#ifndef __TOWERBULLET_H__
+#define __TOWERBULLET_H__
 #include "Actor/Actor.h"
 #include "Interface/ICollisionHandler.h"
-
 using namespace System;
 
-class Enemy : public Actor, public ICollisionHandler
+class TowerBullet : public Actor, public ICollisionHandler
 {
-	RTTI_DECLARATIONS(Enemy, Actor)
+	RTTI_DECLARATIONS(TowerBullet, Actor)
 public:
-	Enemy();
-	virtual ~Enemy();
+	TowerBullet();
+	virtual ~TowerBullet();
 
 	void OnCollisionEnter2D(Actor* _pActor) override;
 
@@ -21,10 +19,7 @@ public:
 	void Tick(float _fDeltaTime) override;
 	void Render() override;
 
-private:
-
-
 };
 
 
-#endif
+#endif // !__TOWERBULLET_H__

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Ground">
+      <UniqueIdentifier>{ecf3143e-9c95-4e23-9e65-41e392bbc358}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Default\Main.cpp">
@@ -34,6 +37,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Player\PlayerCursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ground\Ground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Road\Road.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Target\Target.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Towers\TowerBullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,6 +75,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player\PlayerCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ground\Ground.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Road\Road.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Target\Target.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Towers\TowerBullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Interface\ICollisionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

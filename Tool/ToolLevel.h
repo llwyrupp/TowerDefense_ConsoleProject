@@ -17,6 +17,10 @@ public:
 	void BeginPlay() override;
 	void Tick(float _fDeltaTime) override;
 	void Render() override;
+public:
+	void ShowOption();
+private:
+	string m_strOption;
 };
 
 
