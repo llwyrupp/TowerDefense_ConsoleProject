@@ -3,8 +3,8 @@
 
 BEGIN(System)
 
-Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color color)
-	:m_vPosition(vPos), m_eColor(color), m_iStringHeight(1), m_iStringWidth(1)
+Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color color, E_LAYER _eLayer)
+	:m_vPosition(vPos), m_eColor(color), m_eLayer(_eLayer), m_iStringHeight(1), m_iStringWidth(1)
 {
 	if (!pImage && !pPath) {
 		std::cerr << "============YOU NEED AT LEAST ONE: CHAR or PATH============" << this->GetType();

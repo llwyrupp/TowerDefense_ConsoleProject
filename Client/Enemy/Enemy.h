@@ -22,7 +22,8 @@ public:
 	void Render() override;
 
 private:
-
+	float m_fX = 0.f;
+	float m_fY = 0.f;
 
 };
 

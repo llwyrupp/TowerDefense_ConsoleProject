@@ -49,12 +49,7 @@ T Clamp(T value, T min, T max)
 	return value;
 }
 
-//void AllocateMem_Arr(T& _pDestArr, T& _pSrcArr)
-//{
-//	size_t szLen = strlen(_pSrcArr) + 1;
-//	_pDestArr = new T[szLen];
-//	strcpy_s(_pDestArr, sizeof(T) * szLen, _pSrcArr);
-//}
+
 #pragma endregion MEMORY
 END
 

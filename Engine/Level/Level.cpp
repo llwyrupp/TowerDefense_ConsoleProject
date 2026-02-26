@@ -2,12 +2,13 @@
 #include "Actor/Actor.h"
 #include "CollisionMgr/CollisionMgr.h"
 #include "EngineCommon/Engine_Function.h"
+#include "Actor/ActorPool.h"
 
 BEGIN(System)
 
 Level::Level()
 {
-
+	m_pActorPool = new ActorPool();
 }
 
 Level::~Level()
@@ -16,6 +17,8 @@ Level::~Level()
 		Safe_Delete(actor);
 
 	m_vecActors.clear();
+
+	Safe_Delete(m_pActorPool);
 }
 void Level::BeginPlay()
 {
@@ -58,26 +61,49 @@ void Level::AddNewActor(Actor* pNewActor)
 	pNewActor->SetLevel(this);
 }
 
-void Level::Process_AddNDestroyActors()
+void Level::Process_AddnDestroyActors()
 {
 	//delete any delete-requested actors.
 	for (int i = 0; i < static_cast<int>(m_vecActors.size());)
 	{
+		Actor* pActor = m_vecActors[i];
 		if (m_vecActors[i]->Get_IsDestroyRequested()) {
+			//detelte from layer.
+			int iLayer = static_cast<int>(pActor->GetLayer());
+			vector<Actor*>& vecLayer = m_vecLayers[iLayer];
+
+			vector<Actor*>::iterator it = find(vecLayer.begin(), vecLayer.end(), pActor);
+			if (it != vecLayer.end())
+			{
+				vecLayer.erase(it);
+			}
+
 			//if requested to be del, delete
-			delete m_vecActors[i];
+			//if the actor is using actorpool, do not delete it.
+			if (pActor->Get_IsUsingActorPool())
+			{
+				//TODO: retrieve actor to actorpool
+				m_pActorPool->Push(m_vecActors[i]);
+			}
+			else//if the actor's class does not use object pooling, just delete it
+			{
+				delete m_vecActors[i];
+			}
+
 			m_vecActors.erase(m_vecActors.begin() + i);
 			continue;//skip to next iteration.
 		}
 		++i;
 	}
 
-	//additional process.
+	// Additional process: Moving actors from "Waiting Room" to "Active World"
 	if (m_vecAddReqActors.empty())
 		return;
 
 	for (Actor* const actor : m_vecAddReqActors) {
 		m_vecActors.emplace_back(actor);
+		int iLayer = static_cast<int>(actor->GetLayer());
+		m_vecLayers[iLayer].emplace_back(actor);
 	}
 
 	//init arr.

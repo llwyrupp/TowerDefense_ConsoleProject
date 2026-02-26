@@ -14,7 +14,7 @@ namespace System {
 		RTTI_DECLARATIONS(Actor, RTTI)
 
 	public:
-		Actor(const char* pImage = nullptr, const char* pPath = nullptr, const Vector2& vPos = Vector2::Zero, Color color = Color::eWhite);
+		Actor(const char* pImage = nullptr, const char* pPath = nullptr, const Vector2& vPos = Vector2::Zero, Color color = Color::eWhite, E_LAYER _eLayer = E_LAYER::E_NONE);
 		virtual ~Actor();
 
 	public:
@@ -45,6 +45,11 @@ namespace System {
 		inline void SetColor( Color const _eColor) { m_eColor = _eColor; }
 		inline Color GetColor() const { return m_eColor; }
 		inline const RECT& GetRect() const { return m_rtSize; }
+		inline void SetLayer( E_LAYER const _eLayer) { m_eLayer = _eLayer; }
+		inline E_LAYER GetLayer() const { return m_eLayer; }
+
+		inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
+		inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }
 	protected:
 		//beginplay에 들어가면 세팅되는 플래그값
 		bool m_bHasBegunPlay = false;
@@ -54,6 +59,9 @@ namespace System {
 
 		//현재 프레임에 삭제요청 받았는지 확인하는 용도
 		bool m_bIsDestroyRequested = false;
+
+		//액터 풀을 사용하는지 확인
+		bool m_bIsUsingActorPool = false;
 
 		//letter to draw(image)
 		//char* m_pImage = nullptr;
@@ -79,6 +87,7 @@ namespace System {
 		//the bigger, the higher the priority
 		int m_iSortingOrder = 0;
 
+		E_LAYER m_eLayer = E_LAYER::E_NONE;
 	protected:
 		RECT m_rtSize = {};
 

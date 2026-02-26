@@ -1,7 +1,9 @@
 #include "Target.h"
 
+using namespace System;
+
 Target::Target(const Vector2& position)
-	: super("T", nullptr, position, Color::eGreen)
+	: super("T", nullptr, position, Color::eGreen, E_LAYER::E_ETCETERA)
 {
 	m_iSortingOrder = 3;
 }

@@ -1,4 +1,5 @@
 #include "FieldLevel.h"
+#include "Level/Level.h"
 #include "Player/Player.h"
 #include "InputMgr/InputMgr.h"
 #include "Engine/Engine.h"
@@ -13,14 +14,21 @@
 #include "Actor/Actor.h"
 #include "Towers/TowerBullet.h"
 #include "Enemy/Enemy.h"
+#include "Enemy/EnemySpawner.h"
+#include "Util/Timer.h"
+#include "Graphics/Renderer/Renderer.h"
 
 using namespace System;
+using namespace Util;
 
 FieldLevel::FieldLevel()
 {
 	AddNewActor(m_pCursor = new PlayerCursor());
 	AddNewActor(m_pPlayer = new Player(m_pCursor));
 	LoadMap("../Data/Map/RoadMap.txt");
+
+	m_PreRoundTimer.SetTargetTime(5.f);
+	m_RoundTimer.SetTargetTime(2.f);
 }
 
 FieldLevel::~FieldLevel()
@@ -38,18 +46,50 @@ void FieldLevel::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 
+#pragma region INPUT
 	if (InputMgr::Get_Instance().GetKeyDown('Q'))
 	{
 		Engine::Get_Instance().QuitEngine();
 	}
+#pragma endregion INPUT
 
-	//check collisions
-	CheckCollision_PlayerCursor_TowerActors();
+#pragma region PRE_ROUND
+	if (!m_bHasRoundBegun)
+	{
+		m_PreRoundTimer.Tick(_fDeltaTime);
+
+		if (m_PreRoundTimer.IsTimeOut())
+		{
+			m_bHasRoundBegun = true;
+			m_PreRoundTimer.ResetTime();
+		}
+	}
+#pragma endregion PRE_ROUND
+
+#pragma endregion ROUND
+	if (m_bHasRoundBegun) {
+
+		m_RoundTimer.Tick(_fDeltaTime);
+		if (m_RoundTimer.IsTimeOut())
+		{
+			//spawn enemy.
+			SpawnActor<Enemy>(Vector2::Zero);
+			m_RoundTimer.ResetTime();
+		}
+		
+		//check collisions
+		CheckCollision_PlayerCursor_TowerActors();
+		CheckCollision_TowerBullet_Enemies();
+	}
+#pragma endregion ROUND
 }
 
 void FieldLevel::Render()
 {
 	super::Render();
+
+	string tempStr = to_string(static_cast<int>(m_PreRoundTimer.GetTargetTime() - m_PreRoundTimer.GetElapsedTime())) + " seconds left";
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 0), Color::eWhite);
 }
 
 void FieldLevel::LoadMap(const char* _pPath)
@@ -90,11 +130,11 @@ void FieldLevel::LoadMap(const char* _pPath)
 			AddNewActor(new Road(vPos));
 			break;
 		case '.':
-			AddNewActor(new Ground(vPos));
+			//AddNewActor(new Ground(vPos));
 			break;
 		case 'T':
 			AddNewActor(new Target(vPos));
-			AddNewActor(new Ground(vPos));
+			//AddNewActor(new Ground(vPos));
 			break;
 		}
 
@@ -114,20 +154,17 @@ void FieldLevel::AddTower()
 		pTower->SetPos(m_pCursor->GetPos());
 }
 
+void FieldLevel::StartRound()
+{
+	//Generate Enemies.
+}
+
 void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 {
-	list<Actor*> listTowerActors;
-
-	for (auto const actor : m_vecActors)
-	{
-		if(actor->IsTypeOf<Tower>())
-			listTowerActors.push_back(actor);
-
-	}
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
 		return;
 
-	for (auto const tower : listTowerActors)
+	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 	{
 		if (m_pCursor->CheckIntersect(tower))
 		{
@@ -142,22 +179,16 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 
 void FieldLevel::CheckCollision_TowerBullet_Enemies()
 {
-	list<Actor*> listTowerBulletActors;
-	list<Actor*> listEnemyActors;
-
-	for (auto const actor : m_vecActors)
+	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
 	{
-		if (actor->IsTypeOf<TowerBullet>())
-			listTowerBulletActors.push_back(actor);
+		if (bullet->Get_IsDestroyRequested())
+			continue;
 
-		if (actor->IsTypeOf<Enemy>())
-			listEnemyActors.push_back(actor);
-	}
-
-	for (auto const bullet : listTowerBulletActors)
-	{
-		for (auto const enemy : listEnemyActors)
+		for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
 		{
+			if (enemy->Get_IsDestroyRequested())
+				continue;
+
 			if (bullet->CheckIntersect(enemy))
 			{
 				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(enemy);

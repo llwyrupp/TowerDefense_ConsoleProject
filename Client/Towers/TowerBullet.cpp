@@ -6,8 +6,14 @@
 using namespace System;
 
 TowerBullet::TowerBullet()
-	:super(".", nullptr, Vector2::Zero, Color::eBlue)
+	:super(".", nullptr, Vector2::Zero, Color::eBlue, E_LAYER::E_TOWERBULLET)
 {
+	m_bIsUsingActorPool = true;
+
+#ifdef _DEBUG
+	m_fSpeed = 10.f;
+#endif
+
 }
 
 TowerBullet::~TowerBullet()
@@ -32,16 +38,7 @@ void TowerBullet::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 
-	static ICollisionHandler* InterfaceCollisionHandler = nullptr;
-	
-	if (!InterfaceCollisionHandler && m_pLevel)
-	{
-		InterfaceCollisionHandler = dynamic_cast<ICollisionHandler*>(m_pLevel);
-		if (InterfaceCollisionHandler == nullptr)
-		{
-			__debugbreak();
-		}
-	}
+	SetPos(Vector2(GetPos().m_iX + m_vDir.m_iX * _fDeltaTime * m_fSpeed, GetPos().m_iY + m_vDir.m_iY * _fDeltaTime * m_fSpeed));
 
 }
 

@@ -3,7 +3,7 @@
 
 using namespace System;
 Road::Road(const Vector2& vPos)
-	:super("#", nullptr, vPos, Color::eWhite)
+	:super("#", nullptr, vPos, Color::eWhite, E_LAYER::E_ROAD)
 {
 	m_iSortingOrder = 1;
 }

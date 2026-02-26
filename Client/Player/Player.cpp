@@ -6,10 +6,11 @@
 #include "Towers/Tower.h"
 #include "Level/FieldLevel.h"
 
+using namespace System;
+
 Player::Player(PlayerCursor* _cursor)
-	:super("@", nullptr, Vector2::Zero, Color::eGreen), m_pCursor(_cursor)
+	:super("@", nullptr, Vector2::Zero, Color::eGreen, E_LAYER::E_PLAYER), m_pCursor(_cursor)
 {
-	
 }
 
 Player::~Player()
@@ -30,7 +31,6 @@ void Player::Tick(float _fDeltaTime)
 	{
 		dynamic_cast<FieldLevel*>(m_pLevel)->AddTower();
 	}
-	//SetPos(Vector2(InputMgr::Get_Instance().GetMousePos().m_iX, InputMgr::Get_Instance().GetMousePos().m_iY));
 }
 
 void Player::Render()

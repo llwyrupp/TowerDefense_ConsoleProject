@@ -95,7 +95,7 @@ void Engine::Run()
 			m_pInput->SavePrevInputStates();
 
 			if(m_pMainLevel)
-				m_pMainLevel->Process_AddNDestroyActors();
+				m_pMainLevel->Process_AddnDestroyActors();
 		}
 	}
 	std::cout << "Program Quit.\n";

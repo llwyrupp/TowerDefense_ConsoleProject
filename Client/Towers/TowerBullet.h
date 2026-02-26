@@ -18,7 +18,13 @@ public:
 	void BeginPlay() override;
 	void Tick(float _fDeltaTime) override;
 	void Render() override;
+public:
+	void SetDir(const Vector2& _vPos) { m_vDir = _vPos; }
+	void SetSpeed(float _speed) { m_fSpeed = _speed; }
 
+private:
+	Vector2 m_vDir = Vector2::Zero;
+	float m_fSpeed = 0.f;
 };
 
 

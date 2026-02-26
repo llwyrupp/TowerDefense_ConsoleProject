@@ -63,6 +63,12 @@
     <ClInclude Include="CollisionMgr\CollisionMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Util\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\ActorPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Engine.cpp">
@@ -90,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionMgr\CollisionMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor\ActorPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

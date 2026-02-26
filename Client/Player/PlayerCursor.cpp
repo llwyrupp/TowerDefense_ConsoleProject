@@ -5,8 +5,10 @@
 //DELEGATE
 //using OnHit = bool (*)(Actor*);
 
+using namespace System;
+
 PlayerCursor::PlayerCursor()
-	:super(nullptr, "../Data/Player/PlayerCursor.txt", Vector2::Zero, Color::eGreen)
+	:super(nullptr, "../Data/Player/PlayerCursor.txt", Vector2::Zero, Color::eGreen, E_LAYER::E_PLAYER)
 {
 	m_iSortingOrder = 3;
 }
