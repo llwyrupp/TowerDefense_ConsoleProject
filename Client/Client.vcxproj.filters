@@ -39,10 +39,10 @@
     <ClCompile Include="Player\PlayerCursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ground\Ground.cpp">
+    <ClCompile Include="Environment\Ground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Road\Road.cpp">
+    <ClCompile Include="Environment\Road.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Target\Target.cpp">
@@ -52,6 +52,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\EnemySpawner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\Wall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,10 +83,10 @@
     <ClInclude Include="Player\PlayerCursor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ground\Ground.h">
+    <ClInclude Include="Environment\Ground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Road\Road.h">
+    <ClInclude Include="Environment\Road.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Target\Target.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\EnemySpawner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\Wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

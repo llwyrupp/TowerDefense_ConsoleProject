@@ -12,7 +12,6 @@ namespace System {
 	class ENGINE_DLL  Actor : public RTTI
 	{
 		RTTI_DECLARATIONS(Actor, RTTI)
-
 	public:
 		Actor(const char* pImage = nullptr, const char* pPath = nullptr, const Vector2& vPos = Vector2::Zero, Color color = Color::eWhite, E_LAYER _eLayer = E_LAYER::E_NONE);
 		virtual ~Actor();

@@ -6,8 +6,9 @@
 #include "Player/PlayerCursor.h"
 #include "CollisionMgr/CollisionMgr.h"
 #include "Towers/Tower.h"
-#include "Ground/Ground.h"
-#include "Road/Road.h"
+#include "Environment/Ground.h"
+#include "Environment/Wall.h"
+#include "Environment/Road.h"
 #include "Target/Target.h"
 #include "EngineCommon/Engine_Function.h"
 #include "Game/Game.h"
@@ -63,6 +64,8 @@ void FieldLevel::Tick(float _fDeltaTime)
 			m_bHasRoundBegun = true;
 			m_PreRoundTimer.ResetTime();
 		}
+
+		m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
 	}
 #pragma endregion PRE_ROUND
 
@@ -73,13 +76,17 @@ void FieldLevel::Tick(float _fDeltaTime)
 		if (m_RoundTimer.IsTimeOut())
 		{
 			//spawn enemy.
-			SpawnActor<Enemy>(Vector2::Zero);
+			SpawnActor<Enemy>(Vector2(1,1));
 			m_RoundTimer.ResetTime();
 		}
 		
 		//check collisions
 		CheckCollision_PlayerCursor_TowerActors();
 		CheckCollision_TowerBullet_Enemies();
+		CheckCollision_TowerBullet_Walls();
+		CheckCollision_Enemies_Walls();
+
+		m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
 	}
 #pragma endregion ROUND
 }
@@ -90,6 +97,13 @@ void FieldLevel::Render()
 
 	string tempStr = to_string(static_cast<int>(m_PreRoundTimer.GetTargetTime() - m_PreRoundTimer.GetElapsedTime())) + " seconds left";
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 0), Color::eWhite);
+
+	tempStr = "Number of actors in m_vecActors: " + to_string(m_vecActors.size());
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 20), Color::eWhite);
+	tempStr = "Number of TowerBullets in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)].size());
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 21), Color::eWhite);
+	tempStr = "Number of Enemies in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size());
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 25), Color::eWhite);
 }
 
 void FieldLevel::LoadMap(const char* _pPath)
@@ -126,15 +140,16 @@ void FieldLevel::LoadMap(const char* _pPath)
 
 		switch (cLetter)
 		{
-		case '@':
+		/*case '@':
 			AddNewActor(new Road(vPos));
-			break;
+			break;*/
 		case '.':
-			//AddNewActor(new Ground(vPos));
 			break;
 		case 'T':
 			AddNewActor(new Target(vPos));
-			//AddNewActor(new Ground(vPos));
+			break;
+		case 'X':
+			AddNewActor(new Wall(vPos));
 			break;
 		}
 
@@ -145,18 +160,40 @@ void FieldLevel::LoadMap(const char* _pPath)
 	fclose(pFile);
 }
 
-void FieldLevel::AddTower()
+bool FieldLevel::AddTower(E_TYPE_TOWER _eType)
 {
+	if (!m_bCanPlaceTower)
+		return false;
+
 	Tower* pTower = nullptr;
-	AddNewActor(pTower = new Tower(E_TYPE_TOWER::E_TYPE_RIFLE, "../Data/Tower/TowerRifle.txt"));
+	const char* pPath = "";
+
+	switch (_eType)
+	{
+	case E_TYPE_TOWER::E_TYPE_RIFLE:
+		pPath = "../Data/Tower/TowerRifle.txt";
+		break;
+	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
+		pPath = "../Data/Tower/TowerShotgun.txt";
+		break;
+	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
+		pPath = "../Data/Tower/TowerMachinegun.txt";
+		break;
+	}
+
+	//tower objects will not use pooling.
+	AddNewActor(pTower = new Tower(_eType, pPath));
 
 	if (pTower && m_pCursor)
 		pTower->SetPos(m_pCursor->GetPos());
+
+	return true;
 }
 
 void FieldLevel::StartRound()
 {
 	//Generate Enemies.
+
 }
 
 void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
@@ -193,6 +230,42 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 			{
 				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(enemy);
 				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(bullet);
+			}
+		}
+	}
+}
+
+void FieldLevel::CheckCollision_TowerBullet_Walls()
+{
+	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	{
+		if (bullet->Get_IsDestroyRequested())
+			continue;
+
+		for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
+		{
+			if (bullet->CheckIntersect(wall))
+			{
+				//wall stays.
+				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(wall);
+			}
+		}
+	}
+}
+
+void FieldLevel::CheckCollision_Enemies_Walls()
+{
+	//temporary logic.
+	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	{
+		if (enemy->Get_IsDestroyRequested())
+			continue;
+
+		for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
+		{
+			if (enemy->CheckIntersect(wall))
+			{
+				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(wall);
 			}
 		}
 	}

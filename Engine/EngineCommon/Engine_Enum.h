@@ -20,7 +20,8 @@ enum class ENGINE_DLL E_LAYER {
 	E_TOWERBULLET = 3,
 	E_GROUND = 4,
 	E_ROAD = 5,
-	E_ETCETERA = 6,
+	E_WALL = 6,
+	E_ETCETERA = 7,
 	E_MAX
 };
 END

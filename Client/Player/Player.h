@@ -4,7 +4,10 @@
 #define __PLAYER_H__
 
 #include "Actor/Actor.h"
-using namespace System;
+#include "Util/Timer.h"
+#include "ClientCommon/ClientEnum.h"
+
+using namespace Util;
 
 class PlayerCursor;
 class Player : public Actor
@@ -19,9 +22,17 @@ public:
 	void Render() override;
 
 public:
+	bool Check_EnoughMoney_TowerCooldown();
+private:
+	Timer m_Cooldown[3];
+	unsigned int m_iOwnTower[3];
+	unsigned int m_iTowerPrice[3];
 private:
 	POINT m_MousePt = {};
 	PlayerCursor* m_pCursor;
+private:
+	int m_iMoney = 0;
+	E_TYPE_TOWER m_eCurTowerType = E_TYPE_TOWER::E_TYPE_MAX;
 };
 
 #endif//!__PLAYER_H__

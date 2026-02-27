@@ -16,6 +16,15 @@ Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 	{
 	case E_TYPE_TOWER::E_TYPE_RIFLE:
 		m_fBoundary = 50.f;
+		m_FireTimer.SetTargetTime(1.f);
+		break;
+	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
+		m_fBoundary = 30.f;
+		m_FireTimer.SetTargetTime(2.f);
+		break;
+	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
+		m_fBoundary = 40.f;
+		m_FireTimer.SetTargetTime(0.5f);
 		break;
 	}
 }
@@ -33,6 +42,13 @@ void Tower::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 	
+	m_FireTimer.Tick(_fDeltaTime);
+
+	if (m_FireTimer.IsTimeOut())
+	{
+		m_FireTimer.ResetTime();
+		m_pLevel->SpawnActor<TowerBullet>(GetPos());
+	}
 
 	//get distance between tower and enemy
 	float fDist = sqrtf( powf(m_vTarget.m_iX - GetPos().m_iX, 2.f) + powf(m_vTarget.m_iY - GetPos().m_iY, 2.f));

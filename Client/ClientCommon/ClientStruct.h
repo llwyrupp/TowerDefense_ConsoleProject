@@ -5,7 +5,7 @@
 typedef struct tagTowerInfo {
 	tagTowerInfo() {
 		iHP = 0;
-		eType = E_TYPE_TOWER::E_TYPE_NONE;
+		eType = E_TYPE_TOWER::E_TYPE_MAX;
 	}
 
 	tagTowerInfo(int _hp, E_TYPE_TOWER _type) 

@@ -5,8 +5,11 @@
 #include "ClientCommon/ClientStruct.h"
 #include "Interface/ICollisionHandler.h"
 #include "Actor/Actor.h"
+#include "Util/Timer.h"
 
 using namespace System;
+using namespace Util;
+
 class Tower : public Actor , public ICollisionHandler
 {
 	RTTI_DECLARATIONS(Tower, Actor)
@@ -26,6 +29,8 @@ public:
 private:
 	TOWERINFO m_tInfo = {};
 	Vector2 m_vTarget = Vector2::Zero;
+	Timer m_FireTimer;
+private:
 	bool m_bIsAttacking = false;
 	float m_fBoundary = 0.f;
 };

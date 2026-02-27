@@ -6,6 +6,7 @@
 #include "Level/Level.h"
 #include "Interface/ICollisionHandler.h"
 #include "Util/Timer.h"
+#include "ClientCommon/ClientEnum.h"
 
 using namespace System;
 using namespace Util;
@@ -26,12 +27,14 @@ public:
 	void Render() override;
 public:
 	void LoadMap(const char* _pPath);
-	void AddTower();
+	bool AddTower(E_TYPE_TOWER _eType);
 public:
 	void StartRound();
 public:
 	void CheckCollision_PlayerCursor_TowerActors();
 	void CheckCollision_TowerBullet_Enemies();
+	void CheckCollision_TowerBullet_Walls();
+	void CheckCollision_Enemies_Walls();//for _DEBUG ONLY
 
 private:
 	Player* m_pPlayer = nullptr;
@@ -46,6 +49,7 @@ private:
 	bool m_bCanPlaceTower = false;
 	bool m_bHasRoundBegun = false;
 private:
+	E_TYPE_GAMESTATE m_eGameState = E_TYPE_GAMESTATE::E_NONE;
 };
 
 

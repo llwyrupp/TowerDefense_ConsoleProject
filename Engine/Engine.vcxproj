@@ -98,6 +98,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
   <ItemGroup>
     <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Actor\ActorPool.cpp" />
+    <ClCompile Include="AStarMgr\AStarMgr.cpp" />
     <ClCompile Include="CollisionMgr\CollisionMgr.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\Renderer\Renderer.cpp" />
@@ -110,6 +111,8 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
     <ClInclude Include="Actor\ActorPool.h" />
+    <ClInclude Include="AStarMgr\AStarMgr.h" />
+    <ClInclude Include="AStarMgr\Node.h" />
     <ClInclude Include="CollisionMgr\CollisionMgr.h" />
     <ClInclude Include="EngineCommon\Engine_Defines.h" />
     <ClInclude Include="EngineCommon\Engine_Enum.h" />

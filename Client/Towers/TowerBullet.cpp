@@ -2,11 +2,12 @@
 #include "Interface/ICollisionHandler.h"
 #include "Level/Level.h"
 #include "Enemy/Enemy.h"
+#include "Environment/Wall.h"
 
 using namespace System;
 
 TowerBullet::TowerBullet()
-	:super(".", nullptr, Vector2::Zero, Color::eBlue, E_LAYER::E_TOWERBULLET)
+	:super("&", nullptr, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWERBULLET)
 {
 	m_bIsUsingActorPool = true;
 
@@ -24,6 +25,10 @@ TowerBullet::~TowerBullet()
 void TowerBullet::OnCollisionEnter2D(Actor* _pActor)
 {
 	if (_pActor->IsTypeOf<Enemy>() && !m_bIsDestroyRequested)
+	{
+		Destroy();
+	}
+	else if (_pActor->IsTypeOf<Wall>() && !m_bIsDestroyRequested)
 	{
 		Destroy();
 	}
