@@ -9,12 +9,14 @@
 BEGIN(System)
 class Node {
 public:
-	Node(int _x, int _y, Node* _parent = nullptr)
+	Node(int _x, int _y, Node* _parent)
+		:m_Parent(_parent)
 	{
-
+		m_Pos.iX = _x;
+		m_Pos.iY = _y;
 	}
 public:
-	float GetFCost() const { return m_GCost + m_HCost; }
+	
 public:
 	POS operator-(const Node& _other)
 	{
@@ -35,8 +37,12 @@ public:
 public:
 	Node* GetParent() const { return m_Parent; }
 	POS GetPos() const { return m_Pos; }
-	float GetGCost() const { return m_GCost; }
-	float GetHCost() const { return m_HCost; }
+	inline float GetGCost() const { return m_GCost; }
+	inline void SetGCost(float _cost) { m_GCost = _cost; }
+	inline float GetHCost() const { return m_HCost; }
+	inline void SetHCost(float _cost) { m_HCost = _cost; }
+	inline float GetFCost() const { return m_FCost; }
+	inline void SetFCost(float _cost) { m_FCost = _cost; }
 private:
 	Node* m_Parent = nullptr;
 	POS m_Pos = {};
@@ -45,4 +51,4 @@ private:
 	float m_GCost = 0.f;//The actual cost (e.g., distance or time) of the path from the starting node to the current node
 };
 END
-#endif // !__NODE_H_
+#endif // !__NODE_H__

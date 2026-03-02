@@ -22,16 +22,16 @@ typedef struct tagDirection
 	tagDirection() {
 		iX = 0;
 		iY = 0;
-		fCost = 0.f;
+		gCost = 0.f;
 	}
 	tagDirection(int _x, int _y, float _cost)
-		:iX(_x), iY(_y), fCost(_cost)
+		:iX(_x), iY(_y), gCost(_cost)
 	{
 		//fCost = sqrt()
 	}
 	int iX;
 	int iY;
-	float fCost;
+	float gCost;
 }DIR;
 
 #endif//!__ENGINE_STRUCT_H__

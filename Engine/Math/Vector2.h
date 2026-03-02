@@ -24,6 +24,8 @@ public:
 
 	operator COORD() const;//short vars.
 
+	void NormalizeVector();
+
 	//default vectors.
 	static Vector2 Zero;
 	static Vector2 One;

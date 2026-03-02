@@ -15,6 +15,7 @@ class Player;
 class PlayerCursor;
 class TowerBullet;
 class Enemy;
+class Target;
 class FieldLevel : public Level
 {
 	RTTI_DECLARATIONS(FieldLevel, Level)
@@ -35,10 +36,13 @@ public:
 	void CheckCollision_TowerBullet_Enemies();
 	void CheckCollision_TowerBullet_Walls();
 	void CheckCollision_Enemies_Walls();//for _DEBUG ONLY
-
+	void CheckCollision_Enemies_Target();//for _DEBUG ONLY
+public:
+	inline Target* GetTarget() const { return m_pTarget; }
 private:
 	Player* m_pPlayer = nullptr;
 	PlayerCursor* m_pCursor = nullptr;
+	Target* m_pTarget = nullptr;
 private:
 	Timer m_PreRoundTimer;
 	Timer m_RoundTimer;
@@ -50,6 +54,9 @@ private:
 	bool m_bHasRoundBegun = false;
 private:
 	E_TYPE_GAMESTATE m_eGameState = E_TYPE_GAMESTATE::E_NONE;
+
+
+	bool temp = false;
 };
 
 

@@ -11,8 +11,9 @@ class Target : public Actor
 	RTTI_DECLARATIONS(Target, Actor)
 
 public:
+	Target() {}
 	Target(const Vector2& position);
-
+public:
 	void BeginPlay() override;
 	void Tick(float _fDeltaTime) override;
 	void Render() override;

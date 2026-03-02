@@ -78,4 +78,15 @@ Vector2::operator COORD() const
     return coord;
 }
 
+void Vector2::NormalizeVector()
+{
+    //calc. the magnitude(length) using pythagorean theo.
+    float fMagnitude = static_cast<float>(sqrt(m_iX * m_iX + m_iY * m_iY));
+    //prevent divbyzero
+    if (fMagnitude > 0.f) {
+        m_iX /= fMagnitude;
+        m_iY /= fMagnitude;
+    }
+}
+
 END

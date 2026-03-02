@@ -47,11 +47,12 @@ void Tower::Tick(float _fDeltaTime)
 	if (m_FireTimer.IsTimeOut())
 	{
 		m_FireTimer.ResetTime();
-		m_pLevel->SpawnActor<TowerBullet>(GetPos());
+		TowerBullet* pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+		pBullet->SetDir(Vector2::Right);
 	}
 
 	//get distance between tower and enemy
-	float fDist = sqrtf( powf(m_vTarget.m_iX - GetPos().m_iX, 2.f) + powf(m_vTarget.m_iY - GetPos().m_iY, 2.f));
+	float fDist = static_cast<float>(sqrt( pow(m_vTarget.m_iX - GetPos().m_iX, 2) + pow(m_vTarget.m_iY - GetPos().m_iY, 2)));
 
 	//if (fDist);
 }

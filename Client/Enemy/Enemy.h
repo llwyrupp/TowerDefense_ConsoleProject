@@ -4,6 +4,7 @@
 
 #include "Actor/Actor.h"
 #include "Interface/ICollisionHandler.h"
+#include "EngineCommon/Engine_Defines.h"
 
 using namespace System;
 
@@ -22,9 +23,14 @@ public:
 	void Render() override;
 
 private:
+	float m_fSpeed = 0.f;
 	float m_fX = 0.f;
 	float m_fY = 0.f;
-
+	std::stack<Vector2> m_stackPath;
+private:
+	bool m_bIsMoving = false;
+	Vector2 m_vNextPos = Vector2::Zero;
+	Vector2 m_vNextDir = Vector2::Zero;
 };
 
 

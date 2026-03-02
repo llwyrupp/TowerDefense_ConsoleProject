@@ -18,6 +18,7 @@
 #include "Enemy/EnemySpawner.h"
 #include "Util/Timer.h"
 #include "Graphics/Renderer/Renderer.h"
+#include "AStarMgr/AStarMgr.h"
 
 using namespace System;
 using namespace Util;
@@ -28,7 +29,8 @@ FieldLevel::FieldLevel()
 	AddNewActor(m_pPlayer = new Player(m_pCursor));
 	LoadMap("../Data/Map/RoadMap.txt");
 
-	m_PreRoundTimer.SetTargetTime(5.f);
+	//m_PreRoundTimer.SetTargetTime(5.f);
+	m_PreRoundTimer.SetTargetTime(0.5f);
 	m_RoundTimer.SetTargetTime(2.f);
 }
 
@@ -75,6 +77,7 @@ void FieldLevel::Tick(float _fDeltaTime)
 		m_RoundTimer.Tick(_fDeltaTime);
 		if (m_RoundTimer.IsTimeOut())
 		{
+			temp = true;
 			//spawn enemy.
 			SpawnActor<Enemy>(Vector2(1,1));
 			m_RoundTimer.ResetTime();
@@ -84,7 +87,8 @@ void FieldLevel::Tick(float _fDeltaTime)
 		CheckCollision_PlayerCursor_TowerActors();
 		CheckCollision_TowerBullet_Enemies();
 		CheckCollision_TowerBullet_Walls();
-		CheckCollision_Enemies_Walls();
+		//CheckCollision_Enemies_Walls();
+		CheckCollision_Enemies_Target();
 
 		m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
 	}
@@ -133,7 +137,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 
 		if (cLetter == '\n') {
 			//update pos.
-			vPos.m_iX = 0, ++vPos.m_iY;
+			vPos.m_iX = 0, ++vPos.m_iY;//initialize column index, increase row index.
 			//skip CRLF.
 			continue;
 		}
@@ -146,15 +150,17 @@ void FieldLevel::LoadMap(const char* _pPath)
 		case '.':
 			break;
 		case 'T':
-			AddNewActor(new Target(vPos));
+			AddNewActor(m_pTarget = new Target(vPos));
 			break;
 		case 'X':
 			AddNewActor(new Wall(vPos));
 			break;
 		}
 
-		++vPos.m_iX;
+		++vPos.m_iX;//increase column index
 	}
+
+	AStarMgr::Get_Instance().SetMapMaxSize(vPos.m_iY, vPos.m_iX);//HEIGHT(row) = 50, WIDTH(col) = 100
 
 	Safe_Delete_Arr(pBuffer);
 	fclose(pFile);
@@ -267,6 +273,20 @@ void FieldLevel::CheckCollision_Enemies_Walls()
 			{
 				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(wall);
 			}
+		}
+	}
+}
+
+void FieldLevel::CheckCollision_Enemies_Target()
+{
+	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	{
+		if (enemy->Get_IsDestroyRequested())
+			continue;
+
+		if (enemy->CheckIntersect(m_pTarget))
+		{
+			dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(m_pTarget);
 		}
 	}
 }

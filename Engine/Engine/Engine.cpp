@@ -7,6 +7,7 @@
 #include "InputMgr/InputMgr.h"
 #include "Graphics/Renderer/Renderer.h"
 #include "CollisionMgr/CollisionMgr.h"
+#include "AStarMgr/AStarMgr.h"
 #include "Util/Util.h"
 
 using namespace Util;
@@ -25,6 +26,9 @@ Engine::Engine()
 
 	//collision manager
 	m_pCollisionMgr = new CollisionMgr();
+
+	//astar manager
+	m_pAStarMgr = new AStarMgr();
 
 	//object manager
 	//m_pObjectMgr = new ObjectMgr();
