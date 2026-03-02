@@ -6,6 +6,9 @@
 
 using namespace System;
 
+const float AccX = 5.f;
+const float AccY = 5.f;
+
 Enemy::Enemy()
 	:super("@", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
 {
@@ -68,24 +71,24 @@ void Enemy::Tick(float _fDeltaTime)
 	}
 
 	m_fX += static_cast<float>(m_vNextDir.m_iX) * _fDeltaTime * m_fSpeed;
-	if (m_fX >= 10.f)
+	if (m_fX >= AccX)
 	{
 		vNewPos.m_iX += 1;
 		m_fX = 0.f;
 	}
-	else if (m_fX <= -10.f)
+	else if (m_fX <= -AccX)
 	{
 		vNewPos.m_iX -= 1;
 		m_fX = 0.f;
 	}
 
 	m_fY += static_cast<float>(m_vNextDir.m_iY) * _fDeltaTime * m_fSpeed;
-	if (m_fY >= 10.f)
+	if (m_fY >= AccY)
 	{
 		vNewPos.m_iY += 1;
 		m_fY = 0.f;
 	}
-	else if (m_fY <= -10.f)
+	else if (m_fY <= -AccY)
 	{
 		vNewPos.m_iY -= 1;
 		m_fY = 0.f;

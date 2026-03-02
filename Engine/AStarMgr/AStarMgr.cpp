@@ -1,5 +1,6 @@
 #include "AStarMgr/AStarMgr.h"
 #include "AStarMgr/Node.h"
+#include "EngineCommon/Engine_Function.h"
 
 BEGIN(System)
 
@@ -46,6 +47,8 @@ vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 	if (_start == nullptr || _targetNode == nullptr)
 		return {};
 
+	vector<Node*> allNodes;
+
 	m_ClosedList.clear();
 
 	//implement A-Star pathfinding algorithm
@@ -61,9 +64,14 @@ vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 		m_OpenList.pop();
 
 		//if current node is the target node, 
-		if (*currentNode == *_targetNode)
-			return ConstructPath(currentNode);
+		if (*currentNode == *_targetNode) {
 
+			for (auto& const node : allNodes)
+			{
+				//Safe_Delete(node);
+			}
+			return ConstructPath(currentNode);
+		}
 
 		m_ClosedList.emplace_back(currentNode);
 
@@ -78,13 +86,14 @@ vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 			{
 				//update the new gcost to next coord
 				vecBestGCost[nextY][nextX] = nextGCost;
-
 				Node* pNextNode = new Node(nextX, nextY, currentNode);
 				float fHeuristicValue = CalculateHeuristic(pNextNode, _targetNode);
 				pNextNode->SetGCost(nextGCost);
 				pNextNode->SetHCost(fHeuristicValue);
+				pNextNode->SetFCost(nextGCost + fHeuristicValue);
 				m_OpenList.push(pNextNode);
 
+				allNodes.emplace_back(pNextNode);
 			}
 		}
 	}
