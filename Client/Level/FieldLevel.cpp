@@ -30,8 +30,14 @@ FieldLevel::FieldLevel()
 	LoadMap("../Data/Map/RoadMap.txt");
 
 	//m_PreRoundTimer.SetTargetTime(5.f);
-	m_PreRoundTimer.SetTargetTime(0.5f);
-	m_RoundTimer.SetTargetTime(2.f);
+	m_PreRoundTimer.SetTargetTime(5.f);
+	m_SpawnEnemyTimer.SetTargetTime(2.f);
+	m_PreRoundTimer.ResetTime();
+	m_SpawnEnemyTimer.ResetTime();
+
+	m_bHasRoundBegun = false;
+
+	m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
 }
 
 FieldLevel::~FieldLevel()
@@ -41,8 +47,6 @@ FieldLevel::~FieldLevel()
 void FieldLevel::BeginPlay()
 {
 	super::BeginPlay();
-
-	
 }
 
 void FieldLevel::Tick(float _fDeltaTime)
@@ -57,7 +61,7 @@ void FieldLevel::Tick(float _fDeltaTime)
 #pragma endregion INPUT
 
 #pragma region PRE_ROUND
-	if (!m_bHasRoundBegun)
+	if (!m_bHasRoundBegun && m_eGameState == E_TYPE_GAMESTATE::E_PREROUND)
 	{
 		m_PreRoundTimer.Tick(_fDeltaTime);
 
@@ -65,32 +69,45 @@ void FieldLevel::Tick(float _fDeltaTime)
 		{
 			m_bHasRoundBegun = true;
 			m_PreRoundTimer.ResetTime();
+			m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
 		}
 
-		m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
+		++m_iCurEnemySpawnPointIdx;
+		m_iCurEnemySpawnPointIdx = m_iCurEnemySpawnPointIdx >= static_cast<int>(m_vecEnemySpawnPoints.size()) ? 0 : m_iCurEnemySpawnPointIdx;
 	}
 #pragma endregion PRE_ROUND
 
 #pragma endregion ROUND
-	if (m_bHasRoundBegun) {
+	else if (m_bHasRoundBegun && m_eGameState == E_TYPE_GAMESTATE::E_ROUND) {
 
-		m_RoundTimer.Tick(_fDeltaTime);
-		if (m_RoundTimer.IsTimeOut())
+		m_SpawnEnemyTimer.Tick(_fDeltaTime);
+		if (m_SpawnEnemyTimer.IsTimeOut())
 		{
-			temp = true;
-			//spawn enemy.
-			SpawnActor<Enemy>(Vector2(1,1));
-			m_RoundTimer.ResetTime();
+			int iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
+
+			if (m_iCurEnemySpawnPointIdx < static_cast<int>(m_vecEnemySpawnPoints.size()) &&
+				m_iTotalSpawnedEnemies < m_iMaxEnemiesPerRound)
+			{
+				//spawn enemy.
+				SpawnActor<Enemy>(m_vecEnemySpawnPoints[m_iCurEnemySpawnPointIdx]);
+				++m_iTotalSpawnedEnemies;
+			}
+
+			if(m_iTotalSpawnedEnemies >= m_iMaxEnemiesPerRound && iEnemiesOnScene == 0)
+			{
+				m_PreRoundTimer.ResetTime();
+				m_bHasRoundBegun = false;
+				m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
+				m_iTotalSpawnedEnemies = 0;
+			}
+			m_SpawnEnemyTimer.ResetTime();
 		}
 		
 		//check collisions
 		CheckCollision_PlayerCursor_TowerActors();
 		CheckCollision_TowerBullet_Enemies();
 		CheckCollision_TowerBullet_Walls();
-		//CheckCollision_Enemies_Walls();
 		CheckCollision_Enemies_Target();
-
-		m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
 	}
 #pragma endregion ROUND
 }
@@ -142,21 +159,29 @@ void FieldLevel::LoadMap(const char* _pPath)
 			continue;
 		}
 
+		E_LAYER eLayer = E_LAYER::E_NONE;
 		switch (cLetter)
 		{
-		/*case '@':
+		case 'S'://spawn points
+			m_vecEnemySpawnPoints.emplace_back(vPos);
+			break;
+		case '#':
+			eLayer = E_LAYER::E_ROAD;
 			AddNewActor(new Road(vPos));
-			break;*/
+			break;
 		case '.':
+			eLayer = E_LAYER::E_GROUND;
 			break;
 		case 'T':
+			eLayer = E_LAYER::E_TARGET;
 			AddNewActor(m_pTarget = new Target(vPos));
 			break;
 		case 'X':
+			eLayer = E_LAYER::E_WALL;
 			AddNewActor(new Wall(vPos));
 			break;
 		}
-
+		AStarMgr::Get_Instance().SetCurNodeLayerType(vPos.m_iX, vPos.m_iY, eLayer);
 		++vPos.m_iX;//increase column index
 	}
 

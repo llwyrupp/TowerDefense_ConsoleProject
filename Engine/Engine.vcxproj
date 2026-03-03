@@ -99,6 +99,7 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Actor\ActorPool.cpp" />
     <ClCompile Include="AStarMgr\AStarMgr.cpp" />
+    <ClCompile Include="AStarMgr\Node.cpp" />
     <ClCompile Include="CollisionMgr\CollisionMgr.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\Renderer\Renderer.cpp" />

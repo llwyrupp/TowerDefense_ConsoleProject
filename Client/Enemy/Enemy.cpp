@@ -3,6 +3,7 @@
 #include "Level/FieldLevel.h"
 #include "Target/Target.h"
 #include "Math/Vector2.h"
+#include "EngineCommon/Engine_Function.h"
 
 using namespace System;
 
@@ -37,15 +38,19 @@ void Enemy::BeginPlay()
 	{
 		Vector2 targetPos = dynamic_cast<FieldLevel*>(m_pLevel)->GetTarget()->GetPos();
 
+		Node* currentNode = new Node(GetPos().m_iX, GetPos().m_iY, nullptr);
 		Node* targetNode = new Node(targetPos.m_iX, targetPos.m_iY, nullptr);
-		vector<Node*> vecPath = AStarMgr::Get_Instance().FindPath(new Node(GetPos().m_iX, GetPos().m_iY, nullptr), targetNode);
+		vector<POS> vecPath = AStarMgr::Get_Instance().FindPath(currentNode, targetNode);
 		reverse(vecPath.begin(), vecPath.end());
 		for (int i = 0; i < vecPath.size(); ++i)
 		{
 			//convert node to vector2 and push into actor
-			Vector2 vPos(vecPath[i]->GetPos().iX, vecPath[i]->GetPos().iY);
+			Vector2 vPos(vecPath[i].iCol, vecPath[i].iRow);
 			m_stackPath.push(vPos);
 		}
+
+		Safe_Delete(currentNode);
+		Safe_Delete(targetNode);
 	}
 }
 

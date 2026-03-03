@@ -5,16 +5,16 @@
 typedef struct tagPosition
 {
 	tagPosition() {
-		iX = 0;
-		iY = 0;
+		iCol = 0;
+		iRow = 0;
 	}
-	tagPosition(int _x, int _y)
-		:iX(_x), iY(_y)
+	tagPosition(int _col, int _row)
+		:iCol(_col), iRow(_row)
 	{
 
 	}
-	int iX;
-	int iY;
+	int iCol;
+	int iRow;
 }POS;
 
 typedef struct tagDirection

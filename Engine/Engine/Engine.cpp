@@ -56,6 +56,7 @@ Engine::~Engine()
 	Safe_Delete(m_pMainLevel);
 	Safe_Delete(m_pRenderer);
 	//Safe_Delete(m_pObjectMgr);
+	Safe_Delete(m_pAStarMgr);
 	Safe_Delete(m_pCollisionMgr);
 	Safe_Delete(m_pInput);
 }

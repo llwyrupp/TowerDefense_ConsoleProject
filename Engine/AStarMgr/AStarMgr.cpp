@@ -6,8 +6,6 @@ BEGIN(System)
 
 AStarMgr* AStarMgr::m_pInstance = nullptr;
 
-const unsigned int MaxDir = 8;
-const float MaxGCost = 999999.f;
 
 AStarMgr::AStarMgr()
 {
@@ -25,38 +23,69 @@ AStarMgr::AStarMgr()
 	//4. 왼쪽방향은 -1, 0, 비용이 1이다.
 	m_vecDir.emplace_back(DIR(-1, 0, 1.f));
 
-	////DIAGONAL
-	////5. 대각선방향은 1, 1, 비용이 1.414(sqrt2)이다.
-	//m_vecDir.emplace_back(DIR(1, 1, 1.414f));
-	//// . 대각선방향은 1, -1, 비용이 1.414(sqrt2)이다.
-	//m_vecDir.emplace_back(DIR(1, -1, 1.414f));
-	//// . 대각선방향은 -1, 1, 비용이 1.414(sqrt2)이다.
-	//m_vecDir.emplace_back(DIR(-1, 1, 1.414f));
-	//// . 대각선방향은 -1, -1, 비용이 1.414(sqrt2)이다.
-	//m_vecDir.emplace_back(DIR(-1, -1, 1.414f));
+	//DIAGONAL
+	//5. 대각선방향은 1, 1, 비용이 1.414(sqrt2)이다.
+	m_vecDir.emplace_back(DIR(1, 1, 1.414f));
+	// . 대각선방향은 1, -1, 비용이 1.414(sqrt2)이다.
+	m_vecDir.emplace_back(DIR(1, -1, 1.414f));
+	// . 대각선방향은 -1, 1, 비용이 1.414(sqrt2)이다.
+	m_vecDir.emplace_back(DIR(-1, 1, 1.414f));
+	// . 대각선방향은 -1, -1, 비용이 1.414(sqrt2)이다.
+	m_vecDir.emplace_back(DIR(-1, -1, 1.414f));
 
+	m_vecNodes.resize(MaxHeight, vector<Node*>(MaxWidth, nullptr));
 
+	for (int i = 0; i < MaxHeight; ++i)//row
+	{
+		for (int j = 0; j < MaxWidth; ++j)//col
+		{
+			m_vecNodes[i][j] = new Node(j, i, nullptr);
+		}
+	}
+
+	m_vecBestGCost.resize(MaxHeight, vector<float>(MaxWidth, MaxGCost));
+	m_vecLayerType.resize(MaxHeight, vector<E_LAYER>(MaxWidth, E_LAYER::E_NONE));
 }
 
 AStarMgr::~AStarMgr()
 {
+	for (auto& const vec : m_vecNodes)
+	{
+		for (auto& const node : vec)
+		{
+			Safe_Delete(node);
+		}
+	}
 }
 
-vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
+vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 {
 	if (_start == nullptr || _targetNode == nullptr)
 		return {};
 
-	vector<Node*> allNodes;
+	//ResetAllNodes();
 
+	for (auto& const vec : m_vecBestGCost)
+	{
+		for (auto& const cost : vec)
+		{
+			cost = MaxGCost;
+		}
+	}
+
+	while (!m_OpenList.empty())
+	{
+		m_OpenList.pop();
+	}
 	m_ClosedList.clear();
-
+	
 	//implement A-Star pathfinding algorithm
 
 	m_OpenList.push(_start);
 
 	//height: row(50), X, width: col(100), Y
-	vector < vector<float>> vecBestGCost(m_iMapMaxHeight, vector<float>(m_iMapMaxWidth, MaxGCost));
+	//STORE THE BEST GCOST FOR EACH COORDINATE ON THE MAP.
+	
 
 	while (!m_OpenList.empty())
 	{
@@ -65,11 +94,6 @@ vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 
 		//if current node is the target node, 
 		if (*currentNode == *_targetNode) {
-
-			for (auto& const node : allNodes)
-			{
-				//Safe_Delete(node);
-			}
 			return ConstructPath(currentNode);
 		}
 
@@ -77,37 +101,38 @@ vector<Node*> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 
 		for (int i = 0; i < m_vecDir.size(); ++i)
 		{
-			int nextX = currentNode->GetPos().iX + m_vecDir[i].iX;
-			int nextY = currentNode->GetPos().iY + m_vecDir[i].iY;
+			//get next coordinate.
+			int nextCol = currentNode->GetPos().iCol + m_vecDir[i].iX;
+			int nextRow = currentNode->GetPos().iRow + m_vecDir[i].iY;
 
 			float nextGCost = currentNode->GetGCost() + m_vecDir[i].gCost;//add the cost of the next direction.
 			//if next direction's gcost is smaller, we have found a shorter path to target.
-			if (IsInRange(nextY, nextX) && nextGCost < vecBestGCost[nextY][nextX])//[50][100]
+			if (IsInRange(nextCol, nextRow) && nextGCost < m_vecBestGCost[nextRow][nextCol])//[50][100]
 			{
 				//update the new gcost to next coord
-				vecBestGCost[nextY][nextX] = nextGCost;
-				Node* pNextNode = new Node(nextX, nextY, currentNode);
+				m_vecBestGCost[nextRow][nextCol] = nextGCost;
+				Node* pNextNode = m_vecNodes[nextRow][nextCol];
 				float fHeuristicValue = CalculateHeuristic(pNextNode, _targetNode);
+
 				pNextNode->SetGCost(nextGCost);
 				pNextNode->SetHCost(fHeuristicValue);
 				pNextNode->SetFCost(nextGCost + fHeuristicValue);
+				pNextNode->SetParent(currentNode);
 				m_OpenList.push(pNextNode);
-
-				allNodes.emplace_back(pNextNode);
 			}
 		}
 	}
 	return {};
 }
 
-vector<Node*> AStarMgr::ConstructPath(Node* _targetNode)
+vector<POS> AStarMgr::ConstructPath(Node* _targetNode)
 {
-	vector<Node*> newPath;
+	vector<POS> newPath;
 	//backtracking via parent node.
 	Node* curNode = _targetNode;
 	while (curNode)
 	{
-		newPath.emplace_back(curNode);
+		newPath.emplace_back(curNode->GetPos());
 		curNode = curNode->GetParent();
 	}
 	//reverse the newPath vector
@@ -118,28 +143,69 @@ vector<Node*> AStarMgr::ConstructPath(Node* _targetNode)
 float AStarMgr::CalculateHeuristic(Node* _current, Node* _targetNode)
 {
 	POS posDiff = *_current - *_targetNode;
-	return static_cast<float>(sqrt(pow(posDiff.iX, 2) + pow(posDiff.iY, 2)));
+	return static_cast<float>(sqrt(pow(posDiff.iCol, 2) + pow(posDiff.iRow, 2)));
 }
 
-bool AStarMgr::IsInRange(int _y, int _x)//height, width
+bool AStarMgr::IsInRange(int _col, int _row)//width, height
 {
 	//exception handling
 	if (m_iMapMaxWidth == 0 || m_iMapMaxHeight == 0)
 		return false;
 
 	//check x, y outofbounds
-	if (_x <= 0 || _x >= m_iMapMaxWidth||
-		_y <= 0 || _y >= m_iMapMaxHeight)
+	if (_col <= 0 || _col >= m_iMapMaxWidth||
+		_row <= 0 || _row >= m_iMapMaxHeight)
+		return false;
+
+	//check tile type
+	if (m_vecLayerType[_row][_col] != E_LAYER::E_GROUND && m_vecLayerType[_row][_col] != E_LAYER::E_TARGET)
 		return false;
 
 	return true;
 }
 
-bool AStarMgr::HasVisited(int _x, int _y, float _gCost)
+void AStarMgr::ClearOpenList()
+{
+	while (!m_OpenList.empty())
+	{
+		Node* temp = m_OpenList.top();
+		Safe_Delete(temp);
+		m_OpenList.pop();
+	}
+}
+
+void AStarMgr::ResetAllNodes()
+{
+	for (auto& const vec : m_vecNodes)
+	{
+		for (auto& const node : vec)
+		{
+			node->ResetNode();
+		}
+	}
+
+	for (auto& const vec : m_vecBestGCost)
+	{
+		for (auto& const cost : vec)
+		{
+			cost = MaxGCost;
+		}
+	}
+}
+
+void AStarMgr::SetCurNodeLayerType(int _col, int _row, E_LAYER _layer)
+{
+	if (!m_vecLayerType.empty() && _layer != E_LAYER::E_NONE && _col < MaxWidth && _col > 0 && _row < MaxHeight && _row > 0)
+	{
+		m_vecLayerType[_row][_col] = _layer;
+	}
+}
+
+bool AStarMgr::HasVisited(int _col, int _row, float _gCost)
 {
 	auto it = find_if(m_ClosedList.begin(), m_ClosedList.end(), [&](const Node* _node)
 		{
-			return _x == _node->GetPos().iX && _y == _node->GetPos().iY &&
+			return _col == _node->GetPos().iCol && _row == _node->GetPos().iRow &&
 				_gCost >= _node->GetGCost();
 		});
 

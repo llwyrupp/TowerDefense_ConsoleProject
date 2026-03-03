@@ -45,18 +45,19 @@ private:
 	Target* m_pTarget = nullptr;
 private:
 	Timer m_PreRoundTimer;
-	Timer m_RoundTimer;
+	Timer m_SpawnEnemyTimer;
 private:
 	vector<TowerBullet*> m_vecTowerBullet;
-	vector<Enemy*> m_vecEnemy;
+	vector<Vector2>m_vecEnemySpawnPoints;
 private:
 	bool m_bCanPlaceTower = false;
 	bool m_bHasRoundBegun = false;
 private:
 	E_TYPE_GAMESTATE m_eGameState = E_TYPE_GAMESTATE::E_NONE;
 
-
-	bool temp = false;
+	const int m_iMaxEnemiesPerRound = 30;
+	int m_iTotalSpawnedEnemies= 0;
+	int m_iCurEnemySpawnPointIdx = 0;
 };
 
 
