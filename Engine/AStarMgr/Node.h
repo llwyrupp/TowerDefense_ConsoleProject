@@ -9,8 +9,8 @@
 BEGIN(System)
 class Node {
 public:
-	Node(int _col, int _row, Node* _parent)
-		:m_Parent(_parent)
+	Node(int _col, int _row, float _weight, Node* _parent)
+		:m_fWeight(_weight), m_Parent(_parent)
 	{
 		m_Pos.iCol = _col;
 		m_Pos.iRow = _row;
@@ -45,7 +45,8 @@ public:
 
 	inline Node* GetParent() const { return m_Parent; }
 	inline void SetParent(Node* _parent) { m_Parent = _parent; }
-
+	inline float GetWeight() const { return m_fWeight; }
+	inline void SetWeight(float _cost) { m_fWeight = _cost; }
 	void ResetNode() {
 		m_Parent = nullptr;
 		m_Pos = { 0, 0 };
@@ -60,6 +61,8 @@ private:
 	float m_FCost = 0.f;//The total estimated cost of the cheapest path from the start node to the goal node, going through the current node
 	float m_HCost = 0.f;//Heuristic: The estimated cost of moving from the current node n to the final destination
 	float m_GCost = 0.f;//The actual cost (e.g., distance or time) of the path from the starting node to the current node
+
+	float m_fWeight = 0.f;
 };
 END
 #endif // !__NODE_H__

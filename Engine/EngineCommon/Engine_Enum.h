@@ -10,6 +10,9 @@ enum class ENGINE_DLL Color : unsigned short {
 	eGreen = FOREGROUND_GREEN,
 	eRed = FOREGROUND_RED,
 	eWhite = eBlue | eGreen | eRed,
+	eYellow = eGreen | eRed,
+	eCyan = eGreen | eBlue,
+	eMagenta = eBlue | eRed,
 };
 
 enum class ENGINE_DLL E_LAYER {

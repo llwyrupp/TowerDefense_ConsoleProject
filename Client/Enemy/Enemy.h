@@ -26,6 +26,8 @@ private:
 	float m_fSpeed = 0.f;
 	float m_fX = 0.f;
 	float m_fY = 0.f;
+	const float AccX = 5.f;
+	const float AccY = 5.f;
 	std::stack<Vector2> m_stackPath;
 private:
 	bool m_bIsMoving = false;

@@ -7,15 +7,14 @@
 
 using namespace System;
 
-const float AccX = 5.f;
-const float AccY = 5.f;
+
 
 Enemy::Enemy()
 	:super("@", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
 {
 	m_bIsUsingActorPool = true;
 
-	m_fSpeed = 30.f;
+	m_fSpeed = 50.f;
 }
 
 Enemy::~Enemy()
@@ -38,8 +37,8 @@ void Enemy::BeginPlay()
 	{
 		Vector2 targetPos = dynamic_cast<FieldLevel*>(m_pLevel)->GetTarget()->GetPos();
 
-		Node* currentNode = new Node(GetPos().m_iX, GetPos().m_iY, nullptr);
-		Node* targetNode = new Node(targetPos.m_iX, targetPos.m_iY, nullptr);
+		Node* currentNode = new Node(GetPos().m_iX, GetPos().m_iY,0.f, nullptr);
+		Node* targetNode = new Node(targetPos.m_iX, targetPos.m_iY, 0.f, nullptr);
 		vector<POS> vecPath = AStarMgr::Get_Instance().FindPath(currentNode, targetNode);
 		reverse(vecPath.begin(), vecPath.end());
 		for (int i = 0; i < vecPath.size(); ++i)

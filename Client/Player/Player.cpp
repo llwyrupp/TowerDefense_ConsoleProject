@@ -19,7 +19,7 @@ Player::Player(PlayerCursor* _cursor)
 	m_iTowerPrice[1] = 200;
 	m_iTowerPrice[2] = 300;
 
-	m_Cooldown[0].SetTargetTime(5.f);
+	m_Cooldown[0].SetTargetTime(1.f);
 	m_Cooldown[1].SetTargetTime(10.f);
 	m_Cooldown[2].SetTargetTime(15.f);
 }

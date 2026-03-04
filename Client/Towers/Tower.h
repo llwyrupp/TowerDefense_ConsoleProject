@@ -10,6 +10,12 @@
 using namespace System;
 using namespace Util;
 
+enum class E_TOWER_STATE {
+	E_IDLE = 0,
+	E_ATTACK = 1,
+	E_MAX
+};
+
 class Tower : public Actor , public ICollisionHandler
 {
 	RTTI_DECLARATIONS(Tower, Actor)
@@ -25,14 +31,13 @@ public:
 	void OnCollisionEnter2D(Actor* _pActor) override;
 public:
 	void FireBullet();
-	inline void SetIsAttacking(bool _bFlag) { m_bIsAttacking = _bFlag; }
 private:
 	TOWERINFO m_tInfo = {};
 	Vector2 m_vTarget = Vector2::Zero;
 	Timer m_FireTimer;
 private:
-	bool m_bIsAttacking = false;
 	float m_fBoundary = 0.f;
+	E_TOWER_STATE m_eCurState = E_TOWER_STATE::E_IDLE;
 };
 
 

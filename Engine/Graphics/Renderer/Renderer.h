@@ -47,6 +47,7 @@ public:
 	void Render();
 
 	void Submit(string pText, const Vector2& vPos, Color eColor = Color::eWhite, int iSortOrder = 0);
+	void ImmidiateRender();
 
 public:
 	static Renderer& Get_Instance();
@@ -56,6 +57,7 @@ private:
 
 	//use double buffering to swap the current(active) buffer
 	void Present();
+
 
 	ScreenBuffer* GetCurBuffer();
 

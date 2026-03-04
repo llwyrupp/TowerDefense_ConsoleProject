@@ -31,12 +31,14 @@ public:
 	bool AddTower(E_TYPE_TOWER _eType);
 public:
 	void StartRound();
+	void GameOver();
 public:
 	void CheckCollision_PlayerCursor_TowerActors();
 	void CheckCollision_TowerBullet_Enemies();
 	void CheckCollision_TowerBullet_Walls();
 	void CheckCollision_Enemies_Walls();//for _DEBUG ONLY
-	void CheckCollision_Enemies_Target();//for _DEBUG ONLY
+	void CheckCollision_Enemies_Target();
+	void CheckCollision_Enemies_TowerBoundaries();
 public:
 	inline Target* GetTarget() const { return m_pTarget; }
 private:
@@ -58,6 +60,9 @@ private:
 	const int m_iMaxEnemiesPerRound = 30;
 	int m_iTotalSpawnedEnemies= 0;
 	int m_iCurEnemySpawnPointIdx = 0;
+
+	const int m_iMaxBaseHP = 100;
+	int m_iCurBaseHP = 0;
 };
 
 

@@ -30,7 +30,7 @@ FieldLevel::FieldLevel()
 	LoadMap("../Data/Map/RoadMap.txt");
 
 	//m_PreRoundTimer.SetTargetTime(5.f);
-	m_PreRoundTimer.SetTargetTime(5.f);
+	m_PreRoundTimer.SetTargetTime(0.1f);
 	m_SpawnEnemyTimer.SetTargetTime(2.f);
 	m_PreRoundTimer.ResetTime();
 	m_SpawnEnemyTimer.ResetTime();
@@ -38,6 +38,8 @@ FieldLevel::FieldLevel()
 	m_bHasRoundBegun = false;
 
 	m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
+
+	m_iCurBaseHP = m_iMaxBaseHP;
 }
 
 FieldLevel::~FieldLevel()
@@ -71,9 +73,6 @@ void FieldLevel::Tick(float _fDeltaTime)
 			m_PreRoundTimer.ResetTime();
 			m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
 		}
-
-		++m_iCurEnemySpawnPointIdx;
-		m_iCurEnemySpawnPointIdx = m_iCurEnemySpawnPointIdx >= static_cast<int>(m_vecEnemySpawnPoints.size()) ? 0 : m_iCurEnemySpawnPointIdx;
 	}
 #pragma endregion PRE_ROUND
 
@@ -99,6 +98,9 @@ void FieldLevel::Tick(float _fDeltaTime)
 				m_bHasRoundBegun = false;
 				m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
 				m_iTotalSpawnedEnemies = 0;
+
+				++m_iCurEnemySpawnPointIdx;
+				m_iCurEnemySpawnPointIdx = m_iCurEnemySpawnPointIdx >= static_cast<int>(m_vecEnemySpawnPoints.size()) ? 0 : m_iCurEnemySpawnPointIdx;
 			}
 			m_SpawnEnemyTimer.ResetTime();
 		}
@@ -108,6 +110,7 @@ void FieldLevel::Tick(float _fDeltaTime)
 		CheckCollision_TowerBullet_Enemies();
 		CheckCollision_TowerBullet_Walls();
 		CheckCollision_Enemies_Target();
+		CheckCollision_Enemies_TowerBoundaries();
 	}
 #pragma endregion ROUND
 }
@@ -119,11 +122,13 @@ void FieldLevel::Render()
 	string tempStr = to_string(static_cast<int>(m_PreRoundTimer.GetTargetTime() - m_PreRoundTimer.GetElapsedTime())) + " seconds left";
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 0), Color::eWhite);
 
-	tempStr = "Number of actors in m_vecActors: " + to_string(m_vecActors.size());
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 20), Color::eWhite);
+	/*tempStr = "Number of actors in m_vecActors: " + to_string(m_vecActors.size());
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 20), Color::eWhite);*/
 	tempStr = "Number of TowerBullets in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)].size());
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 21), Color::eWhite);
-	tempStr = "Number of Enemies in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size());
+	tempStr = "My Base HP: " + to_string(m_iCurBaseHP) + "/" + to_string(m_iMaxBaseHP);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 22), Color::eGreen);
+	tempStr = "Enemies Remaining: " + to_string(m_iMaxEnemiesPerRound - m_iTotalSpawnedEnemies) + "/" + to_string(m_iMaxEnemiesPerRound);
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 25), Color::eWhite);
 }
 
@@ -227,6 +232,14 @@ void FieldLevel::StartRound()
 
 }
 
+void FieldLevel::GameOver()
+{
+	Renderer::Get_Instance().Submit("GAME OVER", Vector2(50, 50), Color::eRed, 100);
+	Renderer::Get_Instance().ImmidiateRender();
+	Sleep(5000);
+	Game::Get_Instance().QuitEngine();
+}
+
 void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 {
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
@@ -312,6 +325,31 @@ void FieldLevel::CheckCollision_Enemies_Target()
 		if (enemy->CheckIntersect(m_pTarget))
 		{
 			dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(m_pTarget);
+			--m_iCurBaseHP;
+			if (m_iCurBaseHP <= 0)
+			{
+				//gameover
+				GameOver();
+			}
+		}
+	}
+}
+
+void FieldLevel::CheckCollision_Enemies_TowerBoundaries()
+{
+	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	{
+		if (enemy->Get_IsDestroyRequested())
+			continue;
+
+		for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+		{
+			//use custom checkintersect
+			if (enemy->CheckIntersect(tower))
+			{
+				//wall stays.
+				dynamic_cast<Tower*>(tower)->OnCollisionEnter2D(enemy);
+			}
 		}
 	}
 }

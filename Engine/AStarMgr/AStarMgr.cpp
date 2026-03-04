@@ -1,6 +1,8 @@
 #include "AStarMgr/AStarMgr.h"
 #include "AStarMgr/Node.h"
 #include "EngineCommon/Engine_Function.h"
+#include "EngineCommon/Engine_Defines.h"
+#include "Util/Util.h"
 
 BEGIN(System)
 
@@ -39,7 +41,7 @@ AStarMgr::AStarMgr()
 	{
 		for (int j = 0; j < MaxWidth; ++j)//col
 		{
-			m_vecNodes[i][j] = new Node(j, i, nullptr);
+			m_vecNodes[i][j] = new Node(j, i, 0.f, nullptr);
 		}
 	}
 
@@ -63,15 +65,8 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 	if (_start == nullptr || _targetNode == nullptr)
 		return {};
 
-	//ResetAllNodes();
-
-	for (auto& const vec : m_vecBestGCost)
-	{
-		for (auto& const cost : vec)
-		{
-			cost = MaxGCost;
-		}
-	}
+	ResetAllNodes();
+	SetRandomWeight();
 
 	while (!m_OpenList.empty())
 	{
@@ -85,7 +80,6 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 
 	//height: row(50), X, width: col(100), Y
 	//STORE THE BEST GCOST FOR EACH COORDINATE ON THE MAP.
-	
 
 	while (!m_OpenList.empty())
 	{
@@ -105,7 +99,7 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 			int nextCol = currentNode->GetPos().iCol + m_vecDir[i].iX;
 			int nextRow = currentNode->GetPos().iRow + m_vecDir[i].iY;
 
-			float nextGCost = currentNode->GetGCost() + m_vecDir[i].gCost;//add the cost of the next direction.
+			float nextGCost = currentNode->GetGCost() + m_vecDir[i].gCost + currentNode->GetWeight();//add the cost of the next direction.
 			//if next direction's gcost is smaller, we have found a shorter path to target.
 			if (IsInRange(nextCol, nextRow) && nextGCost < m_vecBestGCost[nextRow][nextCol])//[50][100]
 			{
@@ -143,7 +137,11 @@ vector<POS> AStarMgr::ConstructPath(Node* _targetNode)
 float AStarMgr::CalculateHeuristic(Node* _current, Node* _targetNode)
 {
 	POS posDiff = *_current - *_targetNode;
-	return static_cast<float>(sqrt(pow(posDiff.iCol, 2) + pow(posDiff.iRow, 2)));
+	float fDist = static_cast<float>(sqrt(pow(posDiff.iCol, 2) + pow(posDiff.iRow, 2)));
+
+	// Add a 10% random variation to the "guess"
+	//float fNoise = 30.f + (Util::RandomInt(0, 100) % 10) / 100;
+	return fDist;
 }
 
 bool AStarMgr::IsInRange(int _col, int _row)//width, height
@@ -158,37 +156,39 @@ bool AStarMgr::IsInRange(int _col, int _row)//width, height
 		return false;
 
 	//check tile type
-	if (m_vecLayerType[_row][_col] != E_LAYER::E_GROUND && m_vecLayerType[_row][_col] != E_LAYER::E_TARGET)
+	if (m_vecLayerType[_row][_col] != E_LAYER::E_GROUND && 
+		m_vecLayerType[_row][_col] != E_LAYER::E_TARGET)
 		return false;
 
 	return true;
 }
 
-void AStarMgr::ClearOpenList()
-{
-	while (!m_OpenList.empty())
-	{
-		Node* temp = m_OpenList.top();
-		Safe_Delete(temp);
-		m_OpenList.pop();
-	}
-}
-
 void AStarMgr::ResetAllNodes()
 {
-	for (auto& const vec : m_vecNodes)
+	/*for (auto& const vec : m_vecNodes)
 	{
 		for (auto& const node : vec)
 		{
 			node->ResetNode();
 		}
-	}
+	}*/
 
 	for (auto& const vec : m_vecBestGCost)
 	{
 		for (auto& const cost : vec)
 		{
 			cost = MaxGCost;
+		}
+	}
+}
+
+void AStarMgr::SetRandomWeight()
+{
+	for (auto& const vec : m_vecNodes)
+	{
+		for (auto& const node : vec)
+		{
+			node->SetWeight(Util::RandomRange(0.f, 100.f));
 		}
 	}
 }
@@ -201,20 +201,20 @@ void AStarMgr::SetCurNodeLayerType(int _col, int _row, E_LAYER _layer)
 	}
 }
 
-bool AStarMgr::HasVisited(int _col, int _row, float _gCost)
-{
-	auto it = find_if(m_ClosedList.begin(), m_ClosedList.end(), [&](const Node* _node)
-		{
-			return _col == _node->GetPos().iCol && _row == _node->GetPos().iRow &&
-				_gCost >= _node->GetGCost();
-		});
-
-	if (it != m_ClosedList.end())
-	{
-		return true;
-	}
-	return false;
-}
+//bool AStarMgr::HasVisited(int _col, int _row, float _gCost)
+//{
+//	auto it = find_if(m_ClosedList.begin(), m_ClosedList.end(), [&](const Node* _node)
+//		{
+//			return _col == _node->GetPos().iCol && _row == _node->GetPos().iRow &&
+//				_gCost >= _node->GetGCost();
+//		});
+//
+//	if (it != m_ClosedList.end())
+//	{
+//		return true;
+//	}
+//	return false;
+//}
 
 bool AStarMgr::IsEqual_GCost(const Node*& _vecA, const Node*& _vecB)
 {

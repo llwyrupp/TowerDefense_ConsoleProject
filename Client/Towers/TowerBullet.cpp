@@ -13,7 +13,7 @@ TowerBullet::TowerBullet()
 	m_bIsUsingActorPool = true;
 
 #ifdef _DEBUG
-	m_fSpeed = 100.f;
+	m_fSpeed = 50.f;
 #endif
 
 }
@@ -44,8 +44,32 @@ void TowerBullet::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
 
-	SetPos(Vector2(GetPos().m_iX + m_vDir.m_iX * static_cast<int>(_fDeltaTime * m_fSpeed), 
-		GetPos().m_iY + m_vDir.m_iY * static_cast<int>(_fDeltaTime * m_fSpeed)));
+	Vector2 vNewPos = GetPos();
+	m_fX += static_cast<float>(m_vDir.m_iX) * _fDeltaTime * m_fSpeed;
+	if (m_fX >= AccX)
+	{
+		vNewPos.m_iX += 1;
+		m_fX = 0.f;
+	}
+	else if (m_fX <= -AccX)
+	{
+		vNewPos.m_iX -= 1;
+		m_fX = 0.f;
+	}
+
+	m_fY += static_cast<float>(m_vDir.m_iY) * _fDeltaTime * m_fSpeed;
+	if (m_fY >= AccY)
+	{
+		vNewPos.m_iY += 1;
+		m_fY = 0.f;
+	}
+	else if (m_fY <= -AccY)
+	{
+		vNewPos.m_iY -= 1;
+		m_fY = 0.f;
+	}
+
+	SetPos(vNewPos);
 
 }
 

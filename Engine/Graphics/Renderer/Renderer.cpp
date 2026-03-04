@@ -130,29 +130,6 @@ void Renderer::Render()
 
 			m_pFrame->pSortingOrderArr[iFrameIdx] = com.iSortingOrder;
 		}
-
-		////print Y
-		//const int iStartY = com.vPosition.m_iY;
-		//const int iEndY = com.vPosition.m_iY + iLen - 1;
-		//if (iEndY < 0 || iStartY >= m_vScreenSize.m_iX)
-		//	continue;
-
-		//const int iVisibleStartY = iStartY < 0 ? 0 : iStartY;
-		//const int iVisibleEndY = iEndY >= m_vScreenSize.m_iY ? m_vScreenSize.m_iY - 1 : iEndY;
-
-		//for (int i = iVisibleStartY; i <= iVisibleEndY; ++i) {
-		//	const int iSrcIdx = i - iStartY;
-
-		//	const int iFrameIdx = (com.vPosition.m_iY * m_vScreenSize.m_iY) + i;
-
-		//	if (m_pFrame->pSortingOrderArr[iFrameIdx] > com.iSortingOrder)
-		//		continue;
-
-		//	m_pFrame->charInfoArr[iFrameIdx].Char.AsciiChar = com.strText[iSrcIdx];
-		//	m_pFrame->charInfoArr[iFrameIdx].Attributes = (WORD)com.eColor;
-
-		//	m_pFrame->pSortingOrderArr[iFrameIdx] = com.iSortingOrder;
-		//}
 	}
 
 	//draw the letters.
@@ -203,6 +180,13 @@ void Renderer::Present()
 
 	//swap index
 	m_iCurBufIdx = 1 - m_iCurBufIdx;
+}
+
+void Renderer::ImmidiateRender()
+{
+	Render();
+	GetCurBuffer()->Draw_Char(m_pFrame->charInfoArr);
+	Present();
 }
 
 ScreenBuffer* Renderer::GetCurBuffer()

@@ -3,6 +3,7 @@
 #include "EngineCommon/Engine_Function.h"
 #include "ClientCommon/ClientEnum.h"
 #include "Level/FieldLevel.h"
+#include "Util/Util.h"
 
 using namespace System;
 Game* Game::m_pInstance = nullptr;
@@ -17,6 +18,8 @@ Game::Game()
 	m_vecLevels.emplace_back(new FieldLevel());
 
 	m_pMainLevel = *m_vecLevels.begin();
+
+	Util::SetRandomSeed();
 }
 
 Game::~Game()

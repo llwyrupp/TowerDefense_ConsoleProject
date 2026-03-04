@@ -32,6 +32,7 @@ namespace System {}
 #include <string>
 #include <cmath>
 #include <fstream>
+#include <random>
 #include <Windows.h>
 #include <time.h>
 

@@ -4,7 +4,7 @@
 BEGIN(System)
 
 Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color color, E_LAYER _eLayer)
-	:m_vPosition(vPos), m_eColor(color), m_eLayer(_eLayer), m_iStringHeight(1), m_iStringWidth(1)
+	:m_vPosition(vPos), m_eColor(color), m_eLayer(_eLayer), m_iHeight(1), m_iWidth(1)
 {
 	if (!pImage && !pPath) {
 		std::cerr << "============YOU NEED AT LEAST ONE: CHAR or PATH============" << this->GetType();
@@ -50,8 +50,8 @@ void Actor::Render()
 		Renderer::Get_Instance().Submit(m_strImg, m_vPosition, m_eColor, m_iSortingOrder);
 	else {//assume that all objects' height and width are even numbers.
 		size_t szIndex = 0;
-		for (int iX = -m_iStringWidth / 2; iX < (m_iStringWidth / 2) + 1; ++iX) {
-			for (int iY = -m_iStringHeight / 2; iY < (m_iStringHeight / 2) + 1; ++iY)
+		for (int iX = -m_iWidth / 2; iX < (m_iWidth / 2) + 1; ++iX) {
+			for (int iY = -m_iHeight / 2; iY < (m_iHeight / 2) + 1; ++iY)
 			{
 				if (szIndex >= m_vecStr_FieldLevel.size())
 					break;
@@ -82,8 +82,8 @@ void Actor::UpdateRect()
 {
 	m_rtSize.left = static_cast<long>(m_vPosition.m_iX);
 	m_rtSize.top = static_cast<long>(m_vPosition.m_iY);
-	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iStringWidth);
-	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iStringHeight);
+	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iWidth);
+	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iHeight);
 }
 
 bool System::Actor::CheckIntersect(const Actor* const _other)
@@ -131,8 +131,8 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 		while (std::getline(file, tempStr)) {
 			m_vecStr_FieldLevel.emplace_back(tempStr);
 		}
-		m_iStringWidth = static_cast<int>(m_vecStr_FieldLevel[0].length());
-		m_iStringHeight = static_cast<int>(m_vecStr_FieldLevel.size());
+		m_iWidth = static_cast<int>(m_vecStr_FieldLevel[0].length());
+		m_iHeight = static_cast<int>(m_vecStr_FieldLevel.size());
 	}
 
 	/*
@@ -180,7 +180,7 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 		//개행으로 문자열 분리
 		pToken = strtok_s(nullptr, "\n", &pContext);
 
-		++m_iStringHeight;
+		++m_iHeight;
 	}
 
 	//remove the last '\n'

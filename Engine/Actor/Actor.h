@@ -43,9 +43,13 @@ namespace System {
 		inline int Get_SortingOrder() const { return m_iSortingOrder; }
 		inline void SetColor( Color const _eColor) { m_eColor = _eColor; }
 		inline Color GetColor() const { return m_eColor; }
+		inline void SetRect(RECT const _rect) { m_rtSize = _rect; }
 		inline const RECT& GetRect() const { return m_rtSize; }
 		inline void SetLayer( E_LAYER const _eLayer) { m_eLayer = _eLayer; }
 		inline E_LAYER GetLayer() const { return m_eLayer; }
+
+		inline void SetWidth(float _width) { m_iWidth = _width; }
+		inline void SetHeight(float _height) { m_iHeight = _height; }
 
 		inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
 		inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }
@@ -73,9 +77,9 @@ namespace System {
 		//bool m_bIsUsingCustomImg = false;
 
 		//length of string
-		int m_iStringWidth = 1;
+		int m_iWidth = 1;
 		//height of string
-		int m_iStringHeight = 1;
+		int m_iHeight = 1;
 
 		//color of letter
 		Color m_eColor = Color::eWhite;

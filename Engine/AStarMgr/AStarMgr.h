@@ -26,13 +26,13 @@ public:
 	vector<POS> ConstructPath(Node* _targetNode);
 	float CalculateHeuristic(Node* _current, Node* _targetNode);
 	bool IsEqual_GCost (const Node*& _vecA, const Node*& _vecB);
-	bool HasVisited(int _col, int _row, float _gCost);
+	//bool HasVisited(int _col, int _row, float _gCost);
 	//validate pos
 	bool IsInRange(int _col, int _row);
 	//inline bool IsTarget(const Node* const _node) const { return *m_Target == *_node; }
 	inline void SetMapMaxSize(int _height, int _width) { m_iMapMaxHeight = _height, m_iMapMaxWidth = _width; }
-	void ClearOpenList();
 	void ResetAllNodes();
+	void SetRandomWeight();
 	inline static AStarMgr& Get_Instance() { return *m_pInstance; }
 
 	void SetCurNodeLayerType(int _col, int _row, E_LAYER _layer);
@@ -56,7 +56,6 @@ private:
 	vector<vector<float>> m_vecBestGCost;
 	vector<vector<E_LAYER>> m_vecLayerType;
 	vector < vector<Node*>> m_vecNodes;
-
 };
 
 END
