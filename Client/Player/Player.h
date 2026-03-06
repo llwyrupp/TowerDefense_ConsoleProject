@@ -23,6 +23,9 @@ public:
 
 public:
 	bool Check_EnoughMoney_TowerCooldown();
+	bool CheckCanPlaceTower();
+public:
+	void AddMoney(int _money) { m_iMoney += _money; }
 private:
 	Timer m_Cooldown[3];
 	unsigned int m_iOwnTower[3];
@@ -30,6 +33,9 @@ private:
 private:
 	POINT m_MousePt = {};
 	PlayerCursor* m_pCursor;
+	float m_fAccX = 0.f;
+	float m_fAccY = 0.f;
+	float m_fCursorSpeed = 0.f;
 private:
 	int m_iMoney = 0;
 	E_TYPE_TOWER m_eCurTowerType = E_TYPE_TOWER::E_TYPE_MAX;

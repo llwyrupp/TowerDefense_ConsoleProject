@@ -5,6 +5,7 @@
 #include "Actor/Actor.h"
 #include "Interface/ICollisionHandler.h"
 #include "EngineCommon/Engine_Defines.h"
+#include "ClientCommon/ClientEnum.h"
 
 using namespace System;
 
@@ -21,8 +22,14 @@ public:
 	void BeginPlay() override;
 	void Tick(float _fDeltaTime) override;
 	void Render() override;
-
+public:
+	inline int GetMoney() const { return m_iMoney; }
+	inline int GetHP() const { return m_iHP; }
+	inline void SetHP(int _hp) { m_iHP = _hp; }
+	void SetEnemyInfo(E_TYPE_ENEMY _type);
 private:
+	int m_iHP = 0;
+	int m_iMoney = 0;
 	float m_fSpeed = 0.f;
 	float m_fX = 0.f;
 	float m_fY = 0.f;
@@ -33,6 +40,7 @@ private:
 	bool m_bIsMoving = false;
 	Vector2 m_vNextPos = Vector2::Zero;
 	Vector2 m_vNextDir = Vector2::Zero;
+	E_TYPE_ENEMY m_eType = E_TYPE_ENEMY::E_TYPE_NONE;
 };
 
 

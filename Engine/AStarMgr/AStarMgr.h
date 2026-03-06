@@ -48,8 +48,8 @@ private:
 	unsigned int m_iMapMaxWidth = 0;
 	unsigned int m_iMapMaxHeight = 0;
 private:
-	const int MaxHeight = 100;
-	const int MaxWidth = 100;
+	const int MaxHeight = 50;
+	const int MaxWidth = 150;
 	const unsigned int MaxDir = 8;
 	const float MaxGCost = 999999.f;
 

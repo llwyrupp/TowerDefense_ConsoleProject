@@ -21,7 +21,8 @@ public:
 public:
 	void SetDir(const Vector2& _vPos) { m_vDir = _vPos; }
 	void SetSpeed(float _speed) { m_fSpeed = _speed; }
-
+	inline int GetDamage()const { return m_iDamage; }
+	inline void SetDamage(int _damage) { m_iDamage = _damage; }
 private:
 	Vector2 m_vDir = Vector2::Zero;
 	float m_fSpeed = 0.f;
@@ -29,6 +30,7 @@ private:
 	float m_fY = 0.f;
 	const float AccX = 5.f;
 	const float AccY = 5.f;
+	int m_iDamage = 0;
 };
 
 

@@ -8,14 +8,14 @@
 using namespace System;
 
 TowerBullet::TowerBullet()
-	:super("&", nullptr, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWERBULLET)
+	:super("@", nullptr, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWERBULLET)
 {
 	m_bIsUsingActorPool = true;
 
 #ifdef _DEBUG
 	m_fSpeed = 50.f;
 #endif
-
+	m_fSpeed = 50.f;
 }
 
 TowerBullet::~TowerBullet()
@@ -77,7 +77,7 @@ void TowerBullet::Render()
 {
 	super::Render();
 
-	string tempStr = "bullet pos x: " + to_string(GetPos().m_iX);
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 30), Color::eWhite);
+	/*string tempStr = "bullet pos x: " + to_string(GetPos().m_iX);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 30), Color::eWhite);*/
 }
 

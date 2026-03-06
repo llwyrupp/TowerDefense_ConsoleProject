@@ -48,8 +48,8 @@ namespace System {
 		inline void SetLayer( E_LAYER const _eLayer) { m_eLayer = _eLayer; }
 		inline E_LAYER GetLayer() const { return m_eLayer; }
 
-		inline void SetWidth(float _width) { m_iWidth = _width; }
-		inline void SetHeight(float _height) { m_iHeight = _height; }
+		inline void SetWidth(int _width) { m_iWidth = _width; }
+		inline void SetHeight(int _height) { m_iHeight = _height; }
 
 		inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
 		inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }

@@ -19,6 +19,7 @@
 #include "Util/Timer.h"
 #include "Graphics/Renderer/Renderer.h"
 #include "AStarMgr/AStarMgr.h"
+#include "Effect/Effect.h"
 
 using namespace System;
 using namespace Util;
@@ -88,7 +89,12 @@ void FieldLevel::Tick(float _fDeltaTime)
 				m_iTotalSpawnedEnemies < m_iMaxEnemiesPerRound)
 			{
 				//spawn enemy.
-				SpawnActor<Enemy>(m_vecEnemySpawnPoints[m_iCurEnemySpawnPointIdx]);
+				Enemy* pEnemy = SpawnActor<Enemy>(m_vecEnemySpawnPoints[m_iCurEnemySpawnPointIdx]);
+				if (pEnemy)
+				{
+					int iRandInt = Util::RandomInt(0, 100) % static_cast<int>(E_TYPE_ENEMY::E_TYPE_MAX);
+					pEnemy->SetEnemyInfo(static_cast<E_TYPE_ENEMY>(iRandInt));
+				}
 				++m_iTotalSpawnedEnemies;
 			}
 
@@ -120,16 +126,16 @@ void FieldLevel::Render()
 	super::Render();
 
 	string tempStr = to_string(static_cast<int>(m_PreRoundTimer.GetTargetTime() - m_PreRoundTimer.GetElapsedTime())) + " seconds left";
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 0), Color::eWhite);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 0), Color::eWhite);
 
 	/*tempStr = "Number of actors in m_vecActors: " + to_string(m_vecActors.size());
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 20), Color::eWhite);*/
 	tempStr = "Number of TowerBullets in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)].size());
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 21), Color::eWhite);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 21), Color::eWhite);
 	tempStr = "My Base HP: " + to_string(m_iCurBaseHP) + "/" + to_string(m_iMaxBaseHP);
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 22), Color::eGreen);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 22), Color::eGreen);
 	tempStr = "Enemies Remaining: " + to_string(m_iMaxEnemiesPerRound - m_iTotalSpawnedEnemies) + "/" + to_string(m_iMaxEnemiesPerRound);
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 25), Color::eWhite);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 25), Color::eWhite);
 }
 
 void FieldLevel::LoadMap(const char* _pPath)
@@ -175,6 +181,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 			AddNewActor(new Road(vPos));
 			break;
 		case '.':
+		case 'G':
 			eLayer = E_LAYER::E_GROUND;
 			break;
 		case 'T':
@@ -273,7 +280,24 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 			if (bullet->CheckIntersect(enemy))
 			{
 				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(enemy);
-				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(bullet);
+
+				int iEnemyHP = dynamic_cast<Enemy*>(enemy)->GetHP();
+				int iBulletDmg = dynamic_cast<TowerBullet*>(bullet)->GetDamage();
+				int iNewHP = iEnemyHP - iBulletDmg;
+				if (iNewHP <= 0)//enemy hp hits below zero -> enemy destroyed
+				{
+
+					if (m_pPlayer)
+					{
+						m_pPlayer->AddMoney(dynamic_cast<Enemy*>(enemy)->GetMoney());
+					}
+					dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(bullet);
+					//AddNewActor(new Effect(enemy->GetPos()));
+				}
+				else if (iNewHP > 0)//enemy still alive
+				{
+					dynamic_cast<Enemy*>(enemy)->SetHP(iNewHP);
+				}
 			}
 		}
 	}
@@ -345,9 +369,8 @@ void FieldLevel::CheckCollision_Enemies_TowerBoundaries()
 		for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 		{
 			//use custom checkintersect
-			if (enemy->CheckIntersect(tower))
+			if (tower->IsTypeOf<Tower>() && dynamic_cast<Tower*>(tower)->CheckIsActorInTowerBoundary(enemy))
 			{
-				//wall stays.
 				dynamic_cast<Tower*>(tower)->OnCollisionEnter2D(enemy);
 			}
 		}

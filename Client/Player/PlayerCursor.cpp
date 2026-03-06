@@ -1,6 +1,7 @@
 #include "PlayerCursor.h"
 #include "InputMgr/InputMgr.h"
 #include "CollisionMgr/CollisionMgr.h"
+#include "Graphics/Renderer/Renderer.h"
 
 //DELEGATE
 //using OnHit = bool (*)(Actor*);
@@ -25,12 +26,17 @@ void PlayerCursor::BeginPlay()
 void PlayerCursor::Tick(float _fDeltaTime)
 {
 	super::Tick(_fDeltaTime);
-	SetPos(Vector2(InputMgr::Get_Instance().GetMousePos().m_iX, InputMgr::Get_Instance().GetMousePos().m_iY));
+
+	/*SetPos(Vector2(
+		static_cast<int>(InputMgr::Get_Instance().GetMousePosFloat().fX), 
+		static_cast<int>(InputMgr::Get_Instance().GetMousePosFloat().fY)));*/
 }
 
 void PlayerCursor::Render()
 {
 	super::Render();
+	string tempStr = to_string(InputMgr::Get_Instance().GetMousePosFloat().fX) + ", " + to_string(InputMgr::Get_Instance().GetMousePosFloat().fY);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 30));
 }
 
 void PlayerCursor::OnHit()

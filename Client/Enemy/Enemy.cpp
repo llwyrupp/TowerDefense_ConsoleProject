@@ -12,9 +12,8 @@ using namespace System;
 Enemy::Enemy()
 	:super("@", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
 {
+	m_iSortingOrder = 5;
 	m_bIsUsingActorPool = true;
-
-	m_fSpeed = 50.f;
 }
 
 Enemy::~Enemy()
@@ -104,4 +103,31 @@ void Enemy::Tick(float _fDeltaTime)
 void Enemy::Render()
 {
 	super::Render();
+}
+
+void Enemy::SetEnemyInfo(E_TYPE_ENEMY _type)
+{
+	m_eType = _type;
+
+	switch (_type)
+	{
+	case E_TYPE_ENEMY::E_TYPE_SOLDIER:
+		m_strImg = "A";
+		m_fSpeed = 30.f;
+		m_iHP = 20;
+		m_iMoney = 150;
+		break;
+	case E_TYPE_ENEMY::E_TYPE_TANKER:
+		m_strImg = "$";
+		m_fSpeed = 20.f;
+		m_iHP = 100;
+		m_iMoney = 300;
+		break;
+	case E_TYPE_ENEMY::E_TYPE_ASSASSIN:
+		m_strImg = "&";
+		m_fSpeed = 50.f;
+		m_iHP = 50;
+		m_iMoney = 550;
+		break;
+	}
 }

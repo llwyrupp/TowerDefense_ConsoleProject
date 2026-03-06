@@ -30,10 +30,13 @@ public:
 	// Inherited via ICollisionHandler
 	void OnCollisionEnter2D(Actor* _pActor) override;
 public:
-	void FireBullet();
+	bool CheckIsActorInTowerBoundary(const Actor* _other);
+	float ConvertToRadians(float _degree);
 private:
 	TOWERINFO m_tInfo = {};
-	Vector2 m_vTarget = Vector2::Zero;
+	//Vector2 m_vTarget = Vector2::Zero;
+	Actor* m_pTarget = nullptr;
+	Vector2 m_vPosBoundary[12] = {};
 	Timer m_FireTimer;
 private:
 	float m_fBoundary = 0.f;

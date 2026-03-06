@@ -90,6 +90,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Effect\Effect.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\EnemySpawner.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -108,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientCommon\ClientStruct.h" />
+    <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\EnemySpawner.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

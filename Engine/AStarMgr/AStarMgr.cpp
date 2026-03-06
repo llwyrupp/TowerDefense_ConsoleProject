@@ -27,13 +27,13 @@ AStarMgr::AStarMgr()
 
 	//DIAGONAL
 	//5. 대각선방향은 1, 1, 비용이 1.414(sqrt2)이다.
-	m_vecDir.emplace_back(DIR(1, 1, 1.414f));
+	m_vecDir.emplace_back(DIR(1, 1, sqrtf(2.f)));
 	// . 대각선방향은 1, -1, 비용이 1.414(sqrt2)이다.
-	m_vecDir.emplace_back(DIR(1, -1, 1.414f));
+	m_vecDir.emplace_back(DIR(1, -1, sqrtf(2.f)));
 	// . 대각선방향은 -1, 1, 비용이 1.414(sqrt2)이다.
-	m_vecDir.emplace_back(DIR(-1, 1, 1.414f));
+	m_vecDir.emplace_back(DIR(-1, 1, sqrtf(2.f)));
 	// . 대각선방향은 -1, -1, 비용이 1.414(sqrt2)이다.
-	m_vecDir.emplace_back(DIR(-1, -1, 1.414f));
+	m_vecDir.emplace_back(DIR(-1, -1, sqrtf(2.f)));
 
 	m_vecNodes.resize(MaxHeight, vector<Node*>(MaxWidth, nullptr));
 
@@ -41,11 +41,11 @@ AStarMgr::AStarMgr()
 	{
 		for (int j = 0; j < MaxWidth; ++j)//col
 		{
-			m_vecNodes[i][j] = new Node(j, i, 0.f, nullptr);
+			m_vecNodes[i][j] = new Node(j, i, 0.f, nullptr);//allocate nodes before the game, manage them using vector container
 		}
 	}
 
-	m_vecBestGCost.resize(MaxHeight, vector<float>(MaxWidth, MaxGCost));
+	m_vecBestGCost.resize(MaxHeight, vector<float>(MaxWidth, MaxGCost));//allocate maxheight*maxwidth memory and initialize them with maxgcost
 	m_vecLayerType.resize(MaxHeight, vector<E_LAYER>(MaxWidth, E_LAYER::E_NONE));
 }
 
@@ -96,14 +96,14 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 		for (int i = 0; i < m_vecDir.size(); ++i)
 		{
 			//get next coordinate.
-			int nextCol = currentNode->GetPos().iCol + m_vecDir[i].iX;
 			int nextRow = currentNode->GetPos().iRow + m_vecDir[i].iY;
+			int nextCol = currentNode->GetPos().iCol + m_vecDir[i].iX;
 
 			float nextGCost = currentNode->GetGCost() + m_vecDir[i].gCost + currentNode->GetWeight();//add the cost of the next direction.
-			//if next direction's gcost is smaller, we have found a shorter path to target.
+			//if next direction's gcost (nextGCost) is smaller, we have found a shorter path to target.
 			if (IsInRange(nextCol, nextRow) && nextGCost < m_vecBestGCost[nextRow][nextCol])//[50][100]
 			{
-				//update the new gcost to next coord
+				//so we update the new nextGCost to next coord
 				m_vecBestGCost[nextRow][nextCol] = nextGCost;
 				Node* pNextNode = m_vecNodes[nextRow][nextCol];
 				float fHeuristicValue = CalculateHeuristic(pNextNode, _targetNode);

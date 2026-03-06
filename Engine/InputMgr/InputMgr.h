@@ -21,6 +21,15 @@ BEGIN(System)
 		bool bWasKeyDown = false;
 	}KEYSTATE;
 
+	typedef struct tagMousePos {
+		tagMousePos() {}
+		tagMousePos(float _x, float _y)
+			:fX(_x), fY(_y) {
+		}
+		float fX = 0.f;
+		float fY = 0.f;
+	}MOUSEPOS;
+
 	public:
 		InputMgr();
 		~InputMgr();
@@ -36,6 +45,7 @@ BEGIN(System)
 		bool GetMouseButtonUp(int iBtnCode);
 		bool GetMouseButton(int iBtnCode);
 		inline Vector2 GetMousePos() const { return m_vMousePos; }
+		inline MOUSEPOS GetMousePosFloat() const { return m_MousePos; }
 	public:
 		static InputMgr& Get_Instance();
 	private:
@@ -47,6 +57,7 @@ BEGIN(System)
 		KEYSTATE m_stKeyStates[MAX_SIZE_KEYSTATE] = {};
 		static InputMgr* m_pInstance;
 		Vector2 m_vMousePos = {};
+		MOUSEPOS m_MousePos = {};
 	};
 END
 #endif

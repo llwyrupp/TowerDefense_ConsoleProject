@@ -50,14 +50,16 @@ void Actor::Render()
 		Renderer::Get_Instance().Submit(m_strImg, m_vPosition, m_eColor, m_iSortingOrder);
 	else {//assume that all objects' height and width are even numbers.
 		size_t szIndex = 0;
-		for (int iX = -m_iWidth / 2; iX < (m_iWidth / 2) + 1; ++iX) {
-			for (int iY = -m_iHeight / 2; iY < (m_iHeight / 2) + 1; ++iY)
-			{
-				if (szIndex >= m_vecStr_FieldLevel.size())
-					break;
-				//object with multiple strings will be drawn with the position as the center.
-				Renderer::Get_Instance().Submit(m_vecStr_FieldLevel[szIndex++], Vector2(m_vPosition.m_iX + iX, m_vPosition.m_iY + iY), m_eColor, m_iSortingOrder);
-			}
+		Vector2 newPos = GetPos();
+		newPos.m_iX -= m_iWidth / 2;
+		newPos.m_iY -= m_iHeight / 2;
+		for (int iY = 0; iY < m_iHeight; ++iY)
+		{
+			if (szIndex >= m_vecStr_FieldLevel.size())
+				break;
+			++newPos.m_iY;
+			//object with multiple strings will be drawn with the position as the center.
+			Renderer::Get_Instance().Submit(m_vecStr_FieldLevel[szIndex++], newPos, m_eColor, m_iSortingOrder);
 		}
 	}
 }

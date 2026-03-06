@@ -22,6 +22,8 @@ Player::Player(PlayerCursor* _cursor)
 	m_Cooldown[0].SetTargetTime(1.f);
 	m_Cooldown[1].SetTargetTime(10.f);
 	m_Cooldown[2].SetTargetTime(15.f);
+
+	m_fCursorSpeed = 30.f;
 }
 
 Player::~Player()
@@ -42,6 +44,45 @@ void Player::Tick(float _fDeltaTime)
 	{
 		m_Cooldown[i].Tick(_fDeltaTime);
 	}
+
+	Vector2 newPos = m_pCursor->GetPos();
+	if (InputMgr::Get_Instance().GetKey(VK_UP))
+	{
+		m_fAccY -= _fDeltaTime * m_fCursorSpeed;
+		if (m_fAccY <= -1.f)
+		{
+			m_fAccY = 0.f;
+			--newPos.m_iY;
+		}
+	}
+	if (InputMgr::Get_Instance().GetKey(VK_DOWN))
+	{
+		m_fAccY += _fDeltaTime * m_fCursorSpeed;
+		if (m_fAccY >= 1.f)
+		{
+			m_fAccY = 0.f;
+			++newPos.m_iY;
+		}
+	}
+	if (InputMgr::Get_Instance().GetKey(VK_LEFT))
+	{
+		m_fAccX -= _fDeltaTime * m_fCursorSpeed;
+		if (m_fAccX <= -1.f)
+		{
+			m_fAccX = 0.f;
+			--newPos.m_iX;
+		}
+	}
+	if (InputMgr::Get_Instance().GetKey(VK_RIGHT))
+	{
+		m_fAccX += _fDeltaTime * m_fCursorSpeed;
+		if (m_fAccX >= 1.f)
+		{
+			m_fAccX = 0.f;
+			++newPos.m_iX;
+		}
+	}
+	m_pCursor->SetPos(newPos);
 
 	if (InputMgr::Get_Instance().GetKeyDown('1'))
 	{
@@ -79,7 +120,7 @@ void Player::Render()
 	//print money
 	string tempStr = "Money: " + to_string(m_iMoney);
 
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 5), Color::eGreen);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 5), Color::eGreen);
 
 
 	//print tower type
@@ -96,24 +137,27 @@ void Player::Render()
 		break;
 	}
 
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 10), Color::eGreen);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 10), Color::eGreen);
 
 
 	//print tower placement cooldown
 	switch (m_eCurTowerType)
 	{
 	case E_TYPE_TOWER::E_TYPE_RIFLE:
-		tempStr = "RifleTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime()) + "s";
+		tempStr = "RifleTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() >= 0 ?
+			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
 		break;
 	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
-		tempStr = "ShotgunTower Cooldown: " + to_string(m_Cooldown[1].GetTargetTime() - m_Cooldown[1].GetElapsedTime()) + "s";
+		tempStr = "ShotgunTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() >= 0 ?
+			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
 		break;
 	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
-		tempStr = "MachinegunTower Cooldown: " + to_string(m_Cooldown[2].GetTargetTime() - m_Cooldown[2].GetElapsedTime()) + "s";
+		tempStr = "MachinegunTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() >= 0 ?
+			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
 		break;
 	}
 
-	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 11), Color::eGreen);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 11), Color::eGreen);
 }
 
 bool Player::Check_EnoughMoney_TowerCooldown()
@@ -131,6 +175,13 @@ bool Player::Check_EnoughMoney_TowerCooldown()
 	{
 		return true;
 	}
+
+	return false;
+}
+
+bool Player::CheckCanPlaceTower()
+{
+
 
 	return false;
 }

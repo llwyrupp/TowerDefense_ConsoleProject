@@ -81,7 +81,7 @@ void InputMgr::ProcessInput()
 	if (!bInit)
 	{
 		//activate mouse event.
-		DWORD dwMode = ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
+		DWORD dwMode = ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT;
 		dwMode &= ~ENABLE_QUICK_EDIT_MODE;
 		BOOL bResult = SetConsoleMode(hInputHandle, dwMode);
 
@@ -124,31 +124,59 @@ void InputMgr::ProcessInput()
 						}
 						break;
 					}
-				case MOUSE_EVENT:
-					{
-						//set mouse position x
-						m_vMousePos.m_iX = rec.Event.MouseEvent.dwMousePosition.X;
-						//adjust x so that the mouse cursor is clamped inside the window
-						m_vMousePos.m_iX = Clamp<int>(m_vMousePos.m_iX, 0, Engine::Get_Instance().GetWidth() - 1);
+				//case MOUSE_EVENT:
+				//	{
+				//		//set mouse position x
+				//		m_vMousePos.m_iX = rec.Event.MouseEvent.dwMousePosition.X;
+				//		//adjust x so that the mouse cursor is clamped inside the window
+				//		m_vMousePos.m_iX = Clamp<int>(m_vMousePos.m_iX, 0, Engine::Get_Instance().GetWidth() - 1);
 
-						//set mouse position x
-						m_vMousePos.m_iY = rec.Event.MouseEvent.dwMousePosition.Y;
-						//adjust y
-						m_vMousePos.m_iY = Clamp<int>(m_vMousePos.m_iY, 0, Engine::Get_Instance().GetHeight() - 1);
+				//		m_MousePos.fX = static_cast<float>(rec.Event.MouseEvent.dwMousePosition.X);
+				//		m_MousePos.fX = Clamp<float>(m_MousePos.fX, 0.f, static_cast<float>(Engine::Get_Instance().GetWidth() - 1));
 
-						//save mouse click state.
-						m_stKeyStates[VK_LBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
-						m_stKeyStates[VK_RBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) != 0;
-					}
-					break;
+				//		//set mouse position x
+				//		m_vMousePos.m_iY = rec.Event.MouseEvent.dwMousePosition.Y;
+				//		//adjust y
+				//		m_vMousePos.m_iY = Clamp<int>(m_vMousePos.m_iY, 0, Engine::Get_Instance().GetHeight() - 1);
+
+				//		m_MousePos.fY = static_cast<float>(rec.Event.MouseEvent.dwMousePosition.Y);
+				//		m_MousePos.fY = Clamp<float>(m_MousePos.fY, 0.f, static_cast<float>(Engine::Get_Instance().GetHeight() - 1));
+
+				//		//save mouse click state.
+				//		m_stKeyStates[VK_LBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
+				//		m_stKeyStates[VK_RBUTTON].bIsKeyDown = (rec.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED) != 0;
+				//	}
+				//	break;
 				}
 			}
 		}
 	}
 
+	//read mouse input
+	/*POINT pt;
+	
+	if (GetCursorPos(&pt))
+	{
+		HWND hWnd = GetConsoleWindow();
+		RECT rcWindow, rcClient;
+		GetWindowRect(hWnd, &rcWindow);
+		GetClientRect(hWnd, &rcClient);
 
-	/*for(int i = 0; i < MAX_SIZE_KEYSTATE; ++i)
-		m_stKeyStates[i].bIsKeyDown = ((GetAsyncKeyState(i) & 0x8000) > 0 ? true : false);*/
+		ScreenToClient(hWnd, &pt);
+
+		CONSOLE_FONT_INFOEX cfi;
+		wcscpy_s(cfi.FaceName, L"Consolas");
+
+		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+		GetCurrentConsoleFontEx(hOutput, FALSE, &cfi);
+
+
+		if (cfi.dwFontSize.X > 0 && cfi.dwFontSize.Y > 0)
+		{
+			m_MousePos.fX = static_cast<float>(pt.x) / static_cast<float>(abs(cfi.dwFontSize.X));
+			m_MousePos.fY = static_cast<float>(pt.y) / static_cast<float>(abs(cfi.dwFontSize.Y));
+		}
+	}*/
 }
 
 void InputMgr::SavePrevInputStates()
