@@ -5,7 +5,6 @@
 BEGIN(System)
 	class InputMgr;
 	class Renderer;
-	class CollisionMgr;
 	class AStarMgr;
 	//class ObjectMgr;
 	class ENGINE_DLL Engine
@@ -49,7 +48,6 @@ BEGIN(System)
 		ENGINESETTING m_stSetting;
 		InputMgr* m_pInput = nullptr;
 		Renderer* m_pRenderer = nullptr;
-		CollisionMgr* m_pCollisionMgr = nullptr;
 		AStarMgr* m_pAStarMgr = nullptr;
 
 		//ObjectMgr* m_pObjectMgr = nullptr;

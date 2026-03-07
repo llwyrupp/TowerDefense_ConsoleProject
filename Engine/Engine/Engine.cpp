@@ -6,7 +6,6 @@
 #include "Level/Level.h"
 #include "InputMgr/InputMgr.h"
 #include "Graphics/Renderer/Renderer.h"
-#include "CollisionMgr/CollisionMgr.h"
 #include "AStarMgr/AStarMgr.h"
 #include "Util/Util.h"
 
@@ -25,7 +24,6 @@ Engine::Engine()
 	m_pInput = new InputMgr();
 
 	//collision manager
-	m_pCollisionMgr = new CollisionMgr();
 
 	//astar manager
 	m_pAStarMgr = new AStarMgr();
@@ -55,9 +53,7 @@ Engine::~Engine()
 {
 	Safe_Delete(m_pMainLevel);
 	Safe_Delete(m_pRenderer);
-	//Safe_Delete(m_pObjectMgr);
 	Safe_Delete(m_pAStarMgr);
-	Safe_Delete(m_pCollisionMgr);
 	Safe_Delete(m_pInput);
 }
 

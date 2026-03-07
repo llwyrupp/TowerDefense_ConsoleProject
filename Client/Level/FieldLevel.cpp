@@ -111,6 +111,11 @@ void FieldLevel::Tick(float _fDeltaTime)
 			m_SpawnEnemyTimer.ResetTime();
 		}
 		
+		//Todo: clear quadtree, insert every actors on scene that can be collided with.
+		//filter: when checking collisions for a bullet, don't loop thru all enemies.
+		//1.ask quadtree(query), get vector<Actor*> of only 2 or 3 enemies in the same quadrant as the current bullet.
+		//perform actual checkintersect only on those 2~3 enemies.
+
 		//check collisions
 		CheckCollision_PlayerCursor_TowerActors();
 		CheckCollision_TowerBullet_Enemies();

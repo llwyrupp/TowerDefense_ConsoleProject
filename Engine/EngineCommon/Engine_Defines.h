@@ -11,6 +11,8 @@
 #define MAX_HEADER_LEN 24
 #define MAX_WIDTH_LEN 5
 
+#define MAX_QUADTREE_DEPTH 5
+
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
