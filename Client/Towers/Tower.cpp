@@ -3,6 +3,7 @@
 #include "Level/Level.h"
 #include "Enemy/Enemy.h"
 #include "Graphics/Renderer/Renderer.h"
+#include "QuadTree/Area.h"
 #include <numbers>
 
 using namespace System;
@@ -32,8 +33,14 @@ Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 
 	m_eCurState = E_TOWER_STATE::E_IDLE;
 
-	/*SetWidth(static_cast<int>(m_fBoundary));
-	SetHeight(static_cast<int>(m_fBoundary));*/
+	if (m_pArea)
+	{
+		int iRadius = static_cast<int>(m_fBoundary);
+		Vector2 vPos = GetPos();
+		//update width and height as the boundary
+		//m_pArea->SetMyQuadrantPos(vPos.m_iX, vPos.m_iY);
+		m_pArea->SetMyQuadrantWidthHeight(vPos.m_iY + iRadius * 2, vPos.m_iX + iRadius);
+	}
 }
 
 Tower::~Tower()

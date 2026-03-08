@@ -21,7 +21,8 @@ enum class E_AREA_INDEX {
 //the Quad TRee consists of numerous Areas.
 //each Area has four quadrant nodes as members.
 //also each node has Quadrant as a member(the boundaries of this area)
-//
+
+class Actor;
 class Area
 {
 public:
@@ -46,6 +47,10 @@ public:
 	inline Area* GetTopRight() const { return m_TopRight; }
 	inline Area* GetBottomLeft() const { return m_BottomLeft; }
 	inline Area* GetBottomRight() const { return m_BottomRight; }
+	inline void SetMyQuadrantPos(int _x, int _y) { m_MyQuadrant.SetPos(_x, _y); }
+	inline void SetMyQuadrantWidthHeight(int _width, int _height) { m_MyQuadrant.SetWidthHeight(_width, _height); }
+	inline Actor* GetActorOwner() const { return m_pActorOwner; }
+	inline void SetActorOwner(Actor* _owner) { m_pActorOwner = _owner; }
 private:
 	int m_iDepth = 0;
 	//which quadrant does it belong to?
@@ -54,6 +59,8 @@ private:
 	//the list of nodes in current area
 	vector<Area*> m_vecAllAreas;
 private:
+	Actor* m_pActorOwner = nullptr;
+
 	Area* m_TopLeft = nullptr;
 	Area* m_TopRight = nullptr;
 	Area* m_BottomLeft = nullptr;

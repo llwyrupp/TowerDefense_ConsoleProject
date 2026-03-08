@@ -21,6 +21,8 @@ public:
 	inline int GetMaxX() const { return m_iOriginX + m_iWidth; }
 	inline int GetMaxY() const { return m_iOriginY + m_iHeight; }
 
+	inline void SetPos(int _originX, int _originY) { m_iOriginX = _originX; m_iOriginY = _originY; }
+	inline void SetWidthHeight(int _width, int _height) { m_iWidth = _width; m_iHeight = _height; }//for tower boundaries
 public:
 	bool CheckIntersect(const Quadrant& _other) const;
 private:

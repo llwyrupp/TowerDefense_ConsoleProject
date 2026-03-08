@@ -33,6 +33,11 @@ vector<Area*> QuadTree::Query(Area* _queryArea)
     if (!_queryArea)
         return {};
 
+    if (!m_Root)
+    {
+        return {};
+    }
+
     vector<Area*> vecPossibleAreas;
     //send over my(m_root's) quadrant, and the output vector(vecPossibleAreas)
     m_Root->Query(_queryArea->GetMyQuadrant(), vecPossibleAreas);

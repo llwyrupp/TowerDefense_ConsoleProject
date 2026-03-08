@@ -28,6 +28,7 @@ Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color c
 	UpdateRect();
 
 	m_pArea = new Area(Quadrant(vPos.m_iX, vPos.m_iY, m_iWidth, m_iHeight));
+	m_pArea->SetActorOwner(this);
 }
 
 Actor::~Actor()
@@ -54,6 +55,7 @@ void Actor::Render()
 	else {//assume that all objects' height and width are even numbers.
 		size_t szIndex = 0;
 		Vector2 newPos = GetPos();
+		//when rendering, use the console window coordinate system(X for width(col) and Y for height(row))
 		newPos.m_iX -= m_iWidth / 2;
 		newPos.m_iY -= m_iHeight / 2;
 		for (int iY = 0; iY < m_iHeight; ++iY)
@@ -85,14 +87,25 @@ void Actor::ChangeImage(const char* newImage)
 
 void Actor::UpdateRect()
 {
+	//OLD
+	/*m_rtSize.left = static_cast<long>(m_vPosition.m_iX);
+	m_rtSize.top = static_cast<long>(m_vPosition.m_iY);
+	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iWidth);
+	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iHeight);*/
+
 	m_rtSize.left = static_cast<long>(m_vPosition.m_iX);
 	m_rtSize.top = static_cast<long>(m_vPosition.m_iY);
 	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iWidth);
 	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iHeight);
+
+	//update area info for Quadtree
+	if(m_pArea)
+		m_pArea->SetMyQuadrantPos(m_vPosition.m_iX, m_vPosition.m_iY);
 }
 
-bool System::Actor::CheckIntersect(const Actor* const _other)
+bool Actor::CheckIntersect(const Actor* const _other)
 {
+	//OLD
 	int iMinX_This = this->m_rtSize.left, iMaxX_This = this->m_rtSize.right,
 		iMinY_This = this->m_rtSize.top, iMaxY_This = this->m_rtSize.bottom,
 		iMinX_Other = _other->GetRect().left, iMaxX_Other = _other->GetRect().right,
@@ -115,6 +128,30 @@ bool System::Actor::CheckIntersect(const Actor* const _other)
 	return true;
 }
 
+//bool Actor::CheckIntersect_ByArea(const Area* const _other)
+//{
+//	int iMinX_This = this->m_rtSize.left, iMaxX_This = this->m_rtSize.right,
+//		iMinY_This = this->m_rtSize.top, iMaxY_This = this->m_rtSize.bottom,
+//		iMinX_Other = _other., iMaxX_Other = _other->GetRect().right,
+//		iMinY_Other = _other->GetRect().top, iMaxY_Other = _other->GetRect().bottom;
+//
+//	//check if two intersects.
+//
+//	if (iMaxX_This <= iMinX_Other)
+//		return false;
+//
+//	if (iMaxX_Other <= iMinX_This)
+//		return false;
+//
+//	if (iMaxY_This <= iMinY_Other)
+//		return false;
+//
+//	if (iMaxY_Other <= iMinY_This)
+//		return false;
+//
+//	return true;
+//}
+
 void Actor::SetPos(const Vector2& vNewPos)
 {
 	//변경하려는 위치가 현 위치와 동일하면 스킵.
@@ -123,6 +160,8 @@ void Actor::SetPos(const Vector2& vNewPos)
 
 	//새 위치값으로 액터 위치 갱신
 	m_vPosition = vNewPos;
+	if (m_pArea)
+		m_pArea->SetMyQuadrantPos(vNewPos.m_iX, vNewPos.m_iY);
 }
 
 void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeation in FieldLevel if its size is bigger than 1.

@@ -21,6 +21,7 @@
 #include "AStarMgr/AStarMgr.h"
 #include "Effect/Effect.h"
 #include "QuadTree/QuadTree.h"
+#include "QuadTree/Quadrant.h"
 
 using namespace System;
 using namespace Util;
@@ -42,10 +43,14 @@ FieldLevel::FieldLevel()
 	m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
 
 	m_iCurBaseHP = m_iMaxBaseHP;
+
+	//TODO: set mapsize from the values read in loadmap
+	m_QuadTree = new System::QuadTree(Quadrant(0, 0, 150, 50)) ;
 }
 
 FieldLevel::~FieldLevel()
 {
+	Safe_Delete(m_QuadTree);
 }
 
 void FieldLevel::BeginPlay()
@@ -212,8 +217,9 @@ void FieldLevel::LoadMap(const char* _pPath)
 
 bool FieldLevel::AddTower(E_TYPE_TOWER _eType)
 {
-	if (!m_bCanPlaceTower)
-		return false;
+	//TODO: enable after testing quadtree
+	/*if (!m_bCanPlaceTower)
+		return false;*/
 
 	Tower* pTower = nullptr;
 	const char* pPath = "";
@@ -259,20 +265,9 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
 		return;
 
-	m_QuadTree.ResetTree();
+	
 
 	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
-	{
-		m_QuadTree.InsertArea(tower->GetArea());
-	}
-	vector<Area*> vecIntersectingAreas =  m_QuadTree.Query(m_pCursor->GetArea());
-
-	for (auto const area : vecIntersectingAreas)
-	{
-		
-	}
-
-	/*for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 	{
 		if (m_pCursor->CheckIntersect(tower))
 		{
@@ -282,11 +277,22 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 		}
 	}
 	m_bCanPlaceTower = true;
-	m_pCursor->SetColor(Color::eGreen);*/
+	m_pCursor->SetColor(Color::eGreen);
 }
 
 void FieldLevel::CheckCollision_TowerBullet_Enemies()
 {
+	//m_QuadTree.ResetTree();
+
+	//
+	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	{
+		m_QuadTree->InsertArea(bullet->GetArea());
+	}
+
+
+
+
 	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
 	{
 		if (bullet->Get_IsDestroyRequested())
@@ -363,19 +369,82 @@ void FieldLevel::CheckCollision_Enemies_Target()
 
 void FieldLevel::CheckCollision_Enemies_TowerBoundaries()
 {
+	//QQUADTREE DEBUG
+	m_QuadTree->ResetTree();
+
 	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
 	{
 		if (enemy->Get_IsDestroyRequested())
 			continue;
 
-		for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+		//push all enemy actors into the tree
+		m_QuadTree->InsertArea(enemy->GetArea());
+	}
+
+	//towers are relatively fewer.
+	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+	{
+		vector<Area*> vecIntersectingAreas = m_QuadTree->Query(tower->GetArea());
+
+		for (auto const area : vecIntersectingAreas)
 		{
-			//use custom checkintersect
-			if (tower->IsTypeOf<Tower>() && dynamic_cast<Tower*>(tower)->CheckIsActorInTowerBoundary(enemy))
+			Actor* pEnemy = area->GetActorOwner();
+			if (pEnemy == nullptr)
+				continue;
+
+			if (tower->IsTypeOf<Tower>() && dynamic_cast<Tower*>(tower)->CheckIsActorInTowerBoundary(pEnemy))
 			{
-				dynamic_cast<Tower*>(tower)->OnCollisionEnter2D(enemy);
+				dynamic_cast<Tower*>(tower)->OnCollisionEnter2D(pEnemy);
 			}
 		}
 	}
+
+	//QUADTREE
+	//for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+	//{
+	//	if (tower->Get_IsDestroyRequested())
+	//		continue;
+
+	//	//push all enemy actors into the tree
+	//	m_QuadTree->InsertArea(tower->GetArea());
+	//}
+
+	//for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	//{
+	//	if (enemy->Get_IsDestroyRequested())
+	//		continue;
+
+	//	vector<Area*> vecIntersectingAreas = m_QuadTree->Query(enemy->GetArea());
+
+	//	for (auto const area : vecIntersectingAreas)
+	//	{
+	//		Actor* pTower = area->GetActorOwner();
+
+	//		if (pTower == nullptr)
+	//			continue;
+
+	//		//if (pTower->CheckIntersect(enemy))
+	//		if(pTower->IsTypeOf<Tower>() && dynamic_cast<Tower*>(pTower)->CheckIsActorInTowerBoundary(enemy))
+	//		{
+	//			dynamic_cast<Tower*>(pTower)->OnCollisionEnter2D(enemy);
+	//		}
+	//	}
+	//}
+
+	//ORIGIN
+	//for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	//{
+	//	if (enemy->Get_IsDestroyRequested())
+	//		continue;
+
+	//	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+	//	{
+	//		//use custom checkintersect
+	//		if (tower->IsTypeOf<Tower>() && dynamic_cast<Tower*>(tower)->CheckIsActorInTowerBoundary(enemy))
+	//		{
+	//			dynamic_cast<Tower*>(tower)->OnCollisionEnter2D(enemy);
+	//		}
+	//	}
+	//}
 }
 

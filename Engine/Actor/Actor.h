@@ -33,6 +33,7 @@ public:
 	void LoadString_FromFile(const char* _pPath);
 	void UpdateRect();
 	bool CheckIntersect(const Actor* const _other);
+	//bool CheckIntersect_ByArea(const Area* const _other);
 public:
 	void SetPos(const Vector2& vNewPos);
 	inline Vector2 GetPos() const { return m_vPosition; }

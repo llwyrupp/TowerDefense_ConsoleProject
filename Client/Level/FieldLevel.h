@@ -47,7 +47,7 @@ private:
 	PlayerCursor* m_pCursor = nullptr;
 	Target* m_pTarget = nullptr;
 private:
-	System::QuadTree m_QuadTree;
+	System::QuadTree* m_QuadTree;
 	Timer m_PreRoundTimer;
 	Timer m_SpawnEnemyTimer;
 private:

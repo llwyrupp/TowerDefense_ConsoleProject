@@ -5,12 +5,13 @@ BEGIN(System)
 Area::Area(const Quadrant& _quadrants, int _depth)
 	:m_MyQuadrant(_quadrants), m_iDepth(_depth)
 {
-
+	//m_vecAllAreas.reserve(100);
 }
 
 Area::~Area()
 {
 	Clear();
+	m_pActorOwner = nullptr;//never delete owner actor. it is managed in the Level class
 }
 
 void Area::Insert(Area* _node)
@@ -113,10 +114,14 @@ void Area::Clear() {
 
 	if (IsDivided())//if current area is divided, meaning there are children areas to be deleted,
 	{
-		m_TopLeft->Clear();
-		m_TopRight->Clear();
-		m_BottomLeft->Clear();
-		m_BottomRight->Clear();
+		if(m_TopLeft)
+			m_TopLeft->Clear();
+		if(m_TopRight)
+			m_TopRight->Clear();
+		if(m_BottomLeft)
+			m_BottomLeft->Clear();
+		if(m_BottomRight)
+			m_BottomRight->Clear();
 
 		DeleteChildren();
 	}
@@ -129,10 +134,14 @@ void Area::Reset()
 
 	if (IsDivided())//if current area is divided, meaning there are children areas to be deleted,
 	{
-		m_TopLeft->Clear();
-		m_TopRight->Clear();
-		m_BottomLeft->Clear();
-		m_BottomRight->Clear();
+		if (m_TopLeft)
+			m_TopLeft->Clear();
+		if (m_TopRight)
+			m_TopRight->Clear();
+		if (m_BottomLeft)
+			m_BottomLeft->Clear();
+		if (m_BottomRight)
+			m_BottomRight->Clear();
 	}
 }
 
@@ -187,7 +196,7 @@ E_AREA_INDEX Area::TestRegion_ReturnIndex(const Quadrant& _quadrant)
 	//return which index the parameter _quadrant belongs to.
 	vector<E_AREA_INDEX> vecIndices = GetCorrespondingQuadrantsIndices(_quadrant);
 
-	if (!vecIndices.empty())
+	if (vecIndices.empty())
 		return E_AREA_INDEX::E_OUTOFBOUNDS;
 
 	else if(vecIndices.size() == 1) {
@@ -229,15 +238,15 @@ vector<E_AREA_INDEX> Area::GetCorrespondingQuadrantsIndices(const Quadrant& _qua
 	{
 		vecIndices.emplace_back(E_AREA_INDEX::E_TOP_LEFT);
 	}
-	else if (bTop && bRight)
+	if (bTop && bRight)
 	{
 		vecIndices.emplace_back(E_AREA_INDEX::E_TOP_RIGHT);
 	}
-	else if (bBottom && bLeft)
+	if (bBottom && bLeft)
 	{
 		vecIndices.emplace_back(E_AREA_INDEX::E_BOTTOM_LEFT);
 	}
-	else if (bBottom && bRight)
+	if (bBottom && bRight)
 	{
 		vecIndices.emplace_back(E_AREA_INDEX::E_BOTTOM_RIGHT);
 	}
