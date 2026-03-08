@@ -1,4 +1,7 @@
 #pragma once
+#ifndef __VECTOR2_H__
+#define __VECTOR2_H__
+
 #include "EngineCommon/Engine_Defines.h"
 #include "EngineCommon/Engine_Macro.h"
 
@@ -41,3 +44,4 @@ private:
 };
 
 END
+#endif // !__VECTOR2_H__

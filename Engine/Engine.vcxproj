@@ -107,9 +107,8 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClCompile Include="Level\Level.cpp" />
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="QuadTree\Quadrant.cpp" />
-    <ClCompile Include="QuadTree\QTNode.cpp" />
+    <ClCompile Include="QuadTree\Area.cpp" />
     <ClCompile Include="QuadTree\QuadTree.cpp" />
-    <ClCompile Include="ScrollMgr\ScrollMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
@@ -129,9 +128,8 @@ xcopy $(OutDir)\Engine.lib ..\Library\Engine\$(Platform)\$(Configuration)\ /e /y
     <ClInclude Include="Level\Level.h" />
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="QuadTree\Quadrant.h" />
-    <ClInclude Include="QuadTree\QTNode.h" />
+    <ClInclude Include="QuadTree\Area.h" />
     <ClInclude Include="QuadTree\QuadTree.h" />
-    <ClInclude Include="ScrollMgr\ScrollMgr.h" />
     <ClInclude Include="Util\Timer.h" />
     <ClInclude Include="Util\Util.h" />
   </ItemGroup>

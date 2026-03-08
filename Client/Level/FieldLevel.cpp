@@ -20,6 +20,7 @@
 #include "Graphics/Renderer/Renderer.h"
 #include "AStarMgr/AStarMgr.h"
 #include "Effect/Effect.h"
+#include "QuadTree/QuadTree.h"
 
 using namespace System;
 using namespace Util;
@@ -115,6 +116,7 @@ void FieldLevel::Tick(float _fDeltaTime)
 		//filter: when checking collisions for a bullet, don't loop thru all enemies.
 		//1.ask quadtree(query), get vector<Actor*> of only 2 or 3 enemies in the same quadrant as the current bullet.
 		//perform actual checkintersect only on those 2~3 enemies.
+
 
 		//check collisions
 		CheckCollision_PlayerCursor_TowerActors();
@@ -257,7 +259,20 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
 		return;
 
+	m_QuadTree.ResetTree();
+
 	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
+	{
+		m_QuadTree.InsertArea(tower->GetArea());
+	}
+	vector<Area*> vecIntersectingAreas =  m_QuadTree.Query(m_pCursor->GetArea());
+
+	for (auto const area : vecIntersectingAreas)
+	{
+		
+	}
+
+	/*for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 	{
 		if (m_pCursor->CheckIntersect(tower))
 		{
@@ -267,7 +282,7 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 		}
 	}
 	m_bCanPlaceTower = true;
-	m_pCursor->SetColor(Color::eGreen);
+	m_pCursor->SetColor(Color::eGreen);*/
 }
 
 void FieldLevel::CheckCollision_TowerBullet_Enemies()
@@ -321,24 +336,6 @@ void FieldLevel::CheckCollision_TowerBullet_Walls()
 			{
 				//wall stays.
 				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(wall);
-			}
-		}
-	}
-}
-
-void FieldLevel::CheckCollision_Enemies_Walls()
-{
-	//temporary logic.
-	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
-	{
-		if (enemy->Get_IsDestroyRequested())
-			continue;
-
-		for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
-		{
-			if (enemy->CheckIntersect(wall))
-			{
-				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(wall);
 			}
 		}
 	}

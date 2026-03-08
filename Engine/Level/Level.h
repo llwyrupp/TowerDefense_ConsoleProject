@@ -7,7 +7,6 @@
 #include "EngineCommon/RTTI.h"
 #include "Actor/Actor.h"
 #include "Actor/ActorPool.h"
-using namespace std;
 
 BEGIN(System)
 

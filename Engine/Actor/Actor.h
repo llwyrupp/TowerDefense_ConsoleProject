@@ -1,4 +1,8 @@
 #pragma once
+#ifndef __ACTOR_H__
+#define __ACTOR_H__
+
+
 #include "EngineCommon/Engine_Defines.h"
 #include "EngineCommon/Engine_Macro.h"
 #include "EngineCommon/Engine_Enum.h"
@@ -6,96 +10,104 @@
 #include "Math/Vector2.h"
 #include "EngineCommon/RTTI.h"
 
-namespace System {
+BEGIN(System)
 
-	class Level;
-	class ENGINE_DLL  Actor : public RTTI
-	{
-		RTTI_DECLARATIONS(Actor, RTTI)
-	public:
-		Actor(const char* pImage = nullptr, const char* pPath = nullptr, const Vector2& vPos = Vector2::Zero, Color color = Color::eWhite, E_LAYER _eLayer = E_LAYER::E_NONE);
-		virtual ~Actor();
+class Level;
+class Area;
+class ENGINE_DLL  Actor : public RTTI
+{
+	RTTI_DECLARATIONS(Actor, RTTI)
+public:
+	Actor(const char* pImage = nullptr, const char* pPath = nullptr, const Vector2& vPos = Vector2::Zero, Color color = Color::eWhite, E_LAYER _eLayer = E_LAYER::E_NONE);
+	virtual ~Actor();
 
-	public:
-		//pure virtuals
-		virtual void BeginPlay() = 0;
-		virtual void Tick(float _fDeltaTime) = 0;
-		virtual void Render() = 0;
-	public:
-		void Destroy();
-		void OnDestroy();
-		void ChangeImage(const char* newImage);
-		void LoadString_FromFile(const char* _pPath);
-		void UpdateRect();
-		bool CheckIntersect(const Actor* const _other);
-	public:
-		void SetPos(const Vector2& vNewPos);
-		inline Vector2 GetPos() const { return m_vPosition; }
+public:
+	//pure virtuals
+	virtual void BeginPlay() = 0;
+	virtual void Tick(float _fDeltaTime) = 0;
+	virtual void Render() = 0;
+public:
+	void Destroy();
+	void OnDestroy();
+	void ChangeImage(const char* newImage);
+	void LoadString_FromFile(const char* _pPath);
+	void UpdateRect();
+	bool CheckIntersect(const Actor* const _other);
+public:
+	void SetPos(const Vector2& vNewPos);
+	inline Vector2 GetPos() const { return m_vPosition; }
 
-		inline void SetLevel(Level* pLevel) { m_pLevel = pLevel; }
-		inline Level* GetLevel() const { return m_pLevel; }
+	inline void SetLevel(Level* pLevel) { m_pLevel = pLevel; }
+	inline Level* GetLevel() const { return m_pLevel; }
 
-		inline bool Get_HasBegunPlay() const { return m_bHasBegunPlay; }
-		inline bool IsActive() const { return m_bHasBegunPlay; }
-		inline bool Get_IsDestroyRequested() const { return m_bIsDestroyRequested; }
-		inline void Set_IsDestroyRequested(bool _bFlag) { m_bIsDestroyRequested = _bFlag; }
+	inline bool Get_HasBegunPlay() const { return m_bHasBegunPlay; }
+	inline bool IsActive() const { return m_bHasBegunPlay; }
+	inline bool Get_IsDestroyRequested() const { return m_bIsDestroyRequested; }
+	inline void Set_IsDestroyRequested(bool _bFlag) { m_bIsDestroyRequested = _bFlag; }
 
-		inline int Get_SortingOrder() const { return m_iSortingOrder; }
-		inline void SetColor( Color const _eColor) { m_eColor = _eColor; }
-		inline Color GetColor() const { return m_eColor; }
-		inline void SetRect(RECT const _rect) { m_rtSize = _rect; }
-		inline const RECT& GetRect() const { return m_rtSize; }
-		inline void SetLayer( E_LAYER const _eLayer) { m_eLayer = _eLayer; }
-		inline E_LAYER GetLayer() const { return m_eLayer; }
+	inline int Get_SortingOrder() const { return m_iSortingOrder; }
+	inline void SetColor( Color const _eColor) { m_eColor = _eColor; }
+	inline Color GetColor() const { return m_eColor; }
+	inline void SetRect(RECT const _rect) { m_rtSize = _rect; }
+	inline const RECT& GetRect() const { return m_rtSize; }
+	inline void SetLayer( E_LAYER const _eLayer) { m_eLayer = _eLayer; }
+	inline E_LAYER GetLayer() const { return m_eLayer; }
 
-		inline void SetWidth(int _width) { m_iWidth = _width; }
-		inline void SetHeight(int _height) { m_iHeight = _height; }
+	inline void SetWidth(int _width) { m_iWidth = _width; }
+	inline void SetHeight(int _height) { m_iHeight = _height; }
 
-		inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
-		inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }
-	protected:
-		//beginplay에 들어가면 세팅되는 플래그값
-		bool m_bHasBegunPlay = false;
+	inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
+	inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }
 
-		//활성화상태?
-		bool m_bIsActive = true;
+	inline Area* GetArea() const { return m_pArea; }
+protected:
+	//beginplay에 들어가면 세팅되는 플래그값
+	bool m_bHasBegunPlay = false;
 
-		//현재 프레임에 삭제요청 받았는지 확인하는 용도
-		bool m_bIsDestroyRequested = false;
+	//활성화상태?
+	bool m_bIsActive = true;
 
-		//액터 풀을 사용하는지 확인
-		bool m_bIsUsingActorPool = false;
+	//현재 프레임에 삭제요청 받았는지 확인하는 용도
+	bool m_bIsDestroyRequested = false;
 
-		//letter to draw(image)
-		//char* m_pImage = nullptr;
-		std::string m_strImg = "";
+	//액터 풀을 사용하는지 확인
+	bool m_bIsUsingActorPool = false;
 
-		//bigger than 1x1 (in fieldlevel)
-		std::vector<std::string> m_vecStr_FieldLevel;
+	//letter to draw(image)
+	//char* m_pImage = nullptr;
+	std::string m_strImg = "";
 
-		//is using custom image? (1x1 or NxN?)
-		//bool m_bIsUsingCustomImg = false;
+	//bigger than 1x1 (in fieldlevel)
+	std::vector<std::string> m_vecStr_FieldLevel;
 
-		//length of string
-		int m_iWidth = 1;
-		//height of string
-		int m_iHeight = 1;
+	//is using custom image? (1x1 or NxN?)
+	//bool m_bIsUsingCustomImg = false;
 
-		//color of letter
-		Color m_eColor = Color::eWhite;
+	//length of string
+	int m_iWidth = 1;
+	//height of string
+	int m_iHeight = 1;
 
-		//종속된 레벨
-		Level* m_pLevel = nullptr;
+	//color of letter
+	Color m_eColor = Color::eWhite;
 
-		//the bigger, the higher the priority
-		int m_iSortingOrder = 0;
+	//종속된 레벨
+	Level* m_pLevel = nullptr;
 
-		E_LAYER m_eLayer = E_LAYER::E_NONE;
-	protected:
-		RECT m_rtSize = {};
+	//member for quadtree
+	Area* m_pArea = nullptr;
 
-	private:
-		Vector2 m_vPosition;
-	};
+	//the bigger, the higher the priority
+	int m_iSortingOrder = 0;
 
-}
+	E_LAYER m_eLayer = E_LAYER::E_NONE;
+protected:
+	RECT m_rtSize = {};
+
+private:
+	Vector2 m_vPosition;
+};
+
+END
+
+#endif // !__ACTOR_H__

@@ -1,7 +1,8 @@
 #include "ActorPool.h"
 #include "Actor/Actor.h"
 #include "EngineCommon/Engine_Function.h"
-using namespace System;
+
+BEGIN(System)
 
 ActorPool::ActorPool()
 {
@@ -40,3 +41,5 @@ Actor* ActorPool::Pop(size_t _szTypeID)
 	}
 	return nullptr;
 }
+
+END

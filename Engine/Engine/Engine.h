@@ -1,4 +1,8 @@
 #pragma once
+#ifndef __ENGINE_H__
+#define __ENGINE_H__
+
+
 #include "EngineCommon/Engine_Defines.h"
 #include "EngineCommon/Engine_Macro.h"
 
@@ -55,3 +59,4 @@ BEGIN(System)
 		static Engine* m_pInstance;
 	};
 END
+#endif // !__ENGINE_H__

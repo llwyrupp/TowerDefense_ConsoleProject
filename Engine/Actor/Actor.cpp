@@ -1,5 +1,6 @@
 #include "Actor/Actor.h"
 #include "Graphics/Renderer/Renderer.h"
+#include "QuadTree/Area.h"
 
 BEGIN(System)
 
@@ -26,11 +27,13 @@ Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color c
 
 	UpdateRect();
 
+	m_pArea = new Area(Quadrant(vPos.m_iX, vPos.m_iY, m_iWidth, m_iHeight));
 }
 
 Actor::~Actor()
 {
 	//Safe_Delete_Arr(m_pImage);
+	Safe_Delete(m_pArea);
 }
 
 void Actor::BeginPlay()

@@ -3,7 +3,7 @@
 #define __QUADTREE_H__
 
 #include "EngineCommon/RTTI.h"
-#include "QuadTree/QTNode.h"
+#include "QuadTree/Area.h"
 #include "EngineCommon/Engine_Defines.h"
 
 
@@ -12,6 +12,7 @@ class Actor;
 class ENGINE_DLL QuadTree
 {
 public:
+	QuadTree() = default;
 	QuadTree(const Quadrant& _quadrant);
 	~QuadTree();
 
@@ -22,13 +23,15 @@ public:
 	//it checks which quadrants the bullet overlaps with, and gives you the list
 	//of actors stored in those specific quadrants.
 public:
-	void InsertNode(QTNode* _qtNode);
-	vector<QTNode*> Query(QTNode* _queryNode);
+	void ResetTree();
+	void InsertArea(Area* _Area);
+	vector<Area*> Query(Area* _queryArea);
 private:
 	static const int m_iMaxDepth = 5;
-	QTNode* m_Root;//the root node.
+	Area* m_Root;//the root node.
 	//vector<Actor*> m_vecActors;//the actors in current quadrant.
 };
 
 END
+
 #endif // !__QUADTREE_H__

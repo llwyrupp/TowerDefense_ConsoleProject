@@ -1,19 +1,19 @@
-#include "QTNode.h"
+#include "Area.h"
 #include "EngineCommon/Engine_Defines.h"
-using namespace System;
 
-QTNode::QTNode(const Quadrant& _quadrants, int _depth)
+BEGIN(System)
+Area::Area(const Quadrant& _quadrants, int _depth)
 	:m_MyQuadrant(_quadrants), m_iDepth(_depth)
 {
 
 }
 
-QTNode::~QTNode()
+Area::~Area()
 {
 	Clear();
 }
 
-void QTNode::Insert(QTNode* _node)
+void Area::Insert(Area* _node)
 {
 	//recursive Insertion.
 
@@ -23,15 +23,15 @@ void QTNode::Insert(QTNode* _node)
 
 	//insert node.
 	//check the overlapping areas.(testregion)
-	E_NODE_INDEX eIndex = TestRegion_ReturnIndex(_node->GetMyQuadrant());
+	E_AREA_INDEX eIndex = TestRegion_ReturnIndex(_node->GetMyQuadrant());
 
 	//if the result is straddling, push it into possible points.
-	if (eIndex == E_NODE_INDEX::E_STRADDLING)
+	if (eIndex == E_AREA_INDEX::E_STRADDLING)
 	{
-		m_vecAllNodes.emplace_back(_node);
+		m_vecAllAreas.emplace_back(_node);
 		return;
 	}
-	else if (eIndex != E_NODE_INDEX::E_OUTOFBOUNDS)
+	else if (eIndex != E_AREA_INDEX::E_OUTOFBOUNDS)
 	{
 		//if the result is not straddling on more than 2 regions,
 		// subdivide it into the 4 quadrants.(until maxdepth)
@@ -41,16 +41,16 @@ void QTNode::Insert(QTNode* _node)
 		{
 			switch (eIndex)
 			{
-			case E_NODE_INDEX::E_TOP_LEFT:
+			case E_AREA_INDEX::E_TOP_LEFT:
 				m_TopLeft->Insert(_node);
 				break;
-			case E_NODE_INDEX::E_TOP_RIGHT:
+			case E_AREA_INDEX::E_TOP_RIGHT:
 				m_TopRight->Insert(_node);
 				break;
-			case E_NODE_INDEX::E_BOTTOM_LEFT:
+			case E_AREA_INDEX::E_BOTTOM_LEFT:
 				m_BottomLeft->Insert(_node);
 				break;
-			case E_NODE_INDEX::E_BOTTOM_RIGHT:
+			case E_AREA_INDEX::E_BOTTOM_RIGHT:
 				m_BottomRight->Insert(_node);
 				break;
 			}
@@ -59,7 +59,7 @@ void QTNode::Insert(QTNode* _node)
 		else {
 			//if failed to subdivide, we have reached the end
 			//push the node into current quadrant
-			m_vecAllNodes.emplace_back(_node);
+			m_vecAllAreas.emplace_back(_node);
 		}
 	}
 
@@ -68,7 +68,7 @@ void QTNode::Insert(QTNode* _node)
 
 }
 
-void QTNode::Query(const Quadrant& _quadrants, vector<QTNode*>& _possibleNodes)
+void Area::Query(const Quadrant& _quadrants, vector<Area*>& _possibleNodes)
 {
 	//add current node(this node) to possible nodes.
 	_possibleNodes.emplace_back(this);
@@ -78,33 +78,65 @@ void QTNode::Query(const Quadrant& _quadrants, vector<QTNode*>& _possibleNodes)
 		return;
 
 	//get the straddling quadrants, and check all four quadrants
-	vector<E_NODE_INDEX> vecIndices = GetCorrespondingQuadrantsIndices(_quadrants);
+	vector<E_AREA_INDEX> vecIndices = GetCorrespondingQuadrantsIndices(_quadrants);
 
 	//for each quadrants, process query.
 	//Query is Recursive. it will continue until we reach max depth
 	for (const auto& index : vecIndices)
 	{
-		if (index == E_NODE_INDEX::E_TOP_LEFT)
+		if (index == E_AREA_INDEX::E_TOP_LEFT)
 		{
 			m_TopLeft->Query(_quadrants, _possibleNodes);
 		}
-		else if (index == E_NODE_INDEX::E_TOP_RIGHT)
+		else if (index == E_AREA_INDEX::E_TOP_RIGHT)
 		{
 			m_TopRight->Query(_quadrants, _possibleNodes);
 		}
-		else if (index == E_NODE_INDEX::E_BOTTOM_LEFT)
+		else if (index == E_AREA_INDEX::E_BOTTOM_LEFT)
 		{
 			m_BottomLeft->Query(_quadrants, _possibleNodes);
 		}
-		else if (index == E_NODE_INDEX::E_BOTTOM_RIGHT)
+		else if (index == E_AREA_INDEX::E_BOTTOM_RIGHT)
 		{
 			m_BottomRight->Query(_quadrants, _possibleNodes);
 		}
 	}
 
 }
+//called when releases memory(end of program)
+void Area::Clear() {
+	//all the actors are managed by Levels
+	//so never delete them here.
 
-bool QTNode::SubDivide()
+	//just clear container
+	m_vecAllAreas.clear();
+
+	if (IsDivided())//if current area is divided, meaning there are children areas to be deleted,
+	{
+		m_TopLeft->Clear();
+		m_TopRight->Clear();
+		m_BottomLeft->Clear();
+		m_BottomRight->Clear();
+
+		DeleteChildren();
+	}
+}
+//called during game loop(reset the whole tree)
+void Area::Reset()
+{
+	//don't delete
+	m_vecAllAreas.clear();
+
+	if (IsDivided())//if current area is divided, meaning there are children areas to be deleted,
+	{
+		m_TopLeft->Clear();
+		m_TopRight->Clear();
+		m_BottomLeft->Clear();
+		m_BottomRight->Clear();
+	}
+}
+
+bool Area::SubDivide()
 {
 	//try dividing current quadrant into four regions.
 
@@ -125,16 +157,16 @@ bool QTNode::SubDivide()
 
 		//ex. map height = 50, map width = 150
 		//first quadrant: 0~25, 0~75, depth+1
-		m_TopLeft = new QTNode(Quadrant(iOriginX, iOriginY, iHalfWidth, iHalfHeight), m_iDepth + 1);
+		m_TopLeft = new Area(Quadrant(iOriginX, iOriginY, iHalfWidth, iHalfHeight), m_iDepth + 1);
 
 		//second quadrant: 0~25, 75~150, depth+1
-		m_TopRight = new QTNode(Quadrant(iOriginX + iHalfWidth, iOriginY, iHalfWidth, iHalfHeight), m_iDepth + 1);
+		m_TopRight = new Area(Quadrant(iOriginX + iHalfWidth, iOriginY, iHalfWidth, iHalfHeight), m_iDepth + 1);
 
 		//third quadrant: 25~50, 0~75, depth+1
-		m_BottomLeft = new QTNode(Quadrant(iOriginX, iOriginY + iHalfHeight, iHalfWidth, iHalfHeight), m_iDepth + 1);
+		m_BottomLeft = new Area(Quadrant(iOriginX, iOriginY + iHalfHeight, iHalfWidth, iHalfHeight), m_iDepth + 1);
 
 		//fourth quadrant: 25~50, 75~150, depth+1
-		m_BottomRight = new QTNode(Quadrant(iOriginX + iHalfWidth, iOriginY + iHalfHeight, iHalfWidth, iHalfHeight), m_iDepth + 1);
+		m_BottomRight = new Area(Quadrant(iOriginX + iHalfWidth, iOriginY + iHalfHeight, iHalfWidth, iHalfHeight), m_iDepth + 1);
 	}
 	else {
 		return false;
@@ -143,29 +175,29 @@ bool QTNode::SubDivide()
 	return true;
 }
 
-bool QTNode::IsDivided()
+bool Area::IsDivided()
 {
 	//if current region is divided, all nodes will not be nullptrs.
 	//so we only have to check one of the child nodes.
 	return m_TopLeft != nullptr;
 }
 
-E_NODE_INDEX QTNode::TestRegion_ReturnIndex(const Quadrant& _quadrant)
+E_AREA_INDEX Area::TestRegion_ReturnIndex(const Quadrant& _quadrant)
 {
 	//return which index the parameter _quadrant belongs to.
-	vector<E_NODE_INDEX> vecIndices = GetCorrespondingQuadrantsIndices(_quadrant);
+	vector<E_AREA_INDEX> vecIndices = GetCorrespondingQuadrantsIndices(_quadrant);
 
 	if (!vecIndices.empty())
-		return E_NODE_INDEX::E_OUTOFBOUNDS;
+		return E_AREA_INDEX::E_OUTOFBOUNDS;
 
 	else if(vecIndices.size() == 1) {
 		return *vecIndices.begin();
 	}
 	//else if(vecIndices.size() > 1)
-	return E_NODE_INDEX::E_STRADDLING;
+	return E_AREA_INDEX::E_STRADDLING;
 }
 
-vector<E_NODE_INDEX> QTNode::GetCorrespondingQuadrantsIndices(const Quadrant& _quadrant)
+vector<E_AREA_INDEX> Area::GetCorrespondingQuadrantsIndices(const Quadrant& _quadrant)
 {
 	//return the straddling quadrants.
 
@@ -190,30 +222,30 @@ vector<E_NODE_INDEX> QTNode::GetCorrespondingQuadrantsIndices(const Quadrant& _q
 	bool bTop = _quadrant.GetOriginY() < iCenterY && _quadrant.GetMaxY() >= iOriginY;
 	bool bBottom = iCenterY <= _quadrant.GetOriginY() && _quadrant.GetOriginY() < m_MyQuadrant.GetMaxY();
 
-	vector<E_NODE_INDEX> vecIndices;
+	vector<E_AREA_INDEX> vecIndices;
 	//we want to know where the parameter(_quadrant) belongs to, 
 	// and return them as a vector with matching indices
 	if (bTop && bLeft)
 	{
-		vecIndices.emplace_back(E_NODE_INDEX::E_TOP_LEFT);
+		vecIndices.emplace_back(E_AREA_INDEX::E_TOP_LEFT);
 	}
 	else if (bTop && bRight)
 	{
-		vecIndices.emplace_back(E_NODE_INDEX::E_TOP_RIGHT);
+		vecIndices.emplace_back(E_AREA_INDEX::E_TOP_RIGHT);
 	}
 	else if (bBottom && bLeft)
 	{
-		vecIndices.emplace_back(E_NODE_INDEX::E_BOTTOM_LEFT);
+		vecIndices.emplace_back(E_AREA_INDEX::E_BOTTOM_LEFT);
 	}
 	else if (bBottom && bRight)
 	{
-		vecIndices.emplace_back(E_NODE_INDEX::E_BOTTOM_RIGHT);
+		vecIndices.emplace_back(E_AREA_INDEX::E_BOTTOM_RIGHT);
 	}
 
 	return vecIndices;
 }
 
-void QTNode::ClearChildren()
+void Area::DeleteChildren()
 {
 	//if divided, delete all the 4 quadrant nodes.
 	if (IsDivided())
@@ -224,3 +256,5 @@ void QTNode::ClearChildren()
 		Safe_Delete(m_BottomRight);
 	}
 }
+
+END

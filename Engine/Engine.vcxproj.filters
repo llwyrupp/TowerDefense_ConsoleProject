@@ -48,9 +48,6 @@
     <ClInclude Include="EngineCommon\Engine_Enum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScrollMgr\ScrollMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Level\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,7 +72,7 @@
     <ClInclude Include="QuadTree\QuadTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QuadTree\QTNode.h">
+    <ClInclude Include="QuadTree\Area.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QuadTree\Quadrant.h">
@@ -101,9 +98,6 @@
     <ClCompile Include="Math\Vector2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScrollMgr\ScrollMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Level\Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,7 +113,7 @@
     <ClCompile Include="QuadTree\QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QuadTree\QTNode.cpp">
+    <ClCompile Include="QuadTree\Area.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QuadTree\Quadrant.cpp">

@@ -2,6 +2,9 @@
 #ifndef __QUADRANT_H__
 #define __QUADRANT_H__
 
+#include "EngineCommon/Engine_Macro.h"
+
+BEGIN(System)
 //this class represents the rectangle area(each quadrant)
 class Quadrant
 {
@@ -31,4 +34,5 @@ private:
 };
 
 
+END
 #endif // !__QUADRANT_H__

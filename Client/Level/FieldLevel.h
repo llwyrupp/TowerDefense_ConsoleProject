@@ -7,6 +7,7 @@
 #include "Interface/ICollisionHandler.h"
 #include "Util/Timer.h"
 #include "ClientCommon/ClientEnum.h"
+#include "QuadTree/QuadTree.h"
 
 using namespace System;
 using namespace Util;
@@ -16,6 +17,7 @@ class PlayerCursor;
 class TowerBullet;
 class Enemy;
 class Target;
+class QuadTree;
 class FieldLevel : public Level
 {
 	RTTI_DECLARATIONS(FieldLevel, Level)
@@ -36,7 +38,6 @@ public:
 	void CheckCollision_PlayerCursor_TowerActors();
 	void CheckCollision_TowerBullet_Enemies();
 	void CheckCollision_TowerBullet_Walls();
-	void CheckCollision_Enemies_Walls();//for _DEBUG ONLY
 	void CheckCollision_Enemies_Target();
 	void CheckCollision_Enemies_TowerBoundaries();
 public:
@@ -46,6 +47,7 @@ private:
 	PlayerCursor* m_pCursor = nullptr;
 	Target* m_pTarget = nullptr;
 private:
+	System::QuadTree m_QuadTree;
 	Timer m_PreRoundTimer;
 	Timer m_SpawnEnemyTimer;
 private:

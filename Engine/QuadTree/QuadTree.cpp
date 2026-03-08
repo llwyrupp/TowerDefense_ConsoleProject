@@ -1,9 +1,9 @@
 #include "QuadTree.h"
-using namespace System;
 
+BEGIN(System)
 QuadTree::QuadTree(const Quadrant& _quadrant)
 {
-    m_Root = new QTNode(_quadrant);//0, 0, 150, 50
+    m_Root = new Area(_quadrant);//0, 0, 150, 50
 }
 
 QuadTree::~QuadTree()
@@ -11,40 +11,49 @@ QuadTree::~QuadTree()
     Safe_Delete(m_Root);
 }
 
-void QuadTree::InsertNode(QTNode* _qtNode)
+void QuadTree::ResetTree()
+{
+    if (m_Root != nullptr)
+    {
+        m_Root->Reset();
+    }
+}
+
+void QuadTree::InsertArea(Area* _Area)
 {
     if (!m_Root)
     {
         return;
     }
-    m_Root->Insert(_qtNode);
+    m_Root->Insert(_Area);
 }
 
-vector<QTNode*> QuadTree::Query(QTNode* _queryNode)
+vector<Area*> QuadTree::Query(Area* _queryArea)
 {
-    if (!_queryNode)
+    if (!_queryArea)
         return {};
 
-    vector<QTNode*> vecPossibleNodes;
-    //send over my(m_root's) quadrant, and the output vector(vecPossibleNodes)
-    m_Root->Query(_queryNode->GetMyQuadrant(), vecPossibleNodes);
+    vector<Area*> vecPossibleAreas;
+    //send over my(m_root's) quadrant, and the output vector(vecPossibleAreas)
+    m_Root->Query(_queryArea->GetMyQuadrant(), vecPossibleAreas);
 
-    vector<QTNode*> vecIntersects;
-    //we then loop through all possible nodes, seeking if any intersects with _querynode
-    for (QTNode* const node : vecPossibleNodes)
+    vector<Area*> vecIntersectingArea;
+    //we then loop through all possible areas, seeking if any intersects with _queryArea
+    for (Area* const area : vecPossibleAreas)
     {
-        for (QTNode* const point : node->GetAllNodes())
+        for (Area* const iter : area->GetAllAreas())
         {
-            //see if the query node's boundary(quadrant) intersects with my boundary(quadrant)
-            if (point->GetMyQuadrant().CheckIntersect(_queryNode->GetMyQuadrant()))
+            //see if the query area's boundary(quadrant) intersects with my boundary(quadrant)
+            if (iter->GetMyQuadrant().CheckIntersect(_queryArea->GetMyQuadrant()))
             {
-                //get the intersecting nodes.
-                vecIntersects.emplace_back(point);
+                //get the intersecting area.
+                vecIntersectingArea.emplace_back(iter);
                 continue;
             }
         }
     }
 
-    //return the intersecting nodes
-    return vecIntersects;
+    //return the intersecting areas
+    return vecIntersectingArea;
 }
+END
