@@ -25,7 +25,8 @@ enum class ENGINE_DLL E_LAYER {
 	E_ROAD = 5,
 	E_WALL = 6,
 	E_TARGET = 7,
-	E_ETCETERA = 8,
+	E_SPAWNPOINT = 8,
+	E_ETCETERA = 9,
 	E_MAX
 };
 END

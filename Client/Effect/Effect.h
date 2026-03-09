@@ -40,7 +40,7 @@ public:
 	Effect(const Vector2& position);
 
 	virtual void BeginPlay() override;
-	virtual virtual void Tick(float deltaTime) override;
+	virtual void Tick(float deltaTime) override;
 	virtual void Render() override;
 
 private:

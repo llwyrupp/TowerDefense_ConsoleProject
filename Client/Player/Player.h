@@ -35,6 +35,8 @@ private:
 	PlayerCursor* m_pCursor;
 	float m_fAccX = 0.f;
 	float m_fAccY = 0.f;
+	const float AccX = 1.f;
+	const float AccY = 1.f;
 	float m_fCursorSpeed = 0.f;
 private:
 	int m_iMoney = 0;

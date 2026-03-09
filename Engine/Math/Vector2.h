@@ -11,7 +11,7 @@ class ENGINE_DLL Vector2
 {
 public:
 	Vector2() = default;
-	Vector2(int iX, int iY);
+	Vector2(float _fX, float _fY);
 	Vector2(const Vector2& other);
 	Vector2& operator=(const Vector2& other);
 	~Vector2();
@@ -28,8 +28,8 @@ public:
 	operator COORD() const;//short vars.
 
 	void NormalizeVector();
-	int DotProduct(const Vector2& _other)const;
-	int CrossProduct(const Vector2& _other)const;
+	float DotProduct(const Vector2& _other)const;
+	float CrossProduct(const Vector2& _other)const;
 
 
 	//default vectors.
@@ -39,8 +39,8 @@ public:
 	static Vector2 Right;
 
 public:
-	int m_iX = 0;
-	int m_iY = 0;
+	float m_fX = 0;
+	float m_fY = 0;
 private:
 
 	char* m_pString = nullptr;

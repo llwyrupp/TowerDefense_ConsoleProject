@@ -25,11 +25,11 @@ public:
 	inline void SetDamage(int _damage) { m_iDamage = _damage; }
 private:
 	Vector2 m_vDir = Vector2::Zero;
-	float m_fSpeed = 0.f;
+	float m_fSpeed = 50.f;
 	float m_fX = 0.f;
 	float m_fY = 0.f;
-	const float AccX = 5.f;
-	const float AccY = 5.f;
+	const float AccX = 2.f;
+	const float AccY = 2.f;
 	int m_iDamage = 0;
 };
 

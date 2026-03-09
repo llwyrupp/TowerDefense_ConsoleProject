@@ -42,6 +42,7 @@ public:
 	inline Level* GetLevel() const { return m_pLevel; }
 
 	inline bool Get_HasBegunPlay() const { return m_bHasBegunPlay; }
+	inline void Set_HasBegunPlay(bool _bFlag) { m_bHasBegunPlay = _bFlag; }
 	inline bool IsActive() const { return m_bHasBegunPlay; }
 	inline bool Get_IsDestroyRequested() const { return m_bIsDestroyRequested; }
 	inline void Set_IsDestroyRequested(bool _bFlag) { m_bIsDestroyRequested = _bFlag; }
@@ -62,16 +63,15 @@ public:
 
 	inline Area* GetArea() const { return m_pArea; }
 protected:
-	//beginplay에 들어가면 세팅되는 플래그값
+	//set to true when enters beginplay()
 	bool m_bHasBegunPlay = false;
-
-	//활성화상태?
+	//is this actor active?
 	bool m_bIsActive = true;
 
-	//현재 프레임에 삭제요청 받았는지 확인하는 용도
+	//is this actor requested to be destroyed in current frame?
 	bool m_bIsDestroyRequested = false;
 
-	//액터 풀을 사용하는지 확인
+	//is this actor going to be created via actorpool?
 	bool m_bIsUsingActorPool = false;
 
 	//letter to draw(image)
@@ -92,7 +92,7 @@ protected:
 	//color of letter
 	Color m_eColor = Color::eWhite;
 
-	//종속된 레벨
+	//the level this actor belongs to (the level which this actor will be managed by)
 	Level* m_pLevel = nullptr;
 
 	//member for quadtree

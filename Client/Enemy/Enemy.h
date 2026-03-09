@@ -26,11 +26,13 @@ public:
 	inline int GetMoney() const { return m_iMoney; }
 	inline int GetHP() const { return m_iHP; }
 	inline void SetHP(int _hp) { m_iHP = _hp; }
+	void ProcessNextPos();
 	void SetEnemyInfo(E_TYPE_ENEMY _type);
+	bool CheckIfPastDest();
 private:
 	int m_iHP = 0;
 	int m_iMoney = 0;
-	float m_fSpeed = 0.f;
+	float m_fSpeed = 40.f;
 	float m_fX = 0.f;
 	float m_fY = 0.f;
 	const float AccX = 5.f;

@@ -17,6 +17,7 @@ public:
 public:
 	void Push(Actor* _pActor);
 	Actor* Pop(size_t _szTypeID);
+	size_t GetPoolSize(size_t _szID) const;
 private:
 	unordered_map<size_t,queue<Actor*>> m_mapPool;
 };

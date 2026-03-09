@@ -49,39 +49,40 @@ void Player::Tick(float _fDeltaTime)
 	if (InputMgr::Get_Instance().GetKey(VK_UP))
 	{
 		m_fAccY -= _fDeltaTime * m_fCursorSpeed;
-		if (m_fAccY <= -1.f)
+		if (m_fAccY <= -AccY)
 		{
 			m_fAccY = 0.f;
-			--newPos.m_iY;
+			newPos.m_fY -= 1.f;
 		}
 	}
 	if (InputMgr::Get_Instance().GetKey(VK_DOWN))
 	{
 		m_fAccY += _fDeltaTime * m_fCursorSpeed;
-		if (m_fAccY >= 1.f)
+		if (m_fAccY >= AccY)
 		{
 			m_fAccY = 0.f;
-			++newPos.m_iY;
+			newPos.m_fY += 1.f;
 		}
 	}
 	if (InputMgr::Get_Instance().GetKey(VK_LEFT))
 	{
 		m_fAccX -= _fDeltaTime * m_fCursorSpeed;
-		if (m_fAccX <= -1.f)
+		if (m_fAccX <= -AccX)
 		{
 			m_fAccX = 0.f;
-			--newPos.m_iX;
+			newPos.m_fX -= 1.f;
 		}
 	}
 	if (InputMgr::Get_Instance().GetKey(VK_RIGHT))
 	{
 		m_fAccX += _fDeltaTime * m_fCursorSpeed;
-		if (m_fAccX >= 1.f)
+		if (m_fAccX >= AccX)
 		{
 			m_fAccX = 0.f;
-			++newPos.m_iX;
+			newPos.m_fX += 1.f;
 		}
 	}
+	
 	m_pCursor->SetPos(newPos);
 
 	if (InputMgr::Get_Instance().GetKeyDown('1'))
@@ -148,12 +149,12 @@ void Player::Render()
 			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
 		break;
 	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
-		tempStr = "ShotgunTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() >= 0 ?
-			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
+		tempStr = "ShotgunTower Cooldown: " + to_string(m_Cooldown[1].GetTargetTime() - m_Cooldown[1].GetElapsedTime() >= 0 ?
+			m_Cooldown[1].GetTargetTime() - m_Cooldown[1].GetElapsedTime() : 0) + "s";
 		break;
 	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
-		tempStr = "MachinegunTower Cooldown: " + to_string(m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() >= 0 ?
-			m_Cooldown[0].GetTargetTime() - m_Cooldown[0].GetElapsedTime() : 0) + "s";
+		tempStr = "MachinegunTower Cooldown: " + to_string(m_Cooldown[2].GetTargetTime() - m_Cooldown[2].GetElapsedTime() >= 0 ?
+			m_Cooldown[2].GetTargetTime() - m_Cooldown[2].GetElapsedTime() : 0) + "s";
 		break;
 	}
 

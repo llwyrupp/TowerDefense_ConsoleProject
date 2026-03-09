@@ -4,7 +4,6 @@
 #include "Enemy/Enemy.h"
 #include "Graphics/Renderer/Renderer.h"
 #include "QuadTree/Area.h"
-#include <numbers>
 
 using namespace System;
 
@@ -38,8 +37,8 @@ Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 		int iRadius = static_cast<int>(m_fBoundary);
 		Vector2 vPos = GetPos();
 		//update width and height as the boundary
-		//m_pArea->SetMyQuadrantPos(vPos.m_iX, vPos.m_iY);
-		m_pArea->SetMyQuadrantWidthHeight(vPos.m_iY + iRadius * 2, vPos.m_iX + iRadius);
+		//m_pArea->SetMyQuadrantPos(vPos.m_fX, vPos.m_fY);
+		m_pArea->SetMyQuadrantWidthHeight(static_cast<int>(vPos.m_fY) + iRadius * 2, static_cast<int>(vPos.m_fX) + iRadius);
 	}
 }
 
@@ -92,7 +91,7 @@ void Tower::Tick(float _fDeltaTime)
 			
 
 			//get distance between tower and enemy
-			float fDist = static_cast<float>(sqrt(vDir.m_iX * vDir.m_iX + vDir.m_iY * vDir.m_iY));
+			float fDist = sqrtf(vDir.m_fX * vDir.m_fX + vDir.m_fY * vDir.m_fY);
 
 			if (fDist >= m_fBoundary)
 			{
@@ -115,36 +114,36 @@ void Tower::Render()
 	//draw top
 	int iBoundary = static_cast<int>(m_fBoundary);
 	Vector2 vPos = GetPos();
-	vPos.m_iX -= iBoundary * 2;
-	vPos.m_iY -= iBoundary;
+	vPos.m_fX -= m_fBoundary * 2.f;
+	vPos.m_fY -= m_fBoundary;
 
 	//draw top
 	for (int i = 0; i < iBoundary * 4; ++i)
 	{
-		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_iX + i, vPos.m_iY), Color::eYellow, 1);
+		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX + i, vPos.m_fY), Color::eYellow, 1);
 	}
 
 	//draw left
 	for (int i = 0; i < iBoundary * 2; ++i)
 	{
-		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_iX, vPos.m_iY + i), Color::eYellow, 1);
+		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX, vPos.m_fY + i), Color::eYellow, 1);
 	}
 
-	vPos.m_iY += iBoundary * 2;
+	vPos.m_fY += iBoundary * 2;
 	//draw bottom
 	for (int i = 0; i < iBoundary * 4; ++i)
 	{
-		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_iX + i, vPos.m_iY), Color::eYellow, 1);
+		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX + i, vPos.m_fY), Color::eYellow, 1);
 	}
 
 	//go back to topmost y pos.
-	vPos.m_iY -= iBoundary * 2;
+	vPos.m_fY -= iBoundary * 2;
 	//go to rightmost x pos
-	vPos.m_iX += iBoundary * 4;
+	vPos.m_fX += iBoundary * 4;
 	//draw right
 	for (int i = 0; i < iBoundary * 2; ++i)
 	{
-		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_iX, vPos.m_iY + i), Color::eYellow, 1);
+		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX, vPos.m_fY + i), Color::eYellow, 1);
 	}
 
 
@@ -156,8 +155,8 @@ void Tower::Render()
 	//	m_vPosBoundary[i] = GetPos();
 	//}
 
-	////x = m_iX + Radius * cos(@);
-	////y = m_iY + Radius * sin(@);
+	////x = m_fX + Radius * cos(@);
+	////y = m_fY + Radius * sin(@);
 
 	//float fRadius = m_fBoundary;
 	//for (int i = 0; i < 12; ++i)
@@ -165,38 +164,37 @@ void Tower::Render()
 	//	// index * 30.f
 	//	float fAngles = i * 30.f;
 	//	float fRadians = ConvertToRadians(fAngles);
-	//	m_vPosBoundary[i].m_iX += static_cast<int>(fRadius * cosf(fRadians));
-	//	m_vPosBoundary[i].m_iY += static_cast<int>(fRadius * sinf(fRadians));
+	//	m_vPosBoundary[i].m_fX += static_cast<int>(fRadius * cosf(fRadians));
+	//	m_vPosBoundary[i].m_fY += static_cast<int>(fRadius * sinf(fRadians));
 	//}
 
 	//for (int i = 0; i < 12; ++i)
 	//{
-	//	Renderer::Get_Instance().Submit(tempStr, Vector2(m_vPosBoundary[i].m_iX, m_vPosBoundary[i].m_iY), Color::eYellow, 1);
+	//	Renderer::Get_Instance().Submit(tempStr, Vector2(m_vPosBoundary[i].m_fX, m_vPosBoundary[i].m_fY), Color::eYellow, 1);
 	//}
 }
 
 bool Tower::CheckIsActorInTowerBoundary(const Actor* _other)
 {
 	Vector2 vCenter = GetPos();
-	int iRadius = static_cast<int>(m_fBoundary);
 
-	int iMinX_This = vCenter.m_iX - (iRadius * 2), iMaxX_This = vCenter.m_iX + (iRadius * 2),//extend width range by twice
-		iMinY_This = vCenter.m_iY - iRadius, iMaxY_This = vCenter.m_iY + iRadius,
-		iMinX_Other = _other->GetRect().left, iMaxX_Other = _other->GetRect().right,
-		iMinY_Other = _other->GetRect().top, iMaxY_Other = _other->GetRect().bottom;
+	float fMinX_This = vCenter.m_fX - (m_fBoundary * 2.f), fMaxX_This = vCenter.m_fX + (m_fBoundary * 2.f),//extend width range by twice
+		fMinY_This = vCenter.m_fY - m_fBoundary, fMaxY_This = vCenter.m_fY + m_fBoundary,
+		fMinX_Other = static_cast<float>(_other->GetRect().left), fMaxX_Other = static_cast<float>(_other->GetRect().right),
+		fMinY_Other = static_cast<float>(_other->GetRect().top), fMaxY_Other = static_cast<float>(_other->GetRect().bottom);
 
 	//check if two intersects.
 
-	if (iMaxX_This <= iMinX_Other)
+	if (fMaxX_This <= fMinX_Other)
 		return false;
 
-	if (iMaxX_Other <= iMinX_This)
+	if (fMaxX_Other <= fMinX_This)
 		return false;
 
-	if (iMaxY_This <= iMinY_Other)
+	if (fMaxY_This <= fMinY_Other)
 		return false;
 
-	if (iMaxY_Other <= iMinY_This)
+	if (fMaxY_Other <= fMinY_This)
 		return false;
 
 	return true;

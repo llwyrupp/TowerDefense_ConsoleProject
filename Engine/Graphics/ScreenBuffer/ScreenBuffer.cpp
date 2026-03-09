@@ -33,8 +33,8 @@ ScreenBuffer::ScreenBuffer(const Vector2& vScreenSize)
 	SMALL_RECT rect;
 	rect.Left = 0;
 	rect.Top = 0;
-	rect.Right = static_cast<short>(m_vScreenSize.m_iX - 1);
-	rect.Bottom = static_cast<short>(m_vScreenSize.m_iY - 1);
+	rect.Right = static_cast<short>(m_vScreenSize.m_fX - 1.f);
+	rect.Bottom = static_cast<short>(m_vScreenSize.m_fY - 1.f);
 
 	if (!SetConsoleWindowInfo(m_hBuffer, true, &rect))
 	{
@@ -79,7 +79,7 @@ void ScreenBuffer::Clear_Buffer()
 	FillConsoleOutputCharacterA(
 		m_hBuffer,
 		' ',
-		m_vScreenSize.m_iX * m_vScreenSize.m_iY,
+		static_cast<DWORD>(m_vScreenSize.m_fX * m_vScreenSize.m_fY),
 		Vector2::Zero,
 		&dwWrittenCount
 	);
@@ -90,8 +90,8 @@ void ScreenBuffer::Draw_Char(CHAR_INFO* chInfo)
 	SMALL_RECT stWriteRegion = {};
 	stWriteRegion.Left = 0;
 	stWriteRegion.Top = 0;
-	stWriteRegion.Right = static_cast<short>(m_vScreenSize.m_iX - 1);
-	stWriteRegion.Bottom = static_cast<short>(m_vScreenSize.m_iY - 1);
+	stWriteRegion.Right = static_cast<short>(m_vScreenSize.m_fX - 1.f);
+	stWriteRegion.Bottom = static_cast<short>(m_vScreenSize.m_fY - 1.f);
 
 	// 버퍼에 전달 받은 글자 배열 설정.
 	WriteConsoleOutputA(

@@ -22,7 +22,7 @@ public:
 	template<typename T>
 	T* SpawnActor(const Vector2& _vPos) {
 		// 1. Try to pull an actor of type T from the pool using its RTTI ID
-		Actor* pPooledActor = m_pActorPool->Pop(T::TypeIdClass());
+		Actor* pPooledActor = m_pActorPool->Pop(T::GetType());
 		T* pActor = nullptr;
 		// 2. We found one! Reuse it.
 		if (pPooledActor != nullptr)
@@ -31,16 +31,19 @@ public:
 			pActor->Set_IsDestroyRequested(false);//init status
 		}
 		// 3. Pool was empty, create a brand new one
-		else if(pActor == nullptr)
+		
+		else if(pPooledActor == nullptr)
 		{
 			pActor = new T();//if there is none in the queue, make a new one
-			pActor->Set_IsUsingActorPool(true);
 			pActor->Set_IsDestroyRequested(false);
 		}
 		// 4. Set common data and register it to the active level
+		pActor->Set_IsUsingActorPool(true);
 		pActor->SetPos(_vPos);
+		pActor->Set_HasBegunPlay(true);
 		AddNewActor(pActor);
-
+		//beginplay AFTER LevelOwner is set.
+		pActor->BeginPlay();//always initialize after spawning!! IMPORTANTE
 		return pActor;
 	}
 public:

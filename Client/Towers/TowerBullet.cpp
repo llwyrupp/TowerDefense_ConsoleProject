@@ -38,6 +38,8 @@ void TowerBullet::OnCollisionEnter2D(Actor* _pActor)
 void TowerBullet::BeginPlay()
 {
 	super::BeginPlay();
+
+	//initialize re-spawned bullets, if necessary
 }
 
 void TowerBullet::Tick(float _fDeltaTime)
@@ -45,28 +47,30 @@ void TowerBullet::Tick(float _fDeltaTime)
 	super::Tick(_fDeltaTime);
 
 	Vector2 vNewPos = GetPos();
-	m_fX += static_cast<float>(m_vDir.m_iX) * _fDeltaTime * m_fSpeed;
+	m_fX += m_vDir.m_fX * _fDeltaTime * m_fSpeed;
+
 	if (m_fX >= AccX)
 	{
-		vNewPos.m_iX += 1;
 		m_fX = 0.f;
+		vNewPos.m_fX += 1.f;
 	}
 	else if (m_fX <= -AccX)
 	{
-		vNewPos.m_iX -= 1;
 		m_fX = 0.f;
+		vNewPos.m_fX -= 1.f;
 	}
 
-	m_fY += static_cast<float>(m_vDir.m_iY) * _fDeltaTime * m_fSpeed;
+	m_fY += m_vDir.m_fY * _fDeltaTime * m_fSpeed;
+
 	if (m_fY >= AccY)
 	{
-		vNewPos.m_iY += 1;
 		m_fY = 0.f;
+		vNewPos.m_fY += 1.f;
 	}
 	else if (m_fY <= -AccY)
 	{
-		vNewPos.m_iY -= 1;
 		m_fY = 0.f;
+		vNewPos.m_fY -= 1.f;
 	}
 
 	SetPos(vNewPos);
@@ -77,7 +81,7 @@ void TowerBullet::Render()
 {
 	super::Render();
 
-	/*string tempStr = "bullet pos x: " + to_string(GetPos().m_iX);
+	/*string tempStr = "bullet pos x: " + to_string(GetPos().m_fX);
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 30), Color::eWhite);*/
 }
 

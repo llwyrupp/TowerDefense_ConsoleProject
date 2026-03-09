@@ -8,7 +8,7 @@ Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color c
 	:m_vPosition(vPos), m_eColor(color), m_eLayer(_eLayer), m_iHeight(1), m_iWidth(1)
 {
 	if (!pImage && !pPath) {
-		std::cerr << "============YOU NEED AT LEAST ONE: CHAR or PATH============" << this->GetType();
+		std::cerr << "============YOU NEED AT LEAST ONE: CHAR or PATH============" << this->GetTypeID();
 		__debugbreak();
 	}
 
@@ -27,7 +27,7 @@ Actor::Actor(const char* pImage, const char* pPath, const Vector2& vPos, Color c
 
 	UpdateRect();
 
-	m_pArea = new Area(Quadrant(vPos.m_iX, vPos.m_iY, m_iWidth, m_iHeight));
+	m_pArea = new Area(Quadrant(static_cast<int>(vPos.m_fX), static_cast<int>(vPos.m_fY), m_iWidth, m_iHeight));
 	m_pArea->SetActorOwner(this);
 }
 
@@ -57,13 +57,13 @@ void Actor::Render()
 		size_t szIndex = 0;
 		Vector2 newPos = GetPos();
 		//when rendering, use the console window coordinate system(X for width(col) and Y for height(row))
-		newPos.m_iX -= m_iWidth / 2;
-		newPos.m_iY -= m_iHeight / 2;
+		newPos.m_fX -= m_iWidth / 2;
+		newPos.m_fY -= m_iHeight / 2;
 		for (int iY = 0; iY < m_iHeight; ++iY)
 		{
 			if (szIndex >= m_vecStr_FieldLevel.size())
 				break;
-			++newPos.m_iY;
+			++newPos.m_fY;
 			//object with multiple strings will be drawn with the position as the center.
 			Renderer::Get_Instance().Submit(m_vecStr_FieldLevel[szIndex++], newPos, m_eColor, m_iSortingOrder);
 		}
@@ -89,19 +89,19 @@ void Actor::ChangeImage(const char* newImage)
 void Actor::UpdateRect()
 {
 	//OLD
-	/*m_rtSize.left = static_cast<long>(m_vPosition.m_iX);
-	m_rtSize.top = static_cast<long>(m_vPosition.m_iY);
-	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iWidth);
-	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iHeight);*/
+	/*m_rtSize.left = static_cast<long>(m_vPosition.m_fX);
+	m_rtSize.top = static_cast<long>(m_vPosition.m_fY);
+	m_rtSize.right = static_cast<long>(m_vPosition.m_fX + m_iWidth);
+	m_rtSize.bottom = static_cast<long>(m_vPosition.m_fY + m_iHeight);*/
 
-	m_rtSize.left = static_cast<long>(m_vPosition.m_iX);
-	m_rtSize.top = static_cast<long>(m_vPosition.m_iY);
-	m_rtSize.right = static_cast<long>(m_vPosition.m_iX + m_iWidth);
-	m_rtSize.bottom = static_cast<long>(m_vPosition.m_iY + m_iHeight);
+	m_rtSize.left = static_cast<long>(m_vPosition.m_fX);
+	m_rtSize.top = static_cast<long>(m_vPosition.m_fY);
+	m_rtSize.right = static_cast<long>(m_vPosition.m_fX + m_iWidth);
+	m_rtSize.bottom = static_cast<long>(m_vPosition.m_fY + m_iHeight);
 
 	//update area info for Quadtree
 	if(m_pArea)
-		m_pArea->SetMyQuadrantPos(m_vPosition.m_iX, m_vPosition.m_iY);
+		m_pArea->SetMyQuadrantPos(static_cast<int>(m_vPosition.m_fX), static_cast<int>(m_vPosition.m_fY));
 }
 
 bool Actor::CheckIntersect(const Actor* const _other)
@@ -128,8 +128,6 @@ bool Actor::CheckIntersect(const Actor* const _other)
 
 	//if collision skipped in a frame, check with previous position
 	Vector2 vDiff = m_vPosition - m_vPrevPosition;
-
-	vDiff
 
 	return true;
 }
@@ -160,14 +158,14 @@ bool Actor::CheckIntersect(const Actor* const _other)
 
 void Actor::SetPos(const Vector2& vNewPos)
 {
-	//변경하려는 위치가 현 위치와 동일하면 스킵.
+	//if my position is the same as the new pos, skip setpos
 	if (m_vPosition == vNewPos)
 		return;
 
-	//새 위치값으로 액터 위치 갱신
+	//update the actor's pos as the new pos
 	m_vPosition = vNewPos;
 	if (m_pArea)
-		m_pArea->SetMyQuadrantPos(vNewPos.m_iX, vNewPos.m_iY);
+		m_pArea->SetMyQuadrantPos(static_cast<int>(vNewPos.m_fX), static_cast<int>(vNewPos.m_fY));
 }
 
 void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeation in FieldLevel if its size is bigger than 1.
@@ -217,7 +215,6 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 	size_t szTotalLen = 0;
 	while (pToken) {
 		char pLine[MAX_STRING_LEN] = {};
-		//개행문자로 각 행의 문자열 분리 후 저장
 		sscanf_s(pToken, "%s", pLine, MAX_STRING_LEN);
 		szLen = strlen(pLine) + 1;
 
@@ -227,7 +224,6 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 		//strcpy_s(m_pImage + szTotalLen, szLen, pLine);
 		//szTotalLen += szLen;
 
-		//개행으로 문자열 분리
 		pToken = strtok_s(nullptr, "\n", &pContext);
 
 		++m_iHeight;

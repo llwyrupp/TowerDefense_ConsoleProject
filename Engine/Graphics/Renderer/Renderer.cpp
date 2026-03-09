@@ -9,12 +9,11 @@ Renderer* Renderer::m_pInstance = nullptr;
 #pragma region FRAME
 Renderer::tagFrame::tagFrame(int iBufCnt)
 {
-	//¹è¿­ »ý¼º ¹× ÃÊ±âÈ­(RAII)
-	charInfoArr = new CHAR_INFO[iBufCnt];//¸Þ¸ð¸® µ¿ÀûÇÒ´ç
+	charInfoArr = new CHAR_INFO[iBufCnt];//
 	memset(charInfoArr, 0, sizeof(CHAR_INFO) * iBufCnt);
 
 
-	pSortingOrderArr = new int[iBufCnt];//¸Þ¸ð¸® µ¿ÀûÇÒ´ç
+	pSortingOrderArr = new int[iBufCnt];//
 	memset(pSortingOrderArr, 0, sizeof(int) * iBufCnt);
 }
 
@@ -26,9 +25,8 @@ Renderer::tagFrame::~tagFrame()
 
 void Renderer::tagFrame::Clear(const Vector2& vScreenSize)
 {
-	//2Â÷¿ø ¹è¿­·Î ´Ù·ç´Â 1Â÷¿ø ¹è¿­À» µ¹¸é¼­ ¸ðµÎ blank(' ')·Î ¼¼ÆÃ
-	const int iWidth = vScreenSize.m_iX;
-	const int iHeight = vScreenSize.m_iY;
+	const int iWidth = static_cast<int>(vScreenSize.m_fX);
+	const int iHeight = static_cast<int>(vScreenSize.m_fY);
 
 	for (int iRow = 0; iRow < iHeight; ++iRow) {
 		for (int iCol = 0; iCol < iWidth; ++iCol) {
@@ -54,7 +52,7 @@ Renderer::Renderer(const Vector2& vScreenSize)
 {
 	m_pInstance = this;
 
-	const int iBufCnt = vScreenSize.m_iX * vScreenSize.m_iY;
+	const int iBufCnt = static_cast<int>(vScreenSize.m_fX * vScreenSize.m_fY);
 
 	m_pFrame = new FRAME(iBufCnt);
 
@@ -95,7 +93,7 @@ void Renderer::Render()
 			continue;
 
 		//if the y coordinate is out of screen, skip.
-		if (com.vPosition.m_iY < 0 || com.vPosition.m_iY >= m_vScreenSize.m_iY)
+		if (com.vPosition.m_fY < 0.f || com.vPosition.m_fY >= m_vScreenSize.m_fY)
 			continue;
 
 		//check validity of text
@@ -105,21 +103,21 @@ void Renderer::Render()
 
 
 		//print X
-		const int iStartX = com.vPosition.m_iX;
-		const int iEndX = com.vPosition.m_iX + iLen - 1;
-		if (iEndX < 0 || iStartX >= m_vScreenSize.m_iX)
+		const float fStartX = com.vPosition.m_fX;
+		const float fEndX = com.vPosition.m_fX + iLen - 1;
+		if (fEndX < 0 || fStartX >= m_vScreenSize.m_fX)
 			continue;
 
-		const int iVisibleStartX = iStartX < 0 ? 0 : iStartX;
-		const int iVisibleEndX = iEndX >= m_vScreenSize.m_iX ? m_vScreenSize.m_iX - 1 : iEndX;
+		const int iVisibleStartX = static_cast<int>(fStartX < 0.f ? 0.f : fStartX);
+		const int iVisibleEndX = static_cast<int>(fEndX >= m_vScreenSize.m_fX ? m_vScreenSize.m_fX - 1 : fEndX);
 
 		//render the visible parts only.
 		for (int i = iVisibleStartX; i <= iVisibleEndX; ++i) {
 			//srcidx: char index inside the string.
-			const int iSrcIdx = i - iStartX;
+			const int iSrcIdx = i - static_cast<int>(fStartX);
 
 			//2d array index.
-			const int iFrameIdx = (com.vPosition.m_iY * m_vScreenSize.m_iX) + i;
+			const int iFrameIdx = static_cast<int>(com.vPosition.m_fY * m_vScreenSize.m_fX) + i;
 
 			//compare sort priority
 			if (m_pFrame->pSortingOrderArr[iFrameIdx] > com.iSortingOrder)

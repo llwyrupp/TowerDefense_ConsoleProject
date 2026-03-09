@@ -16,6 +16,7 @@ enum class E_TYPE_ENEMY{
 	E_TYPE_SOLDIER = 0,//mid hp, mid speed
 	E_TYPE_TANKER = 1,//high hp, low speed
 	E_TYPE_ASSASSIN = 2,//low hp, high speed
+	//E_TYPE_BOSS = 3,//max HP, mid speed
 	E_TYPE_MAX
 };
 

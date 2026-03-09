@@ -36,7 +36,12 @@ Engine::Engine()
 
 
 	//create a renderer
-	m_pRenderer = new Renderer(Vector2(m_stSetting.iWidth, m_stSetting.iHeight));
+	m_pRenderer = new Renderer(
+		Vector2(
+			static_cast<float>(m_stSetting.iWidth), 
+			static_cast<float>(m_stSetting.iHeight)
+		)
+	);
 	
 
 

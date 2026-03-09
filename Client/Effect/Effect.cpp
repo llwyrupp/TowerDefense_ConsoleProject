@@ -32,13 +32,15 @@ Effect::Effect(const Vector2& position)
 {
 	m_iSortingOrder = 11;
 
-	int effectFrameImageLength = 6;
+	float effectFrameImageLength = 6.f;
 
-	int iX = GetPos().m_iX;
-	int iY = GetPos().m_iY;
-	SetPos(Vector2(iX < 0 ? effectFrameImageLength + iX : iX, iY));
+	float fX = GetPos().m_fX;
+	float fY = GetPos().m_fY;
+	SetPos(Vector2(fX < 0 ? effectFrameImageLength + fX : fX, fY));
 	SetPos(Vector2(
-		iX + effectFrameImageLength > Engine::Get_Instance().GetWidth() ? iX - effectFrameImageLength : iX, iY));
+		fX + effectFrameImageLength > static_cast<float>(Engine::Get_Instance().GetWidth()) ?
+		fX - effectFrameImageLength : fX, fY)
+	);
 
 	m_iEffSeqCnt = sizeof(sequence) / sizeof(sequence[0]);
 

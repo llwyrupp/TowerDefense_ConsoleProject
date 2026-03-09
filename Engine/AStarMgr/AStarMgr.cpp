@@ -51,9 +51,9 @@ AStarMgr::AStarMgr()
 
 AStarMgr::~AStarMgr()
 {
-	for (auto& const vec : m_vecNodes)
+	for (auto& vec : m_vecNodes)
 	{
-		for (auto& const node : vec)
+		for (auto& node : vec)
 		{
 			Safe_Delete(node);
 		}
@@ -66,7 +66,7 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 		return {};
 
 	ResetAllNodes();
-	SetRandomWeight();
+	//SetRandomWeight();
 
 	while (!m_OpenList.empty())
 	{
@@ -151,13 +151,15 @@ bool AStarMgr::IsInRange(int _col, int _row)//width, height
 		return false;
 
 	//check x, y outofbounds
-	if (_col <= 0 || _col >= m_iMapMaxWidth||
-		_row <= 0 || _row >= m_iMapMaxHeight)
+	if (_col < 0 || _col >= m_iMapMaxWidth||
+		_row < 0 || _row >= m_iMapMaxHeight)
 		return false;
 
 	//check tile type
+	//if next position is not ground or target
 	if (m_vecLayerType[_row][_col] != E_LAYER::E_GROUND && 
-		m_vecLayerType[_row][_col] != E_LAYER::E_TARGET)
+		m_vecLayerType[_row][_col] != E_LAYER::E_SPAWNPOINT &&
+		m_vecLayerType[_row][_col] != E_LAYER::E_TARGET )
 		return false;
 
 	return true;
@@ -173,9 +175,9 @@ void AStarMgr::ResetAllNodes()
 		}
 	}*/
 
-	for (auto& const vec : m_vecBestGCost)
+	for (auto& vec : m_vecBestGCost)
 	{
-		for (auto& const cost : vec)
+		for (auto& cost : vec)
 		{
 			cost = MaxGCost;
 		}
@@ -184,9 +186,9 @@ void AStarMgr::ResetAllNodes()
 
 void AStarMgr::SetRandomWeight()
 {
-	for (auto& const vec : m_vecNodes)
+	for (auto& vec : m_vecNodes)
 	{
-		for (auto& const node : vec)
+		for (auto& node : vec)
 		{
 			node->SetWeight(Util::RandomRange(0.f, 100.f));
 		}
@@ -195,7 +197,7 @@ void AStarMgr::SetRandomWeight()
 
 void AStarMgr::SetCurNodeLayerType(int _col, int _row, E_LAYER _layer)
 {
-	if (!m_vecLayerType.empty() && _layer != E_LAYER::E_NONE && _col < MaxWidth && _col > 0 && _row < MaxHeight && _row > 0)
+	if (!m_vecLayerType.empty() && _layer != E_LAYER::E_NONE && _col < MaxWidth && _col >= 0 && _row < MaxHeight && _row >= 0)
 	{
 		m_vecLayerType[_row][_col] = _layer;
 	}

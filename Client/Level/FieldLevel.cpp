@@ -89,7 +89,7 @@ void FieldLevel::Tick(float _fDeltaTime)
 		m_SpawnEnemyTimer.Tick(_fDeltaTime);
 		if (m_SpawnEnemyTimer.IsTimeOut())
 		{
-			int iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
+			size_t iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
 
 			if (m_iCurEnemySpawnPointIdx < static_cast<int>(m_vecEnemySpawnPoints.size()) &&
 				m_iTotalSpawnedEnemies < m_iMaxEnemiesPerRound)
@@ -142,10 +142,16 @@ void FieldLevel::Render()
 
 	/*tempStr = "Number of actors in m_vecActors: " + to_string(m_vecActors.size());
 	Renderer::Get_Instance().Submit(tempStr, Vector2(101, 20), Color::eWhite);*/
-	tempStr = "Number of TowerBullets in Layer: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)].size());
+	size_t iTypeID = TowerBullet::GetType();
+	tempStr = "TowerBullets in ActorPool: " + 
+		to_string(m_pActorPool->GetPoolSize(iTypeID));
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 21), Color::eWhite);
+
+	//TODO: replace with hp gauge
 	tempStr = "My Base HP: " + to_string(m_iCurBaseHP) + "/" + to_string(m_iMaxBaseHP);
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 22), Color::eGreen);
+	
+	
 	tempStr = "Enemies Remaining: " + to_string(m_iMaxEnemiesPerRound - m_iTotalSpawnedEnemies) + "/" + to_string(m_iMaxEnemiesPerRound);
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 25), Color::eWhite);
 }
@@ -169,7 +175,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 	size_t szLen = fread(pBuffer, sizeof(char), szFileSize, pFile);
 
 	int iIndex = 0;
-	Vector2 vPos;
+	Vector2 vPos = Vector2::Zero;
 	int iEnemyCnt = 0;
 	//read the file char by char.
 	while (iIndex < szFileSize) {
@@ -177,7 +183,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 
 		if (cLetter == '\n') {
 			//update pos.
-			vPos.m_iX = 0, ++vPos.m_iY;//initialize column index, increase row index.
+			vPos.m_fX = 0.f, ++vPos.m_fY;//initialize column index, increase row index.
 			//skip CRLF.
 			continue;
 		}
@@ -186,6 +192,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 		switch (cLetter)
 		{
 		case 'S'://spawn points
+			eLayer = E_LAYER::E_SPAWNPOINT;
 			m_vecEnemySpawnPoints.emplace_back(vPos);
 			break;
 		case '#':
@@ -193,7 +200,6 @@ void FieldLevel::LoadMap(const char* _pPath)
 			AddNewActor(new Road(vPos));
 			break;
 		case '.':
-		case 'G':
 			eLayer = E_LAYER::E_GROUND;
 			break;
 		case 'T':
@@ -205,11 +211,11 @@ void FieldLevel::LoadMap(const char* _pPath)
 			AddNewActor(new Wall(vPos));
 			break;
 		}
-		AStarMgr::Get_Instance().SetCurNodeLayerType(vPos.m_iX, vPos.m_iY, eLayer);
-		++vPos.m_iX;//increase column index
+		AStarMgr::Get_Instance().SetCurNodeLayerType(static_cast<int>(vPos.m_fX), static_cast<int>(vPos.m_fY), eLayer);
+		++vPos.m_fX;//increase column index
 	}
 
-	AStarMgr::Get_Instance().SetMapMaxSize(vPos.m_iY, vPos.m_iX);//HEIGHT(row) = 50, WIDTH(col) = 100
+	AStarMgr::Get_Instance().SetMapMaxSize(static_cast<int>(vPos.m_fY), static_cast<int>(vPos.m_fX));//HEIGHT(row) = 50, WIDTH(col) = 100
 
 	Safe_Delete_Arr(pBuffer);
 	fclose(pFile);
