@@ -4,20 +4,24 @@
 #include "Enemy/Enemy.h"
 #include "Graphics/Renderer/Renderer.h"
 #include "QuadTree/Area.h"
+#include "EngineCommon/Engine_Defines.h"
+#include "Util/Util.h"
+
 
 using namespace System;
+using namespace Util;
 
 Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 	:super(nullptr, pPath, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWER)
 {
 	m_tInfo.eType = _eType;
-	m_iSortingOrder = 2;
+	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_TOWER);
 
 	//TODO: needs to vary by the tower's type.
 	switch (_eType)
 	{
 	case E_TYPE_TOWER::E_TYPE_RIFLE:
-		m_fBoundary = 6.f;
+		m_fBoundary = 8.f;
 		m_FireTimer.SetTargetTime(1.f);
 		break;
 	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
@@ -25,7 +29,7 @@ Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 		m_FireTimer.SetTargetTime(2.f);
 		break;
 	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
-		m_fBoundary = 6.f;
+		m_fBoundary = 7.f;
 		m_FireTimer.SetTargetTime(0.5f);
 		break;
 	}
@@ -58,16 +62,19 @@ void Tower::Tick(float _fDeltaTime)
 	switch (m_eCurState)
 	{
 	case E_TOWER_STATE::E_IDLE:
-
+		//idle logic if necessary
 		break;
 	case E_TOWER_STATE::E_ATTACK:
 		
 		if (m_FireTimer.IsTimeOut() && m_pTarget != nullptr)
 		{
 			m_FireTimer.ResetTime();
-			TowerBullet* pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
-			Vector2 vDir = m_pTarget->GetPos() - GetPos();
 
+			TowerBullet* pBullet = nullptr;
+
+			//get bullet's direction vector
+			Vector2 vDir = m_pTarget->GetPos() - GetPos();
+			
 			if (vDir == Vector2::Zero || m_pTarget->Get_IsDestroyRequested())
 			{
 				m_eCurState = E_TOWER_STATE::E_IDLE;
@@ -75,28 +82,68 @@ void Tower::Tick(float _fDeltaTime)
 				return;
 			}
 
-			pBullet->SetDir(vDir);
 			switch (m_tInfo.eType)
 			{
 			case E_TYPE_TOWER::E_TYPE_RIFLE:
-				pBullet->SetDamage(10);
+				{
+					//normalize vector.
+					//vDir.NormalizeVector();
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet->SetDamage(10);
+					pBullet->SetDir(vDir);
+				}
 				break;
 			case E_TYPE_TOWER::E_TYPE_SHOTGUN:
-				pBullet->SetDamage(30);
+				{
+					//find the angle between myself(the tower) and the target
+					float fAngle = atan2(m_pTarget->GetPos().m_fY - GetPos().m_fY, m_pTarget->GetPos().m_fX - GetPos().m_fX);
+					float fRadiansCenter = ConvertToRadians(fAngle);
+					float fRadianLeft = fRadiansCenter - ConvertToRadians(30.f);
+					float fRadianRight = fRadiansCenter + ConvertToRadians(30.f);
+
+
+					//second bullet (30 degrees to left)
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet->SetDamage(15);
+					vDir = Vector2(cosf(fRadianLeft), sinf(fRadianLeft));
+					pBullet->SetDir(vDir);
+
+					//third bullet (30 degrees to right)
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet->SetDamage(15);
+					vDir = Vector2(cosf(fRadianRight), sinf(fRadianRight));
+					pBullet->SetDir(vDir);
+
+					//first bullet (center)
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet->SetDamage(15);
+					vDir = Vector2(cosf(fRadiansCenter), sinf(fRadiansCenter));
+					pBullet->SetDir(vDir);
+				}
 				break;
 			case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
-				pBullet->SetDamage(50);
+				{
+					//normalize vector.
+					//vDir.NormalizeVector();
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet->SetDamage(20);
+					pBullet->SetDir(vDir);
+				}
 				break;
 			}
 			
-
+			//OnCollisionExit2D()
 			//get distance between tower and enemy
 			float fDist = sqrtf(vDir.m_fX * vDir.m_fX + vDir.m_fY * vDir.m_fY);
 
+			//logic for exiting tower boundary
 			if (fDist >= m_fBoundary)
 			{
+				//set tower state to idle for the next attack
 				m_eCurState = E_TOWER_STATE::E_IDLE;
+				//nullify the target for the next attack
 				m_pTarget = nullptr;
+				return;
 			}
 		}
 		break;
@@ -114,33 +161,34 @@ void Tower::Render()
 	//draw top
 	int iBoundary = static_cast<int>(m_fBoundary);
 	Vector2 vPos = GetPos();
+	//move position to left-top position
 	vPos.m_fX -= m_fBoundary * 2.f;
 	vPos.m_fY -= m_fBoundary;
 
-	//draw top
+	//draw top line(left to right)
 	for (int i = 0; i < iBoundary * 4; ++i)
 	{
 		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX + i, vPos.m_fY), Color::eYellow, 1);
 	}
 
-	//draw left
+	//draw left(top to bottom)
 	for (int i = 0; i < iBoundary * 2; ++i)
 	{
 		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX, vPos.m_fY + i), Color::eYellow, 1);
 	}
 
+	//move position from top-left to bottom-left
 	vPos.m_fY += iBoundary * 2;
-	//draw bottom
+	//draw right
 	for (int i = 0; i < iBoundary * 4; ++i)
 	{
 		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX + i, vPos.m_fY), Color::eYellow, 1);
 	}
 
-	//go back to topmost y pos.
+	//move position to top-right
 	vPos.m_fY -= iBoundary * 2;
-	//go to rightmost x pos
 	vPos.m_fX += iBoundary * 4;
-	//draw right
+	//draw bottom
 	for (int i = 0; i < iBoundary * 2; ++i)
 	{
 		Renderer::Get_Instance().Submit(tempStr, Vector2(vPos.m_fX, vPos.m_fY + i), Color::eYellow, 1);
@@ -198,11 +246,6 @@ bool Tower::CheckIsActorInTowerBoundary(const Actor* _other)
 		return false;
 
 	return true;
-}
-
-float Tower::ConvertToRadians(float _degree)
-{
-	return _degree * (3.14159265358979323846f / 180.f);
 }
 
 void Tower::OnCollisionEnter2D(Actor* _pActor)

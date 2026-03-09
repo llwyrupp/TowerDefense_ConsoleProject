@@ -31,7 +31,6 @@ public:
 	void OnCollisionEnter2D(Actor* _pActor) override;
 public:
 	bool CheckIsActorInTowerBoundary(const Actor* _other);
-	float ConvertToRadians(float _degree);
 private:
 	TOWERINFO m_tInfo = {};
 	//Vector2 m_vTarget = Vector2::Zero;

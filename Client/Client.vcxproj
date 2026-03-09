@@ -101,7 +101,7 @@
     <ClCompile Include="Level\FieldLevel.cpp" />
     <ClCompile Include="Player\PlayerCursor.cpp" />
     <ClCompile Include="Player\Player.cpp" />
-    <ClCompile Include="Environment\Road.cpp" />
+    <ClCompile Include="Environment\Barricade.cpp" />
     <ClCompile Include="Target\Target.cpp" />
     <ClCompile Include="Towers\Tower.cpp" />
     <ClCompile Include="Towers\TowerBullet.cpp" />
@@ -121,7 +121,7 @@
     <ClInclude Include="Level\FieldLevel.h" />
     <ClInclude Include="Player\PlayerCursor.h" />
     <ClInclude Include="Player\Player.h" />
-    <ClInclude Include="Environment\Road.h" />
+    <ClInclude Include="Environment\Barricade.h" />
     <ClInclude Include="Target\Target.h" />
     <ClInclude Include="Towers\Tower.h" />
     <ClInclude Include="Towers\TowerBullet.h" />

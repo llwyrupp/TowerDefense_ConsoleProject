@@ -34,4 +34,19 @@ enum class E_TYPE_GAMESTATE {
 	E_ROUND = 1,
 	E_MAX
 };
+
+enum class E_TYPE_SORTORDER {//the higher the number, render priority ascends.
+	E_NONE = -1,
+	E_GROUND = 0,
+	E_WALL = 0,
+	E_BARRICADE = 1,
+	E_TOWER = 2,
+	E_ENEMY = 4,
+	E_TOWERBULLET = 5,
+	E_TARGET = 7,
+	E_PLAYER = 8,
+
+	E_EFFECT = 11,
+	E_MAX
+};
 #endif

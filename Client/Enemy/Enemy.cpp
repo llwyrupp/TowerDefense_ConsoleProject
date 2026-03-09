@@ -4,6 +4,7 @@
 #include "Target/Target.h"
 #include "Math/Vector2.h"
 #include "EngineCommon/Engine_Function.h"
+#include "ClientCommon/ClientEnum.h"
 
 using namespace System;
 
@@ -12,7 +13,7 @@ using namespace System;
 Enemy::Enemy()
 	:super("@", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
 {
-	m_iSortingOrder = 5;
+	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_ENEMY);
 	m_bIsUsingActorPool = true;
 }
 

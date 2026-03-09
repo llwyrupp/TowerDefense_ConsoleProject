@@ -1,17 +1,17 @@
 #pragma once
-#ifndef __ROAD_H__
-#define __ROAD_H__
+#ifndef __BARRICADE_H__
+#define __BARRICADE_H__
 #include "Actor/Actor.h"
 #include "Math/Vector2.h"
 
 using namespace System;
 
-class Road : public Actor
+class Barricade : public Actor
 {
-	RTTI_DECLARATIONS(Road, Actor)
+	RTTI_DECLARATIONS(Barricade, Actor)
 public:
-	Road(const Vector2& vPos);
-	virtual ~Road();
+	Barricade(const Vector2& vPos);
+	virtual ~Barricade();
 private:
 
 public:
@@ -21,4 +21,4 @@ public:
 
 };
 
-#endif
+#endif//!__BARRICADE_H__

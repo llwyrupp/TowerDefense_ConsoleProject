@@ -22,7 +22,7 @@ enum class ENGINE_DLL E_LAYER {
 	E_TOWER = 2,
 	E_TOWERBULLET = 3,
 	E_GROUND = 4,
-	E_ROAD = 5,
+	E_BARRICADE = 5,
 	E_WALL = 6,
 	E_TARGET = 7,
 	E_SPAWNPOINT = 8,

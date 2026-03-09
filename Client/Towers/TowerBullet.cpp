@@ -11,11 +11,13 @@ TowerBullet::TowerBullet()
 	:super("@", nullptr, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWERBULLET)
 {
 	m_bIsUsingActorPool = true;
+	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_TOWERBULLET);
 
 #ifdef _DEBUG
 	m_fSpeed = 50.f;
 #endif
 	m_fSpeed = 50.f;
+
 }
 
 TowerBullet::~TowerBullet()

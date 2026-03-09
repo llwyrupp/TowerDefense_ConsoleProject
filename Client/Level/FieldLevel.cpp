@@ -8,7 +8,7 @@
 #include "Towers/Tower.h"
 #include "Environment/Ground.h"
 #include "Environment/Wall.h"
-#include "Environment/Road.h"
+#include "Environment/Barricade.h"
 #include "Target/Target.h"
 #include "EngineCommon/Engine_Function.h"
 #include "Game/Game.h"
@@ -196,8 +196,8 @@ void FieldLevel::LoadMap(const char* _pPath)
 			m_vecEnemySpawnPoints.emplace_back(vPos);
 			break;
 		case '#':
-			eLayer = E_LAYER::E_ROAD;
-			AddNewActor(new Road(vPos));
+			eLayer = E_LAYER::E_BARRICADE;
+			AddNewActor(new Barricade(vPos));
 			break;
 		case '.':
 			eLayer = E_LAYER::E_GROUND;

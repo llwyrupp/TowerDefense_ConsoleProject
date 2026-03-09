@@ -49,7 +49,6 @@ T Clamp(T value, T min, T max)
 	return value;
 }
 
-
 #pragma endregion MEMORY
 END
 

@@ -11,6 +11,8 @@
 #define MAX_HEADER_LEN 24
 #define MAX_WIDTH_LEN 5
 
+#define PI 3.14159265358979323846f
+
 #define MAX_QUADTREE_DEPTH 5
 
 #ifdef _DEBUG

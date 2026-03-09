@@ -42,7 +42,7 @@
     <ClCompile Include="Environment\Ground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Environment\Road.cpp">
+    <ClCompile Include="Environment\Barricade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Target\Target.cpp">
@@ -89,7 +89,7 @@
     <ClInclude Include="Environment\Ground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Environment\Road.h">
+    <ClInclude Include="Environment\Barricade.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Target\Target.h">

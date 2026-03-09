@@ -1,5 +1,6 @@
 #include "Effect.h"
 #include "Engine/Engine.h"
+#include "ClientCommon/ClientEnum.h"
 
 static const Effect::EFFECTFRAME sequence[] =
 {
@@ -30,7 +31,8 @@ static const Effect::EFFECTFRAME sequence[] =
 Effect::Effect(const Vector2& position)
 	: super(sequence[0].frame, nullptr, position, Color::eRed)
 {
-	m_iSortingOrder = 11;
+	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_EFFECT);
+
 
 	float effectFrameImageLength = 6.f;
 

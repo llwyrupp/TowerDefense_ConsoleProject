@@ -54,6 +54,18 @@ inline float RandomRange(float fMin, float fMax) {
 }
 #pragma endregion RANDOM
 
+#pragma region ANGLES
+inline float ConvertToRadians(float _degree)
+{
+	return _degree * (PI / 180.f);
+}
+
+inline float ConvertToDegrees(float _radian)
+{
+	return _radian * (180.f / PI);
+}
+#pragma endregion ANGLES
+
 END
 
 #endif//!__UTIL_H__
