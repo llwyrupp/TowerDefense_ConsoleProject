@@ -28,6 +28,9 @@ public:
 	operator COORD() const;//short vars.
 
 	void NormalizeVector();
+	int DotProduct(const Vector2& _other)const;
+	int CrossProduct(const Vector2& _other)const;
+
 
 	//default vectors.
 	static Vector2 Zero;

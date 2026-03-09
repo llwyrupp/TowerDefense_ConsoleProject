@@ -89,4 +89,19 @@ void Vector2::NormalizeVector()
     }
 }
 
+int Vector2::DotProduct(const Vector2& _other) const
+{
+    //result > 0 : the vectors point in roughly the same direction (angle < 90)
+    //result = 0 : the vectors are perfectly perpendicular (angle = 90)
+    //result < 0 : the vectors point away from each other (angle > 90)
+    return (m_iX * _other.m_iX) + (m_iY * _other.m_iY);
+}
+
+int Vector2::CrossProduct(const Vector2& _other) const
+{
+    //vector that is perfectly perpendicular to both vectors
+    //returns an int value that will tell us if the point is perfectly lined up with the vector
+    return m_iX * _other.m_iY - m_iY * _other.m_iX;
+}
+
 END

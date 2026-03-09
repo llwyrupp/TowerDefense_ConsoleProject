@@ -202,7 +202,7 @@ E_AREA_INDEX Area::TestRegion_ReturnIndex(const Quadrant& _quadrant)
 	else if(vecIndices.size() == 1) {
 		return *vecIndices.begin();
 	}
-	//else if(vecIndices.size() > 1)
+	//else if(vecIndices.size() > 1)//if there is more than one index
 	return E_AREA_INDEX::E_STRADDLING;
 }
 

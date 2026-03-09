@@ -107,6 +107,7 @@ protected:
 
 private:
 	Vector2 m_vPosition;
+	Vector2 m_vPrevPosition;
 };
 
 END

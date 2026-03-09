@@ -217,9 +217,8 @@ void FieldLevel::LoadMap(const char* _pPath)
 
 bool FieldLevel::AddTower(E_TYPE_TOWER _eType)
 {
-	//TODO: enable after testing quadtree
-	/*if (!m_bCanPlaceTower)
-		return false;*/
+	if (!m_bCanPlaceTower)
+		return false;
 
 	Tower* pTower = nullptr;
 	const char* pPath = "";
@@ -262,10 +261,10 @@ void FieldLevel::GameOver()
 
 void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 {
+	//no need for quadtree queries
+
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
 		return;
-
-	
 
 	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 	{
@@ -282,32 +281,67 @@ void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
 
 void FieldLevel::CheckCollision_TowerBullet_Enemies()
 {
-	//m_QuadTree.ResetTree();
+	/*
+	insert the more numerous group(targets) into the tree,
+	and querying with the fewer or active group(seekers)
 
-	//
-	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	Targets: Enemies, Bullets, numerous entities
+	Seekers: Towers, Target Base, Walls
+
+	 1. Bounding Box Size (The "Pruning" Factor)
+	The rule: Insert the larger objects into the tree; Query with the smaller objects. (as in SIZE)
+	* Why: A small query (like a bullet) will only traverse a narrow path down the tree, visiting
+     very few nodes. A large query (like a giant AOE explosion or a large boss enemy) will
+     overlap many quadrants, forcing the tree to return many "possible" matches, which increases
+     the work for the final collision check.
+
+	2. The "Active" vs. "Passive" Logic
+	The rule: Query with the object that "owns" the collision logic.
+	 * Why: Usually, a bullet's job is to check if it hit an enemy, deal damage, and then destroy
+     itself. If you query with the bullet, the resulting code is cleaner:
+
+	3. Spatial Distribution
+	The rule: Insert the group that is more "statically" distributed across the map.
+	 * Why: If enemies are spread out across the whole map, the QuadTree's spatial partitioning
+     works perfectly. If all bullets are fired from a single point (like a machine gun), they
+     will all be querying the same branch of the tree, which is efficient for the CPU cache.
+
+	 The QuadTree's primary goal is to reduce the number of queries, 
+	 so when the "Few vs. Many" rule is broken, always query with the "Few."
+	*/
+
+	m_QuadTree->ResetTree();
+
+	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
 	{
-		m_QuadTree->InsertArea(bullet->GetArea());
+		if (enemy->Get_IsDestroyRequested())
+			continue;
+
+		m_QuadTree->InsertArea(enemy->GetArea());
 	}
-
-
-
 
 	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
 	{
 		if (bullet->Get_IsDestroyRequested())
 			continue;
 
-		for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+		vector<Area*> vecIntersects = m_QuadTree->Query(bullet->GetArea());
+
+		for (auto const enemy : vecIntersects)
 		{
-			if (enemy->Get_IsDestroyRequested())
+			Actor* pEnemy = enemy->GetActorOwner();
+
+			if (pEnemy == nullptr)
 				continue;
 
-			if (bullet->CheckIntersect(enemy))
-			{
-				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(enemy);
+			if (pEnemy->Get_IsDestroyRequested())
+				continue;
 
-				int iEnemyHP = dynamic_cast<Enemy*>(enemy)->GetHP();
+			if (bullet->CheckIntersect(pEnemy))
+			{
+				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(pEnemy);
+
+				int iEnemyHP = dynamic_cast<Enemy*>(pEnemy)->GetHP();
 				int iBulletDmg = dynamic_cast<TowerBullet*>(bullet)->GetDamage();
 				int iNewHP = iEnemyHP - iBulletDmg;
 				if (iNewHP <= 0)//enemy hp hits below zero -> enemy destroyed
@@ -315,56 +349,148 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 
 					if (m_pPlayer)
 					{
-						m_pPlayer->AddMoney(dynamic_cast<Enemy*>(enemy)->GetMoney());
+						m_pPlayer->AddMoney(dynamic_cast<Enemy*>(pEnemy)->GetMoney());
 					}
-					dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(bullet);
+					dynamic_cast<Enemy*>(pEnemy)->OnCollisionEnter2D(bullet);
 					//AddNewActor(new Effect(enemy->GetPos()));
 				}
 				else if (iNewHP > 0)//enemy still alive
 				{
-					dynamic_cast<Enemy*>(enemy)->SetHP(iNewHP);
+					dynamic_cast<Enemy*>(pEnemy)->SetHP(iNewHP);
 				}
 			}
 		}
 	}
+
+	//OLD
+	//for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	//{
+	//	if (bullet->Get_IsDestroyRequested())
+	//		continue;
+
+	//	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	//	{
+	//		if (enemy->Get_IsDestroyRequested())
+	//			continue;
+
+	//		if (bullet->CheckIntersect(enemy))
+	//		{
+	//			dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(enemy);
+
+	//			int iEnemyHP = dynamic_cast<Enemy*>(enemy)->GetHP();
+	//			int iBulletDmg = dynamic_cast<TowerBullet*>(bullet)->GetDamage();
+	//			int iNewHP = iEnemyHP - iBulletDmg;
+	//			if (iNewHP <= 0)//enemy hp hits below zero -> enemy destroyed
+	//			{
+
+	//				if (m_pPlayer)
+	//				{
+	//					m_pPlayer->AddMoney(dynamic_cast<Enemy*>(enemy)->GetMoney());
+	//				}
+	//				dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(bullet);
+	//				//AddNewActor(new Effect(enemy->GetPos()));
+	//			}
+	//			else if (iNewHP > 0)//enemy still alive
+	//			{
+	//				dynamic_cast<Enemy*>(enemy)->SetHP(iNewHP);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void FieldLevel::CheckCollision_TowerBullet_Walls()
 {
-	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	m_QuadTree->ResetTree();
+
+	for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
 	{
-		if (bullet->Get_IsDestroyRequested())
+		if (wall->Get_IsDestroyRequested())
 			continue;
 
-		for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
+		m_QuadTree->InsertArea(wall->GetArea());
+	}
+
+	for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	{
+		vector<Area*> vecIntersect = m_QuadTree->Query(bullet->GetArea());
+
+		for (auto const area : vecIntersect)
 		{
-			if (bullet->CheckIntersect(wall))
+			Actor* pWall = area->GetActorOwner();
+			if (bullet->CheckIntersect(pWall))
 			{
-				//wall stays.
-				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(wall);
+				if(bullet->IsTypeOf<TowerBullet>())
+					dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(pWall);
 			}
 		}
 	}
+
+	//OLD
+	//for (auto const bullet : m_vecLayers[static_cast<int>(E_LAYER::E_TOWERBULLET)])
+	//{
+	//	if (bullet->Get_IsDestroyRequested())
+	//		continue;
+
+	//	for (auto const wall : m_vecLayers[static_cast<int>(E_LAYER::E_WALL)])
+	//	{
+	//		if (bullet->CheckIntersect(wall))
+	//		{
+	//			//wall stays.
+	//			dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(wall);
+	//		}
+	//	}
+	//}
 }
 
 void FieldLevel::CheckCollision_Enemies_Target()
 {
+	//QQUADTREE DEBUG
+	m_QuadTree->ResetTree();
+
 	for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
 	{
 		if (enemy->Get_IsDestroyRequested())
 			continue;
 
-		if (enemy->CheckIntersect(m_pTarget))
+		m_QuadTree->InsertArea(enemy->GetArea());
+	}
+
+	vector<Area*> vecIntersect = m_QuadTree->Query(m_pTarget->GetArea());
+
+	for (auto const area : vecIntersect)
+	{
+		Actor* pEnemy = area->GetActorOwner();
+		if (pEnemy == nullptr)
+			continue;
+		if (m_pTarget->CheckIntersect(pEnemy))
 		{
-			dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(m_pTarget);
+			dynamic_cast<Enemy*>(pEnemy)->OnCollisionEnter2D(m_pTarget);
 			--m_iCurBaseHP;
 			if (m_iCurBaseHP <= 0)
 			{
-				//gameover
 				GameOver();
 			}
 		}
 	}
+
+	//OLD
+	//for (auto const enemy : m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)])
+	//{
+	//	if (enemy->Get_IsDestroyRequested())
+	//		continue;
+
+	//	if (enemy->CheckIntersect(m_pTarget))
+	//	{
+	//		dynamic_cast<Enemy*>(enemy)->OnCollisionEnter2D(m_pTarget);
+	//		--m_iCurBaseHP;
+	//		if (m_iCurBaseHP <= 0)
+	//		{
+	//			//gameover
+	//			GameOver();
+	//		}
+	//	}
+	//}
 }
 
 void FieldLevel::CheckCollision_Enemies_TowerBoundaries()

@@ -46,6 +46,7 @@ void Actor::Tick(float _fDeltaTime)
 {
 	//TODO: Common Actor Behaviour to be added if necessary.
 	UpdateRect();
+	m_vPrevPosition = m_vPosition;
 }
 
 void Actor::Render()
@@ -124,6 +125,11 @@ bool Actor::CheckIntersect(const Actor* const _other)
 
 	if (iMaxY_Other <= iMinY_This)
 		return false;
+
+	//if collision skipped in a frame, check with previous position
+	Vector2 vDiff = m_vPosition - m_vPrevPosition;
+
+	vDiff
 
 	return true;
 }
