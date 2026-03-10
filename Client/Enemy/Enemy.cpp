@@ -164,7 +164,7 @@ void Enemy::SetEnemyInfo(E_TYPE_ENEMY _type)
 		LoadString_FromFile("../Data/Enemy/Boss.txt");
 		m_strImg = "";
 		m_fSpeed = 10.f;
-		m_iHP = 5000;
+		m_iHP = 2000;
 		m_iMoney = 1000;
 		m_iDamage = 100;
 		break;
