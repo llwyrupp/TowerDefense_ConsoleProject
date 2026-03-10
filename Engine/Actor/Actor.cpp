@@ -73,12 +73,6 @@ void Actor::Render()
 void Actor::Destroy()
 {
 	m_bIsDestroyRequested = true;
-	OnDestroy();
-}
-
-void Actor::OnDestroy()
-{
-	//logic when actor is destroyed
 }
 
 void Actor::ChangeImage(const char* newImage)
@@ -106,11 +100,13 @@ void Actor::UpdateRect()
 
 bool Actor::CheckIntersect(const Actor* const _other)
 {
+	RECT rtOther = _other->GetRect();
+
 	//OLD
 	int iMinX_This = this->m_rtSize.left, iMaxX_This = this->m_rtSize.right,
 		iMinY_This = this->m_rtSize.top, iMaxY_This = this->m_rtSize.bottom,
-		iMinX_Other = _other->GetRect().left, iMaxX_Other = _other->GetRect().right,
-		iMinY_Other = _other->GetRect().top, iMaxY_Other = _other->GetRect().bottom;
+		iMinX_Other = rtOther.left, iMaxX_Other = rtOther.right,
+		iMinY_Other = rtOther.top, iMaxY_Other = rtOther.bottom;
 
 	//check if two intersects.
 
@@ -126,10 +122,41 @@ bool Actor::CheckIntersect(const Actor* const _other)
 	if (iMaxY_Other <= iMinY_This)
 		return false;
 
-	//if collision skipped in a frame, check with previous position
-	Vector2 vDiff = m_vPosition - m_vPrevPosition;
-
 	return true;
+}
+
+bool Actor::CheckIntersect_CrossDot(const Actor* const _other)
+{
+	//if collision skipped in a frame, check with previous position
+	//we use dot product to see if _other is in front of us or behind us.
+	//we use cross product to see if _other is on our left or on the right.
+	//cross product result > 0.f means _other is on the left of my path.
+	//result < 0.f means _other is on the right of my path.
+	//if result == 0.f, _other is exactly on the same line as my path.
+	Vector2 vPath = m_vPosition - m_vPrevPosition;
+	Vector2 vDirPrevToOther = _other->GetPos() - m_vPrevPosition;//AP
+	Vector2 vDirCurToOther = _other->GetPos() - m_vPosition;//BP
+	float fCrossProduct = vPath.CrossProduct(vDirPrevToOther);//AB cross AP
+	float fDot1 = vPath.DotProduct(vDirPrevToOther);//AB dot AP
+	float fDot2 = vPath.DotProduct(vDirCurToOther);//AB dot BP
+	float fDot3 = vDirPrevToOther.DotProduct(vDirCurToOther);//AP dot BP
+
+	if (fabsf(fCrossProduct) < EPSILON) //float cannot be exactly 0.0f. use epsilon instead.
+	{
+		//two vectors point same direction || two vectors point opposite dir
+		/*if (fDot1 > 0.f || fDot2 < 0.f || fDot3 > 0.f)
+		{
+			return true;
+		}*/
+		if (fabsf(fDot3) < EPSILON)
+			return true;
+	}
+	//else if (vDir1.DotProduct(vDir2) == 0.f)//two vectors perfectly perpendicular
+	//{
+
+	//}
+
+	return false;
 }
 
 //bool Actor::CheckIntersect_ByArea(const Area* const _other)
@@ -170,6 +197,8 @@ void Actor::SetPos(const Vector2& vNewPos)
 
 void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeation in FieldLevel if its size is bigger than 1.
 {
+	m_vecStr_FieldLevel.clear();
+
 	std::ifstream file(_pPath);
 
 	if (file.is_open())
@@ -182,59 +211,6 @@ void Actor::LoadString_FromFile(const char* _pPath)//read actor's representeatio
 		m_iWidth = static_cast<int>(m_vecStr_FieldLevel[0].length());
 		m_iHeight = static_cast<int>(m_vecStr_FieldLevel.size());
 	}
-
-	/*
-	FILE* pFile = nullptr;
-	fopen_s(&pFile, _pPath, "rt");
-	if (!pFile) {
-		cerr << "FAILED TO OPEN FILE"<< _pPath;
-		__debugbreak();
-	}
-
-	char cBuffer[MAX_STRING_LEN] = {};
-
-	size_t szLen = fread(cBuffer, sizeof(char), MAX_STRING_LEN, pFile);
-
-	if (szLen == 0) {
-		cerr << "No file at: "<< _pPath;
-		__debugbreak();
-	}
-
-	char* pToken = {};
-	char* pContext = {};
-	if (!m_pImage)
-	{
-		m_pImage = new char[MAX_STRING_LEN];
-		memset(m_pImage, 0, sizeof(char) * MAX_STRING_LEN);
-	}
-
-	//TODO: reserve dynamically
-	vecChars.reserve(MAX_STRING_LEN);
-
-	pToken = strtok_s(cBuffer, "\n", &pContext);//read the first line
-	size_t szTotalLen = 0;
-	while (pToken) {
-		char pLine[MAX_STRING_LEN] = {};
-		sscanf_s(pToken, "%s", pLine, MAX_STRING_LEN);
-		szLen = strlen(pLine) + 1;
-
-		strcat_s(m_pImage, sizeof(char) * MAX_STRING_LEN, pLine);
-		strcat_s(m_pImage, sizeof(char) * MAX_STRING_LEN, "\n");
-
-		//strcpy_s(m_pImage + szTotalLen, szLen, pLine);
-		//szTotalLen += szLen;
-
-		pToken = strtok_s(nullptr, "\n", &pContext);
-
-		++m_iHeight;
-	}
-
-	//remove the last '\n'
-	size_t szTempIdx = strlen(m_pImage) - 1;
-	m_pImage[szTempIdx] = '\0';
-
-	fclose(pFile);
-	*/
 }
 
 END

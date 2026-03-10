@@ -9,19 +9,20 @@
 Player::Player(PlayerCursor* _cursor)
 	:super("@", nullptr, Vector2::Zero, Color::eGreen, E_LAYER::E_PLAYER), m_pCursor(_cursor)
 {
-	m_iMoney = 1000;
+	m_iMoney = 6000;
 	m_eCurTowerType = E_TYPE_TOWER::E_TYPE_RIFLE;
 
 	m_iOwnTower[0] = 3;
 	m_iOwnTower[1] = 3;
 	m_iOwnTower[2] = 3;
-	m_iTowerPrice[0] = 100;
-	m_iTowerPrice[1] = 200;
-	m_iTowerPrice[2] = 300;
+
+	m_iTowerPrice[0] = 1000;
+	m_iTowerPrice[1] = 2000;
+	m_iTowerPrice[2] = 3000;
 
 	m_Cooldown[0].SetTargetTime(1.f);
-	m_Cooldown[1].SetTargetTime(10.f);
-	m_Cooldown[2].SetTargetTime(15.f);
+	m_Cooldown[1].SetTargetTime(5.f);
+	m_Cooldown[2].SetTargetTime(10.f);
 
 	m_fCursorSpeed = 30.f;
 }
@@ -99,7 +100,7 @@ void Player::Tick(float _fDeltaTime)
 	}
 
 	//if (InputMgr::Get_Instance().GetMouseButtonDown(0))
-	if(InputMgr::Get_Instance().GetKeyDown(VK_SPACE) && Check_EnoughMoney_TowerCooldown())
+	if(InputMgr::Get_Instance().GetKeyDown(VK_SPACE) && CheckCanPlaceTower(static_cast<int>(m_eCurTowerType)))
 	{
 		int iTower = static_cast<int>(m_eCurTowerType);
 		if (dynamic_cast<FieldLevel*>(m_pLevel)->AddTower(m_eCurTowerType))
@@ -161,18 +162,13 @@ void Player::Render()
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 11), Color::eGreen);
 }
 
-bool Player::Check_EnoughMoney_TowerCooldown()
+bool Player::Check_TowerCooldown(int _index)
 {
-	int iTower = static_cast<int>(m_eCurTowerType);
-	if (iTower >= static_cast<int>(E_TYPE_TOWER::E_TYPE_MAX))
+	//currently selected tower index check
+	if (_index >= static_cast<int>(E_TYPE_TOWER::E_TYPE_MAX))
 		return false;
 
-	if (m_iMoney < 0)
-	{
-		return false;
-	}
-
-	if (m_Cooldown[iTower].IsTimeOut() && m_iOwnTower[iTower] > 0 && m_iMoney - m_iTowerPrice[iTower] >= 0)
+	if (m_Cooldown[_index].IsTimeOut())
 	{
 		return true;
 	}
@@ -180,9 +176,29 @@ bool Player::Check_EnoughMoney_TowerCooldown()
 	return false;
 }
 
-bool Player::CheckCanPlaceTower()
+bool Player::Check_EnoughMoney(int _index)
 {
+	int iMoneyAfterPurchase = m_iMoney - m_iTowerPrice[_index];
+	if (iMoneyAfterPurchase >= 0)//if the money left over after purchasing the tower is above zero, we do have enough money.
+	{
+		return true;
+	}
 
+	return false;
+}
+
+bool Player::Check_EnoughTower(int _index)
+{
+	if (m_iOwnTower[_index] > 0)
+		return true;
+
+	return false;
+}
+
+bool Player::CheckCanPlaceTower(int _index)
+{
+	if (Check_EnoughMoney(_index) && Check_EnoughTower(_index) && Check_TowerCooldown(_index))
+		return true;
 
 	return false;
 }

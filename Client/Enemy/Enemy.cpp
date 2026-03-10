@@ -11,7 +11,7 @@ using namespace System;
 
 
 Enemy::Enemy()
-	:super("@", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
+	:super("1", nullptr, Vector2::Zero, Color::eRed, E_LAYER::E_ENEMY)
 {
 	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_ENEMY);
 	m_bIsUsingActorPool = true;
@@ -137,22 +137,36 @@ void Enemy::SetEnemyInfo(E_TYPE_ENEMY _type)
 	switch (_type)
 	{
 	case E_TYPE_ENEMY::E_TYPE_SOLDIER:
-		m_strImg = "A";
+		LoadString_FromFile("../Data/Enemy/Soldier.txt");
+		m_strImg = "";
 		m_fSpeed = 40.f;
-		m_iHP = 20;
+		m_iHP = 50;
 		m_iMoney = 10;
+		m_iDamage = 1;
 		break;
 	case E_TYPE_ENEMY::E_TYPE_TANKER:
-		m_strImg = "$";
+		LoadString_FromFile("../Data/Enemy/Tanker.txt");
+		m_strImg = "";
 		m_fSpeed = 30.f;
-		m_iHP = 70;
+		m_iHP = 100;
 		m_iMoney = 50;
+		m_iDamage = 2;
 		break;
 	case E_TYPE_ENEMY::E_TYPE_ASSASSIN:
-		m_strImg = "&";
+		LoadString_FromFile("../Data/Enemy/Assassin.txt");
+		m_strImg = "";
 		m_fSpeed = 50.f;
-		m_iHP = 40;
+		m_iHP = 20;
 		m_iMoney = 100;
+		m_iDamage = 5;
+		break;
+	case E_TYPE_ENEMY::E_TYPE_BOSS:
+		LoadString_FromFile("../Data/Enemy/Boss.txt");
+		m_strImg = "";
+		m_fSpeed = 10.f;
+		m_iHP = 5000;
+		m_iMoney = 1000;
+		m_iDamage = 100;
 		break;
 	}
 }

@@ -5,6 +5,7 @@
 #include "Interface/ICollisionHandler.h"
 using namespace System;
 
+class Tower;
 class TowerBullet : public Actor, public ICollisionHandler
 {
 	RTTI_DECLARATIONS(TowerBullet, Actor)
@@ -23,6 +24,7 @@ public:
 	void SetSpeed(float _speed) { m_fSpeed = _speed; }
 	inline int GetDamage()const { return m_iDamage; }
 	inline void SetDamage(int _damage) { m_iDamage = _damage; }
+	inline void SetParentTower(Tower* _pTower) { m_pTower = _pTower; }
 private:
 	Vector2 m_vDir = Vector2::Zero;
 	float m_fSpeed = 50.f;
@@ -31,6 +33,7 @@ private:
 	const float AccX = 2.f;
 	const float AccY = 2.f;
 	int m_iDamage = 0;
+	Tower* m_pTower = nullptr;
 };
 
 

@@ -123,7 +123,10 @@ void Renderer::Render()
 			if (m_pFrame->pSortingOrderArr[iFrameIdx] > com.iSortingOrder)
 				continue;
 
-			m_pFrame->charInfoArr[iFrameIdx].Char.AsciiChar = com.strText[iSrcIdx];
+			char chDraw = com.strText[iSrcIdx];
+			/*if (chDraw == ' ')
+				continue;*/
+			m_pFrame->charInfoArr[iFrameIdx].Char.AsciiChar = chDraw;
 			m_pFrame->charInfoArr[iFrameIdx].Attributes = (WORD)com.eColor;
 
 			m_pFrame->pSortingOrderArr[iFrameIdx] = com.iSortingOrder;

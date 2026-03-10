@@ -35,8 +35,8 @@ void PlayerCursor::Tick(float _fDeltaTime)
 void PlayerCursor::Render()
 {
 	super::Render();
-	string tempStr = to_string(InputMgr::Get_Instance().GetMousePosFloat().fX) + ", " + to_string(InputMgr::Get_Instance().GetMousePosFloat().fY);
-	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 30));
+	/*string tempStr = to_string(InputMgr::Get_Instance().GetMousePosFloat().fX) + ", " + to_string(InputMgr::Get_Instance().GetMousePosFloat().fY);
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 30));*/
 }
 
 void PlayerCursor::OnHit()

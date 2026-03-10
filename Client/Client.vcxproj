@@ -92,9 +92,7 @@
   <ItemGroup>
     <ClCompile Include="Effect\Effect.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
-    <ClCompile Include="Enemy\EnemySpawner.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Environment\SpawningPoint.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Default\Main.cpp" />
     <ClCompile Include="Environment\Ground.cpp" />
@@ -111,9 +109,7 @@
     <ClInclude Include="ClientCommon\ClientStruct.h" />
     <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="Enemy\Enemy.h" />
-    <ClInclude Include="Enemy\EnemySpawner.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="Environment\SpawningPoint.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="ClientCommon\ClientEnum.h" />
     <ClInclude Include="Environment\Ground.h" />

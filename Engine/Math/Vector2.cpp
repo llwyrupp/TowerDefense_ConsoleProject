@@ -61,7 +61,8 @@ Vector2 Vector2::operator-(const Vector2& other) const
 
 bool Vector2::operator==(const Vector2& other) const
 {
-    return this->m_fX == other.m_fX && this->m_fY == other.m_fY;
+    return fabsf(this->m_fX - other.m_fX) < EPSILON  &&
+        fabsf(this->m_fY - other.m_fY) < EPSILON;
 }
 
 bool Vector2::operator!=(const Vector2& other) const

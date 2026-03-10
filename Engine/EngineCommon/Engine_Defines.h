@@ -12,6 +12,7 @@
 #define MAX_WIDTH_LEN 5
 
 #define PI 3.14159265358979323846f
+#define EPSILON 0.0001f
 
 #define MAX_QUADTREE_DEPTH 5
 

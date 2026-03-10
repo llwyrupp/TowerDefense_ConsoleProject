@@ -16,7 +16,7 @@ enum class E_TYPE_ENEMY{
 	E_TYPE_SOLDIER = 0,//mid hp, mid speed
 	E_TYPE_TANKER = 1,//high hp, low speed
 	E_TYPE_ASSASSIN = 2,//low hp, high speed
-	//E_TYPE_BOSS = 3,//max HP, mid speed
+	E_TYPE_BOSS = 3,//max HP, mid speed
 	E_TYPE_MAX
 };
 
@@ -32,12 +32,14 @@ enum class E_TYPE_GAMESTATE {
 	E_NONE = -1,
 	E_PREROUND = 0,
 	E_ROUND = 1,
+	E_BOSSROUND = 2,
 	E_MAX
 };
 
 enum class E_TYPE_SORTORDER {//the higher the number, render priority ascends.
 	E_NONE = -1,
 	E_GROUND = 0,
+	E_SPAWNINGPOINT = 0,
 	E_WALL = 0,
 	E_BARRICADE = 1,
 	E_TOWER = 2,

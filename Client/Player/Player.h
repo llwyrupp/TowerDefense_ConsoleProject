@@ -22,14 +22,16 @@ public:
 	void Render() override;
 
 public:
-	bool Check_EnoughMoney_TowerCooldown();
-	bool CheckCanPlaceTower();
+	bool Check_TowerCooldown(int _index);
+	bool Check_EnoughMoney(int _index);
+	bool Check_EnoughTower(int _index);
+	bool CheckCanPlaceTower(int _index);
 public:
 	void AddMoney(int _money) { m_iMoney += _money; }
 private:
-	Timer m_Cooldown[3];
-	unsigned int m_iOwnTower[3];
-	unsigned int m_iTowerPrice[3];
+	Timer m_Cooldown[static_cast<int>(E_TYPE_TOWER::E_TYPE_MAX)];
+	int m_iOwnTower[static_cast<int>(E_TYPE_TOWER::E_TYPE_MAX)];
+	int m_iTowerPrice[static_cast<int>(E_TYPE_TOWER::E_TYPE_MAX)];
 private:
 	POINT m_MousePt = {};
 	PlayerCursor* m_pCursor;

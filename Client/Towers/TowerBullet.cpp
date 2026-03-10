@@ -13,11 +13,7 @@ TowerBullet::TowerBullet()
 	m_bIsUsingActorPool = true;
 	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_TOWERBULLET);
 
-#ifdef _DEBUG
-	m_fSpeed = 50.f;
-#endif
-	m_fSpeed = 50.f;
-
+	m_fSpeed = 100.f;
 }
 
 TowerBullet::~TowerBullet()
@@ -42,6 +38,8 @@ void TowerBullet::BeginPlay()
 	super::BeginPlay();
 
 	//initialize re-spawned bullets, if necessary
+	
+
 }
 
 void TowerBullet::Tick(float _fDeltaTime)

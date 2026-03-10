@@ -66,7 +66,7 @@ vector<POS> AStarMgr::FindPath(Node* _start, Node* _targetNode)
 		return {};
 
 	ResetAllNodes();
-	//SetRandomWeight();
+	SetRandomWeight();
 
 	while (!m_OpenList.empty())
 	{
@@ -190,7 +190,7 @@ void AStarMgr::SetRandomWeight()
 	{
 		for (auto& node : vec)
 		{
-			node->SetWeight(Util::RandomRange(0.f, 100.f));
+			node->SetWeight(Util::RandomRange(0.f, 10.f));
 		}
 	}
 }

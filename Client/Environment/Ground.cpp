@@ -5,7 +5,7 @@
 using namespace System;
 
 Ground::Ground(const Vector2& vPos)
-	:super(" ", nullptr, vPos, Color::eWhite, E_LAYER::E_GROUND)
+	:super(" ", nullptr, vPos, Color::eGreen, E_LAYER::E_GROUND)
 {
 	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_GROUND);
 }

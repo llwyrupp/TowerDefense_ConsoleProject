@@ -4,7 +4,7 @@
 
 using namespace System;
 Barricade::Barricade(const Vector2& vPos)
-	:super("#", nullptr, vPos, Color::eBlue, E_LAYER::E_BARRICADE)
+	:super("#", nullptr, vPos, Color::eCyan, E_LAYER::E_BARRICADE)
 {
 	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_BARRICADE);
 }

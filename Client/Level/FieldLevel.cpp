@@ -9,6 +9,7 @@
 #include "Environment/Ground.h"
 #include "Environment/Wall.h"
 #include "Environment/Barricade.h"
+#include "Environment/SpawningPoint.h"
 #include "Target/Target.h"
 #include "EngineCommon/Engine_Function.h"
 #include "Game/Game.h"
@@ -32,11 +33,13 @@ FieldLevel::FieldLevel()
 	AddNewActor(m_pPlayer = new Player(m_pCursor));
 	LoadMap("../Data/Map/RoadMap.txt");
 
-	//m_PreRoundTimer.SetTargetTime(5.f);
-	m_PreRoundTimer.SetTargetTime(0.1f);
+	m_PreRoundTimer.SetTargetTime(5.f);
 	m_SpawnEnemyTimer.SetTargetTime(2.f);
+	m_SpawnBossTimer.SetTargetTime(10.f);
+
 	m_PreRoundTimer.ResetTime();
 	m_SpawnEnemyTimer.ResetTime();
+	m_SpawnBossTimer.ResetTime();
 
 	m_bHasRoundBegun = false;
 
@@ -44,8 +47,10 @@ FieldLevel::FieldLevel()
 
 	m_iCurBaseHP = m_iMaxBaseHP;
 
+	m_iWaveCount = 1;//start from round 1
+
 	//TODO: set mapsize from the values read in loadmap
-	m_QuadTree = new System::QuadTree(Quadrant(0, 0, 150, 50)) ;
+	m_QuadTree = new System::QuadTree(Quadrant(0, 0, m_iMapWidth, m_iMapHeight));
 }
 
 FieldLevel::~FieldLevel()
@@ -78,44 +83,90 @@ void FieldLevel::Tick(float _fDeltaTime)
 		{
 			m_bHasRoundBegun = true;
 			m_PreRoundTimer.ResetTime();
-			m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
+
+			if (m_iWaveCount % static_cast<int>(m_vecEnemySpawnPoints.size()) == 0)//every 3 rounds, bossround starts.
+			{
+				m_eGameState = E_TYPE_GAMESTATE::E_BOSSROUND;
+			}
+			else {
+				m_eGameState = E_TYPE_GAMESTATE::E_ROUND;
+			}
+
 		}
 	}
 #pragma endregion PRE_ROUND
 
-#pragma endregion ROUND
-	else if (m_bHasRoundBegun && m_eGameState == E_TYPE_GAMESTATE::E_ROUND) {
-
-		m_SpawnEnemyTimer.Tick(_fDeltaTime);
-		if (m_SpawnEnemyTimer.IsTimeOut())
+#pragma region ROUND
+	else if (m_bHasRoundBegun) 
+	{
+		if (m_eGameState == E_TYPE_GAMESTATE::E_ROUND)
 		{
-			size_t iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
-
-			if (m_iCurEnemySpawnPointIdx < static_cast<int>(m_vecEnemySpawnPoints.size()) &&
-				m_iTotalSpawnedEnemies < m_iMaxEnemiesPerRound)
+			m_SpawnEnemyTimer.Tick(_fDeltaTime);
+			if (m_SpawnEnemyTimer.IsTimeOut())
 			{
-				//spawn enemy.
-				Enemy* pEnemy = SpawnActor<Enemy>(m_vecEnemySpawnPoints[m_iCurEnemySpawnPointIdx]);
-				if (pEnemy)
+				size_t iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
+
+				if (m_iCurEnemySpawnPointIdx < static_cast<int>(m_vecEnemySpawnPoints.size()) &&
+					m_iTotalSpawnedEnemies < m_iMaxEnemiesPerRound)
 				{
-					int iRandInt = Util::RandomInt(0, 100) % static_cast<int>(E_TYPE_ENEMY::E_TYPE_MAX);
-					pEnemy->SetEnemyInfo(static_cast<E_TYPE_ENEMY>(iRandInt));
+					//spawn enemy.
+					Enemy* pEnemy = SpawnActor<Enemy>(m_vecEnemySpawnPoints[m_iCurEnemySpawnPointIdx]);
+					if (pEnemy)
+					{
+						//generate random type of enemies, except boss monster
+						int iRandInt = Util::RandomInt(0, 100) % (static_cast<int>(E_TYPE_ENEMY::E_TYPE_ASSASSIN) + 1);
+						pEnemy->SetEnemyInfo(static_cast<E_TYPE_ENEMY>(iRandInt));
+					}
+					++m_iTotalSpawnedEnemies;
 				}
-				++m_iTotalSpawnedEnemies;
-			}
 
-			if(m_iTotalSpawnedEnemies >= m_iMaxEnemiesPerRound && iEnemiesOnScene == 0)
-			{
-				m_PreRoundTimer.ResetTime();
-				m_bHasRoundBegun = false;
-				m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
-				m_iTotalSpawnedEnemies = 0;
-
-				++m_iCurEnemySpawnPointIdx;
-				m_iCurEnemySpawnPointIdx = m_iCurEnemySpawnPointIdx >= static_cast<int>(m_vecEnemySpawnPoints.size()) ? 0 : m_iCurEnemySpawnPointIdx;
+				if(m_iTotalSpawnedEnemies >= m_iMaxEnemiesPerRound && iEnemiesOnScene == 0)
+				{
+					m_PreRoundTimer.ResetTime();
+					m_bHasRoundBegun = false;
+					++m_iWaveCount;
+					m_iTotalSpawnedEnemies = 0;
+					++m_iCurEnemySpawnPointIdx;
+					m_iCurEnemySpawnPointIdx = m_iCurEnemySpawnPointIdx >= static_cast<int>(m_vecEnemySpawnPoints.size()) ? 0 : m_iCurEnemySpawnPointIdx;
+					m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
+				}
+				m_SpawnEnemyTimer.ResetTime();
 			}
-			m_SpawnEnemyTimer.ResetTime();
 		}
+#pragma endregion ROUND
+#pragma region BOSSROUND
+		else if (m_eGameState == E_TYPE_GAMESTATE::E_BOSSROUND)
+		{
+			m_SpawnBossTimer.Tick(_fDeltaTime);
+			if (m_SpawnBossTimer.IsTimeOut())
+			{
+				size_t iEnemiesOnScene = m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size();
+
+				if (m_iCurEnemySpawnPointIdx < static_cast<int>(m_vecEnemySpawnPoints.size()) &&
+					m_iTotalSpawnedEnemies < m_iMaxBossPerRound)
+				{
+					//spawn enemy.
+					Enemy* pEnemy = SpawnActor<Enemy>(m_vecEnemySpawnPoints[0]);
+					if (pEnemy)
+					{
+						pEnemy->SetEnemyInfo(E_TYPE_ENEMY::E_TYPE_BOSS);
+					}
+					++m_iTotalSpawnedEnemies;
+				}
+
+				if (m_iTotalSpawnedEnemies >= m_iMaxBossPerRound && iEnemiesOnScene == 0)
+				{
+					m_PreRoundTimer.ResetTime();
+					m_bHasRoundBegun = false;
+					++m_iWaveCount;
+					m_iTotalSpawnedEnemies = 0;
+					m_iCurEnemySpawnPointIdx = 0;
+					m_eGameState = E_TYPE_GAMESTATE::E_PREROUND;
+				}
+				m_SpawnBossTimer.ResetTime();
+			}
+		}
+#pragma endregion BOSSROUND
 		
 		//Todo: clear quadtree, insert every actors on scene that can be collided with.
 		//filter: when checking collisions for a bullet, don't loop thru all enemies.
@@ -124,13 +175,12 @@ void FieldLevel::Tick(float _fDeltaTime)
 
 
 		//check collisions
-		CheckCollision_PlayerCursor_TowerActors();
+		CheckCollision_PlayerCursor_Ground_Barricade_TowerActors();
 		CheckCollision_TowerBullet_Enemies();
 		CheckCollision_TowerBullet_Walls();
 		CheckCollision_Enemies_Target();
 		CheckCollision_Enemies_TowerBoundaries();
 	}
-#pragma endregion ROUND
 }
 
 void FieldLevel::Render()
@@ -152,8 +202,13 @@ void FieldLevel::Render()
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 22), Color::eGreen);
 	
 	
-	tempStr = "Enemies Remaining: " + to_string(m_iMaxEnemiesPerRound - m_iTotalSpawnedEnemies) + "/" + to_string(m_iMaxEnemiesPerRound);
+	tempStr = "Enemies Remaining: " + to_string((m_eGameState == E_TYPE_GAMESTATE::E_ROUND ? m_iMaxEnemiesPerRound : m_iMaxBossPerRound) - m_iTotalSpawnedEnemies) + "/" +
+		to_string(m_eGameState == E_TYPE_GAMESTATE::E_ROUND ? m_iMaxEnemiesPerRound : m_iMaxBossPerRound);
+
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 25), Color::eWhite);
+
+	tempStr = "Enemies on map: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size());
+	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 26), Color::eWhite);
 }
 
 void FieldLevel::LoadMap(const char* _pPath)
@@ -194,6 +249,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 		case 'S'://spawn points
 			eLayer = E_LAYER::E_SPAWNPOINT;
 			m_vecEnemySpawnPoints.emplace_back(vPos);
+			AddNewActor(new SpawningPoint(vPos));
 			break;
 		case '#':
 			eLayer = E_LAYER::E_BARRICADE;
@@ -201,6 +257,7 @@ void FieldLevel::LoadMap(const char* _pPath)
 			break;
 		case '.':
 			eLayer = E_LAYER::E_GROUND;
+			AddNewActor(new Ground(vPos));
 			break;
 		case 'T':
 			eLayer = E_LAYER::E_TARGET;
@@ -216,6 +273,8 @@ void FieldLevel::LoadMap(const char* _pPath)
 	}
 
 	AStarMgr::Get_Instance().SetMapMaxSize(static_cast<int>(vPos.m_fY), static_cast<int>(vPos.m_fX));//HEIGHT(row) = 50, WIDTH(col) = 100
+	m_iMapWidth = static_cast<int>(vPos.m_fX);
+	m_iMapHeight = static_cast<int>(vPos.m_fY);
 
 	Safe_Delete_Arr(pBuffer);
 	fclose(pFile);
@@ -265,16 +324,39 @@ void FieldLevel::GameOver()
 	Game::Get_Instance().QuitEngine();
 }
 
-void FieldLevel::CheckCollision_PlayerCursor_TowerActors()
+void FieldLevel::CheckCollision_PlayerCursor_Ground_Barricade_TowerActors()
 {
-	//no need for quadtree queries
-
+	//
 	if (m_pPlayer == nullptr || m_pCursor == nullptr)
 		return;
 
+	m_QuadTree->ResetTree();
+
+	for (auto const barricade : m_vecLayers[static_cast<int>(E_LAYER::E_BARRICADE)])
+	{
+		m_QuadTree->InsertArea(barricade->GetArea());
+	}
+
+	for (auto const ground : m_vecLayers[static_cast<int>(E_LAYER::E_GROUND)])
+	{
+		m_QuadTree->InsertArea(ground->GetArea());
+	}
+
 	for (auto const tower : m_vecLayers[static_cast<int>(E_LAYER::E_TOWER)])
 	{
-		if (m_pCursor->CheckIntersect(tower))
+		m_QuadTree->InsertArea(tower->GetArea());
+	}
+
+
+	auto vecIntersects = m_QuadTree->Query(m_pCursor->GetArea());
+
+	for (auto const area : vecIntersects)
+	{
+		Actor* pActor = area->GetActorOwner();
+		if (pActor == nullptr)
+			continue;
+
+		if (m_pCursor->CheckIntersect(pActor))
 		{
 			m_bCanPlaceTower = false;
 			m_pCursor->SetColor(Color::eRed);
@@ -343,7 +425,8 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 			if (pEnemy->Get_IsDestroyRequested())
 				continue;
 
-			if (bullet->CheckIntersect(pEnemy))
+			//if normal CheckIntersect did not work, check again using cross and dot product
+			if (bullet->CheckIntersect(pEnemy) || bullet->CheckIntersect_CrossDot(pEnemy))
 			{
 				dynamic_cast<TowerBullet*>(bullet)->OnCollisionEnter2D(pEnemy);
 
@@ -358,13 +441,14 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 						m_pPlayer->AddMoney(dynamic_cast<Enemy*>(pEnemy)->GetMoney());
 					}
 					dynamic_cast<Enemy*>(pEnemy)->OnCollisionEnter2D(bullet);
-					//AddNewActor(new Effect(enemy->GetPos()));
+					AddNewActor(new Effect(pEnemy->GetPos()));
 				}
 				else if (iNewHP > 0)//enemy still alive
 				{
 					dynamic_cast<Enemy*>(pEnemy)->SetHP(iNewHP);
 				}
 			}
+			
 		}
 	}
 
@@ -472,9 +556,10 @@ void FieldLevel::CheckCollision_Enemies_Target()
 		if (m_pTarget->CheckIntersect(pEnemy))
 		{
 			dynamic_cast<Enemy*>(pEnemy)->OnCollisionEnter2D(m_pTarget);
-			--m_iCurBaseHP;
+			m_iCurBaseHP -= dynamic_cast<Enemy*>(pEnemy)->GetDamage();
 			if (m_iCurBaseHP <= 0)
 			{
+				m_iCurBaseHP = 0;
 				GameOver();
 			}
 		}

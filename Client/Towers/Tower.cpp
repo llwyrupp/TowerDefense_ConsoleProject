@@ -12,7 +12,7 @@ using namespace System;
 using namespace Util;
 
 Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
-	:super(nullptr, pPath, Vector2::Zero, Color::eWhite, E_LAYER::E_TOWER)
+	:super(nullptr, pPath, Vector2::Zero, Color::eMagenta, E_LAYER::E_TOWER)
 {
 	m_tInfo.eType = _eType;
 	m_iSortingOrder = static_cast<int>(E_TYPE_SORTORDER::E_TOWER);
@@ -21,16 +21,16 @@ Tower::Tower(const E_TYPE_TOWER& _eType, const char* pPath)
 	switch (_eType)
 	{
 	case E_TYPE_TOWER::E_TYPE_RIFLE:
-		m_fBoundary = 8.f;
+		m_fBoundary = 7.f;
 		m_FireTimer.SetTargetTime(1.f);
 		break;
 	case E_TYPE_TOWER::E_TYPE_SHOTGUN:
-		m_fBoundary = 4.f;
+		m_fBoundary = 5.f;
 		m_FireTimer.SetTargetTime(2.f);
 		break;
 	case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
-		m_fBoundary = 7.f;
-		m_FireTimer.SetTargetTime(0.5f);
+		m_fBoundary = 6.f;
+		m_FireTimer.SetTargetTime(0.2f);
 		break;
 	}
 
@@ -71,11 +71,20 @@ void Tower::Tick(float _fDeltaTime)
 			m_FireTimer.ResetTime();
 
 			TowerBullet* pBullet = nullptr;
+			Vector2 vNewPos = GetPos();
+			Vector2 vTargetPos = m_pTarget->GetPos();
+			//set position to the center of the tower.
+			vNewPos.m_fX += static_cast<float>(m_iWidth / 2);
+			vNewPos.m_fY += static_cast<float>(m_iHeight / 2);
+			vTargetPos.m_fX += static_cast<float>(m_pTarget->GetWidth() / 2);
+			vTargetPos.m_fY += static_cast<float>(m_pTarget->GetHeight() / 2);
 
 			//get bullet's direction vector
-			Vector2 vDir = m_pTarget->GetPos() - GetPos();
+			Vector2 vDiff = vTargetPos - vNewPos;
+			Vector2 vNormDir = vDiff;
+			vNormDir.NormalizeVector();
 			
-			if (vDir == Vector2::Zero || m_pTarget->Get_IsDestroyRequested())
+			if (vDiff == Vector2::Zero || m_pTarget->Get_IsDestroyRequested())
 			{
 				m_eCurState = E_TOWER_STATE::E_IDLE;
 				m_pTarget = nullptr;
@@ -87,54 +96,52 @@ void Tower::Tick(float _fDeltaTime)
 			case E_TYPE_TOWER::E_TYPE_RIFLE:
 				{
 					//normalize vector.
-					//vDir.NormalizeVector();
-					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(vNewPos);
 					pBullet->SetDamage(10);
-					pBullet->SetDir(vDir);
+					pBullet->SetDir(vNormDir);
 				}
 				break;
 			case E_TYPE_TOWER::E_TYPE_SHOTGUN:
 				{
 					//find the angle between myself(the tower) and the target
-					float fAngle = atan2(m_pTarget->GetPos().m_fY - GetPos().m_fY, m_pTarget->GetPos().m_fX - GetPos().m_fX);
-					float fRadiansCenter = ConvertToRadians(fAngle);
-					float fRadianLeft = fRadiansCenter - ConvertToRadians(30.f);
-					float fRadianRight = fRadiansCenter + ConvertToRadians(30.f);
-
+					float fRadiansCenter = atan2(vTargetPos.m_fY - vNewPos.m_fY, vTargetPos.m_fX - vNewPos.m_fX);
+					float fRadianLeft = fRadiansCenter - ConvertToRadians(10.f);
+					float fRadianRight = fRadiansCenter + ConvertToRadians(10.f);
+					Vector2 vNewDir = Vector2::Zero;
 
 					//second bullet (30 degrees to left)
 					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
 					pBullet->SetDamage(15);
-					vDir = Vector2(cosf(fRadianLeft), sinf(fRadianLeft));
-					pBullet->SetDir(vDir);
+					vNewDir = Vector2(cosf(fRadianLeft), sinf(fRadianLeft));
+					pBullet->SetDir(vNewDir);
 
 					//third bullet (30 degrees to right)
 					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
 					pBullet->SetDamage(15);
-					vDir = Vector2(cosf(fRadianRight), sinf(fRadianRight));
-					pBullet->SetDir(vDir);
+					vNewDir = Vector2(cosf(fRadianRight), sinf(fRadianRight));
+					pBullet->SetDir(vNewDir);
 
 					//first bullet (center)
 					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
 					pBullet->SetDamage(15);
-					vDir = Vector2(cosf(fRadiansCenter), sinf(fRadiansCenter));
-					pBullet->SetDir(vDir);
+					vNewDir = Vector2(cosf(fRadiansCenter), sinf(fRadiansCenter));
+					pBullet->SetDir(vNewDir);
 				}
 				break;
 			case E_TYPE_TOWER::E_TYPE_MACHINEGUN:
 				{
 					//normalize vector.
-					//vDir.NormalizeVector();
-					pBullet = m_pLevel->SpawnActor<TowerBullet>(GetPos());
+					pBullet = m_pLevel->SpawnActor<TowerBullet>(vNewPos);
 					pBullet->SetDamage(20);
-					pBullet->SetDir(vDir);
+					pBullet->SetDir(vNormDir);
 				}
 				break;
 			}
 			
 			//OnCollisionExit2D()
 			//get distance between tower and enemy
-			float fDist = sqrtf(vDir.m_fX * vDir.m_fX + vDir.m_fY * vDir.m_fY);
+			//calculation must be done with a direction vector without normalization
+			float fDist = sqrtf(vDiff.m_fX * vDiff.m_fX + vDiff.m_fY * vDiff.m_fY);
 
 			//logic for exiting tower boundary
 			if (fDist >= m_fBoundary)

@@ -227,9 +227,9 @@ vector<E_AREA_INDEX> Area::GetCorrespondingQuadrantsIndices(const Quadrant& _qua
 	//bTop = 20 < 25 && 21 >= 0 V
 	//bBottom = 25 <= 20 && 20 < 50 X
 	bool bLeft = _quadrant.GetOriginX() < iCenterX && iOriginX <= _quadrant.GetMaxX();
-	bool bRight = iCenterX <= _quadrant.GetOriginX() && _quadrant.GetOriginX() < m_MyQuadrant.GetMaxX();
-	bool bTop = _quadrant.GetOriginY() < iCenterY && _quadrant.GetMaxY() >= iOriginY;
-	bool bBottom = iCenterY <= _quadrant.GetOriginY() && _quadrant.GetOriginY() < m_MyQuadrant.GetMaxY();
+	bool bRight = iCenterX <= _quadrant.GetMaxX() && _quadrant.GetOriginX() < m_MyQuadrant.GetMaxX();
+	bool bTop = _quadrant.GetOriginY() < iCenterY && iOriginY <= _quadrant.GetMaxY();
+	bool bBottom = iCenterY <= _quadrant.GetMaxY() && _quadrant.GetOriginY() < m_MyQuadrant.GetMaxY();
 
 	vector<E_AREA_INDEX> vecIndices;
 	//we want to know where the parameter(_quadrant) belongs to, 

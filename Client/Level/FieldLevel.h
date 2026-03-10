@@ -35,7 +35,9 @@ public:
 	void StartRound();
 	void GameOver();
 public:
-	void CheckCollision_PlayerCursor_TowerActors();
+	/*void CheckCollision_PlayerCursor_Barricade();
+	void CheckCollision_PlayerCursor_TowerActors();*/
+	void CheckCollision_PlayerCursor_Ground_Barricade_TowerActors();
 	void CheckCollision_TowerBullet_Enemies();
 	void CheckCollision_TowerBullet_Walls();
 	void CheckCollision_Enemies_Target();
@@ -50,6 +52,7 @@ private:
 	System::QuadTree* m_QuadTree;
 	Timer m_PreRoundTimer;
 	Timer m_SpawnEnemyTimer;
+	Timer m_SpawnBossTimer;
 private:
 	vector<TowerBullet*> m_vecTowerBullet;
 	vector<Vector2>m_vecEnemySpawnPoints;
@@ -58,13 +61,18 @@ private:
 	bool m_bHasRoundBegun = false;
 private:
 	E_TYPE_GAMESTATE m_eGameState = E_TYPE_GAMESTATE::E_NONE;
-
+	int m_iMapWidth = 0;
+	int m_iMapHeight = 0;
 	const int m_iMaxEnemiesPerRound = 30;
+	const int m_iMaxBossPerRound = 4;
 	int m_iTotalSpawnedEnemies= 0;
 	int m_iCurEnemySpawnPointIdx = 0;
 
+
+	int m_iWaveCount = 1;
+private:
 	const int m_iMaxBaseHP = 100;
-	int m_iCurBaseHP = 0;
+	int m_iCurBaseHP = 100;
 };
 
 

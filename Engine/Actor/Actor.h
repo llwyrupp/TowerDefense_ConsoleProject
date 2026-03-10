@@ -28,11 +28,11 @@ public:
 	virtual void Render() = 0;
 public:
 	void Destroy();
-	void OnDestroy();
 	void ChangeImage(const char* newImage);
 	void LoadString_FromFile(const char* _pPath);
 	void UpdateRect();
 	bool CheckIntersect(const Actor* const _other);
+	bool CheckIntersect_CrossDot(const Actor* const _other);
 	//bool CheckIntersect_ByArea(const Area* const _other);
 public:
 	void SetPos(const Vector2& vNewPos);
@@ -57,6 +57,8 @@ public:
 
 	inline void SetWidth(int _width) { m_iWidth = _width; }
 	inline void SetHeight(int _height) { m_iHeight = _height; }
+	inline int GetWidth() const { return m_iWidth; }
+	inline int GetHeight() const { return m_iHeight; }
 
 	inline bool Get_IsUsingActorPool() const { return m_bIsUsingActorPool; }
 	inline void Set_IsUsingActorPool(bool _bFlag) { m_bIsUsingActorPool = _bFlag; }

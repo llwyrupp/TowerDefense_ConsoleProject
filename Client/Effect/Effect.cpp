@@ -4,17 +4,26 @@
 
 static const Effect::EFFECTFRAME sequence[] =
 {
-	/*Effect::EFFECTFRAME("   ¡Ù", 0.08f, Color::eRed),
-	Effect::EFFECTFRAME("¡Ú   ", 0.08f, Color::eBlue),
+	Effect::EFFECTFRAME("  X  ", 0.08f, Color::eRed),
+	Effect::EFFECTFRAME(" X X ", 0.08f, Color::eBlue),
+	Effect::EFFECTFRAME("X X X", 0.08f, Color::eGreen),
+	Effect::EFFECTFRAME(" X X ", 0.08f, Color::eCyan),
+	Effect::EFFECTFRAME("  X  ", 0.08f, Color::eMagenta),
+	Effect::EFFECTFRAME(" X X ", 0.08f, Color::eWhite),
+	Effect::EFFECTFRAME("X X X", 0.08f, Color::eMagenta),
+	Effect::EFFECTFRAME(" X X ", 0.08f, Color::eCyan),
+	Effect::EFFECTFRAME("  X  ", 0.08f, Color::eGreen),
+	/*Effect::EFFECTFRAME("  ¡Ù", 0.08f, Color::eRed),
+	Effect::EFFECTFRAME("¡Ú  ", 0.08f, Color::eBlue),
 	Effect::EFFECTFRAME("   ¡Ù", 0.08f, Color::eBlue),
 	Effect::EFFECTFRAME(" ¡Ú¡Ù¡Ú", 0.08f, Color::eGreen),
 	Effect::EFFECTFRAME("¡Ù¡Ú¡Ù¡Ú  ", 0.08f, Color::eWhite),
 	Effect::EFFECTFRAME("  ¡Ú¡Ù¡Ú¡Ù", 0.08f, Color::eRed),
 	Effect::EFFECTFRAME("¡Ù¡Ú¡Ù¡Ú¡Ù ", 0.08f, Color::eBlue),
 	Effect::EFFECTFRAME(" ¡Ú¡Ù¡Ú¡Ù¡Ú", 0.08f, Color::eGreen),
-	Effect::EFFECTFRAME("¡Ù¡Ú¡Ù¡Ú¡Ù¡Ú", 0.08f, Color::eWhite),
-	Effect::EFFECTFRAME("  X  ", 0.5f, Color::eGreen)*/
-	Effect::EFFECTFRAME("¡Ù ", 0.08f, Color::eBlue),
+	Effect::EFFECTFRAME("¡Ù¡Ú¡Ù¡Ú¡Ù¡Ú", 0.08f, Color::eWhite),*/
+	//Effect::EFFECTFRAME("  X  ", 0.5f, Color::eGreen)
+	/*Effect::EFFECTFRAME("¡Ù ", 0.08f, Color::eBlue),
 	Effect::EFFECTFRAME("¡Ú ", 0.08f, Color::eGreen),
 	Effect::EFFECTFRAME("¡Ù ", 0.08f, Color::eRed),
 	Effect::EFFECTFRAME("¡Ú ", 0.08f, Color::eBlue),
@@ -25,7 +34,7 @@ static const Effect::EFFECTFRAME sequence[] =
 	Effect::EFFECTFRAME("¡Ù ", 0.08f, Color::eRed),
 	Effect::EFFECTFRAME("¡Ú ", 0.08f, Color::eBlue),
 	Effect::EFFECTFRAME("¡Ù ", 0.08f, Color::eGreen),
-	Effect::EFFECTFRAME("¡Ú ", 0.08f, Color::eRed),
+	Effect::EFFECTFRAME("¡Ú ", 0.08f, Color::eRed),*/
 };
 
 Effect::Effect(const Vector2& position)
