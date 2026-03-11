@@ -209,6 +209,8 @@ void FieldLevel::Render()
 
 	tempStr = "Enemies on map: " + to_string(m_vecLayers[static_cast<int>(E_LAYER::E_ENEMY)].size());
 	Renderer::Get_Instance().Submit(tempStr, Vector2(151, 26), Color::eWhite);
+
+	m_QuadTree->Render();
 }
 
 void FieldLevel::LoadMap(const char* _pPath)
@@ -415,7 +417,7 @@ void FieldLevel::CheckCollision_TowerBullet_Enemies()
 
 		vector<Area*> vecIntersects = m_QuadTree->Query(bullet->GetArea());
 
-		for (auto const enemy : vecIntersects)
+		for (auto& enemy : vecIntersects)
 		{
 			Actor* pEnemy = enemy->GetActorOwner();
 

@@ -26,6 +26,7 @@ public:
 	void ResetTree();
 	void InsertArea(Area* _Area);
 	vector<Area*> Query(Area* _queryArea);
+	void Render();
 private:
 	static const int m_iMaxDepth = 5;
 	Area* m_Root;//the root node.

@@ -33,6 +33,7 @@ public:
 	void Query(const Quadrant& _quadrants, vector<Area*>& _possibleNodes);
 	void Clear();
 	void Reset();
+	void ResetVisualize();
 	//divide into 4 quadrants
 	bool SubDivide();
 	//is area divided?
@@ -41,7 +42,7 @@ public:
 	vector<E_AREA_INDEX> GetCorrespondingQuadrantsIndices(const Quadrant& _quadrant);
 	void DeleteChildren();
 public:
-	inline const Quadrant& GetMyQuadrant() const { return m_MyQuadrant; }
+	inline Quadrant& GetMyQuadrant() { return m_MyQuadrant; }
 	inline const vector<Area*>& GetAllAreas() const { return m_vecAllAreas; }
 	inline Area* GetTopLeft() const { return m_TopLeft; }
 	inline Area* GetTopRight() const { return m_TopRight; }
@@ -51,6 +52,8 @@ public:
 	inline void SetMyQuadrantWidthHeight(int _width, int _height) { m_MyQuadrant.SetWidthHeight(_width, _height); }
 	inline Actor* GetActorOwner() const { return m_pActorOwner; }
 	inline void SetActorOwner(Actor* _owner) { m_pActorOwner = _owner; }
+public:
+	void Render();
 private:
 	int m_iDepth = 0;
 	//which quadrant does it belong to?

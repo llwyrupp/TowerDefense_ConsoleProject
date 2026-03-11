@@ -71,6 +71,8 @@ void Area::Insert(Area* _node)
 
 void Area::Query(const Quadrant& _quadrants, vector<Area*>& _possibleNodes)
 {
+	m_MyQuadrant.SetVisualize(true);
+
 	//add current node(this node) to possible nodes.
 	_possibleNodes.emplace_back(this);
 
@@ -142,6 +144,23 @@ void Area::Reset()
 			m_BottomLeft->Clear();
 		if (m_BottomRight)
 			m_BottomRight->Clear();
+	}
+}
+
+void Area::ResetVisualize()
+{
+	m_MyQuadrant.SetVisualize(false);
+
+	if (IsDivided())//if current area is divided, meaning there are children areas to be deleted,
+	{
+		if (m_TopLeft)
+			m_TopLeft->ResetVisualize();
+		if (m_TopRight)
+			m_TopRight->ResetVisualize();
+		if (m_BottomLeft)
+			m_BottomLeft->ResetVisualize();
+		if (m_BottomRight)
+			m_BottomRight->ResetVisualize();
 	}
 }
 
@@ -263,6 +282,28 @@ void Area::DeleteChildren()
 		Safe_Delete(m_TopRight);
 		Safe_Delete(m_BottomLeft);
 		Safe_Delete(m_BottomRight);
+	}
+}
+
+void Area::Render()
+{
+	m_MyQuadrant.Render();
+
+	if (IsDivided())
+	{
+		if (m_TopLeft)
+			m_TopLeft->GetMyQuadrant().Render();
+		if (m_TopRight)
+			m_TopRight->GetMyQuadrant().Render();
+		if (m_BottomLeft)
+			m_BottomLeft->GetMyQuadrant().Render();
+		if (m_BottomRight)
+			m_BottomRight->GetMyQuadrant().Render();
+	}
+
+	for (auto const area : m_vecAllAreas)
+	{
+		area->Render();
 	}
 }
 

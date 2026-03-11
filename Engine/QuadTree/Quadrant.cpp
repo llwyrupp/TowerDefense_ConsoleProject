@@ -26,4 +26,21 @@ bool Quadrant::CheckIntersect(const Quadrant& _other) const
 
     return false;
 }
+
+void Quadrant::Render()
+{
+    if (!m_bVisualize)
+        return;
+
+    for (int i = 0; i < m_iWidth; ++i) {
+        Renderer::Get_Instance().Submit("-", Vector2(m_iOriginX + i, m_iOriginY), Color::eYellow, 101);
+        Renderer::Get_Instance().Submit("-", Vector2(m_iOriginX + i, m_iOriginY + m_iHeight), Color::eYellow, 101);
+    }
+    for (int i = 0; i < m_iHeight; ++i)
+    {
+        Renderer::Get_Instance().Submit("|", Vector2(m_iOriginX, m_iOriginY + i), Color::eYellow, 101);
+        Renderer::Get_Instance().Submit("|", Vector2(m_iOriginX + m_iWidth, m_iOriginY + i), Color::eYellow, 101);
+    }
+}
+
 END

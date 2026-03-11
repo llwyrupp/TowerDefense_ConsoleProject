@@ -3,6 +3,7 @@
 #define __QUADRANT_H__
 
 #include "EngineCommon/Engine_Macro.h"
+#include "Graphics/Renderer/Renderer.h"
 
 BEGIN(System)
 //this class represents the rectangle area(each quadrant)
@@ -23,8 +24,11 @@ public:
 
 	inline void SetPos(int _originX, int _originY) { m_iOriginX = _originX; m_iOriginY = _originY; }
 	inline void SetWidthHeight(int _width, int _height) { m_iWidth = _width; m_iHeight = _height; }//for tower boundaries
+
+	inline void SetVisualize(bool _flag) { m_bVisualize = _flag; }
 public:
 	bool CheckIntersect(const Quadrant& _other) const;
+	void Render();
 private:
 	//the origin point of each Quadrant
 	//left-top point of a quadrant
@@ -33,6 +37,7 @@ private:
 private:
 	int m_iWidth = 1;
 	int m_iHeight = 1;
+	bool m_bVisualize = false;
 };
 
 

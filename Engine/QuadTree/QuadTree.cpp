@@ -37,6 +37,7 @@ vector<Area*> QuadTree::Query(Area* _queryArea)
     {
         return {};
     }
+    m_Root->ResetVisualize();
 
     vector<Area*> vecPossibleAreas;
     //send over my(m_root's) quadrant, and the output vector(vecPossibleAreas)
@@ -61,4 +62,10 @@ vector<Area*> QuadTree::Query(Area* _queryArea)
     //return the intersecting areas
     return vecIntersectingArea;
 }
+
+void QuadTree::Render()
+{
+    m_Root->Render();
+}
+
 END
